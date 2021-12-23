@@ -1,18 +1,18 @@
 <img src="https://www.yegor256.com/images/books/elegant-objects/cactus.svg" height="100px" />
 
 [![EO principles respected here](https://www.elegantobjects.org/badge.svg)](https://www.elegantobjects.org)
-[![DevOps By Rultor.com](http://www.rultor.com/b/cqfn/eo)](http://www.rultor.com/p/cqfn/eo)
+[![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/tojos)](http://www.rultor.com/p/yegor256/tojos)
 [![We recommend IntelliJ IDEA](https://www.elegantobjects.org/intellij-idea.svg)](https://www.jetbrains.com/idea/)
 
-[![mvn](https://github.com/cqfn/eo/actions/workflows/mvn.yml/badge.svg)](https://github.com/cqfn/eo/actions/workflows/mvn.yml)
-[![PDD status](http://www.0pdd.com/svg?name=cqfn/eo)](http://www.0pdd.com/p?name=cqfn/eo)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e4f7ed144919f7f0d58c/maintainability)](https://codeclimate.com/github/cqfn/eo/maintainability)
-[![Maven Central](https://img.shields.io/maven-central/v/com.yegor256/eo-parent.svg)](https://maven-badges.herokuapp.com/maven-central/com.yegor256/eo-parent)
+[![mvn](https://github.com/yegor256/tojos/actions/workflows/mvn.yml/badge.svg)](https://github.com/yegor256/tojos/actions/workflows/mvn.yml)
+[![PDD status](http://www.0pdd.com/svg?name=yegor256/tojos)](http://www.0pdd.com/p?name=yegor256/tojos)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e4f7ed144919f7f0d58c/maintainability)](https://codeclimate.com/github/yegor256/tojos/maintainability)
+[![Maven Central](https://img.shields.io/maven-central/v/com.yegor256/tojos.svg)](https://maven-badges.herokuapp.com/maven-central/com.yegor256/tojos)
 
-[![codecov](https://codecov.io/gh/cqfn/eo/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/eo)
-[![Hits-of-Code](https://hitsofcode.com/github/cqfn/eo)](https://hitsofcode.com/view/github/cqfn/eo)
-![Lines of code](https://img.shields.io/tokei/lines/github/cqfn/eo)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/cqfn/eo/blob/master/LICENSE.txt)
+[![codecov](https://codecov.io/gh/yegor256/tojos/branch/master/graph/badge.svg)](https://codecov.io/gh/yegor256/tojos)
+[![Hits-of-Code](https://hitsofcode.com/github/yegor256/tojos)](https://hitsofcode.com/view/github/yegor256/tojos)
+![Lines of code](https://img.shields.io/tokei/lines/github/yegor256/tojos)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/yegor256/tojos/blob/master/LICENSE.txt)
 
 It's a simple manager of "records" in a text file of CSV, JSON, etc. format.
 It's something you would use when you don't want to run a full database, but
