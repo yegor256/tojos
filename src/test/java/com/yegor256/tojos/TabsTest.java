@@ -33,28 +33,28 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link Csv}.
+ * Test case for {@link Tabs}.
  *
- * @since 0.12
+ * @since 0.7.0
  */
-public final class CsvTest {
+public final class TabsTest {
 
     @Test
     public void simpleScenario(@TempDir final Path temp) {
-        final Mono csv = new Csv(temp.resolve("foo/bar/a.csv"));
-        final Collection<Map<String, String>> rows = csv.read();
+        final Mono tabs = new Tabs(temp.resolve("foo/bar/a.tabs"));
+        final Collection<Map<String, String>> rows = tabs.read();
         MatcherAssert.assertThat(
-            csv.read().size(),
+            tabs.read().size(),
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
         final String key = "id";
-        final String value = "привет,\t\n \"друг\"!";
+        final String value = "привет,\t\r\n друг!";
         row.put(key, value);
         rows.add(row);
-        csv.write(rows);
+        tabs.write(rows);
         MatcherAssert.assertThat(
-            csv.read().iterator().next().get(key),
+            tabs.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
     }

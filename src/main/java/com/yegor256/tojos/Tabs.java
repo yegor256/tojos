@@ -23,31 +23,36 @@
  */
 package com.yegor256.tojos;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import com.opencsv.ICSVWriter;
-import com.opencsv.exceptions.CsvValidationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * CSV file.
+ * Text file where each line contains columns separated by tabs.
+ *
+ * <p>For example:
+ *
+ * <pre> id:Jeff%20Lebowski   salary: $5,000   age: 35
+ * id:Walter%20Sobchak   salary: $4,000   age: 40
+ * </pre>
  *
  * The class is NOT thread-safe.
  *
- * @since 0.3.0
+ * @since 0.7.0
  */
-public final class Csv implements Mono {
+public final class Tabs implements Mono {
 
     /**
      * The file where to keep them.
@@ -60,7 +65,7 @@ public final class Csv implements Mono {
      * @param path The path to the file
      * @since 0.4.0
      */
-    public Csv(final String path) {
+    public Tabs(final String path) {
         this(Paths.get(path));
     }
 
@@ -70,7 +75,7 @@ public final class Csv implements Mono {
      * @param path The path to the file
      * @since 0.4.0
      */
-    public Csv(final File path) {
+    public Tabs(final File path) {
         this(path.toPath());
     }
 
@@ -81,7 +86,7 @@ public final class Csv implements Mono {
      *
      * @param path The path to the file
      */
-    public Csv(final Path path) {
+    public Tabs(final Path path) {
         this.file = path;
     }
 
@@ -89,21 +94,22 @@ public final class Csv implements Mono {
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> rows = new LinkedList<>();
         if (Files.exists(this.file)) {
-            try (CSVReader reader = new CSVReader(Files.newBufferedReader(this.file))) {
-                final String[] header = reader.readNext();
-                while (true) {
-                    final String[] next = reader.readNext();
-                    if (next == null) {
-                        break;
-                    }
-                    final Map<String, String> row = new HashMap<>(header.length);
-                    for (int pos = 0; pos < next.length; ++pos) {
-                        row.put(header[pos], next[pos]);
-                    }
-                    rows.add(row);
-                }
-            } catch (final IOException | CsvValidationException ex) {
+            final List<String> lines;
+            try {
+                lines = Files.readAllLines(
+                    this.file, StandardCharsets.UTF_8
+                );
+            } catch (final IOException ex) {
                 throw new IllegalArgumentException(ex);
+            }
+            for (final String line : lines) {
+                final Map<String, String> row = new HashMap<>(1);
+                final String[] cols = line.split("\t");
+                for (final String part : cols) {
+                    final String[] parts = part.split(":", 2);
+                    row.put(Tabs.decode(parts[0]), Tabs.decode(parts[1]));
+                }
+                rows.add(row);
             }
         }
         return rows;
@@ -111,25 +117,51 @@ public final class Csv implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        final Set<String> keys = new HashSet<>(0);
+        final Collection<String> lines = new ArrayList<>(rows.size());
         for (final Map<String, String> row : rows) {
-            keys.addAll(row.keySet());
-        }
-        final String[] header = keys.toArray(new String[0]);
-        Arrays.sort(header);
-        final String[] values = new String[header.length];
-        this.file.toFile().getParentFile().mkdirs();
-        try (ICSVWriter writer = new CSVWriter(Files.newBufferedWriter(this.file))) {
-            writer.writeNext(header);
-            for (final Map<String, String> row : rows) {
-                Arrays.fill(values, "");
-                for (final Map.Entry<String, String> ent : row.entrySet()) {
-                    values[Arrays.binarySearch(header, ent.getKey())] = ent.getValue();
-                }
-                writer.writeNext(values);
+            final Collection<String> cols = new ArrayList<>(row.size());
+            for (final Map.Entry<String, String> ent : row.entrySet()) {
+                cols.add(
+                    String.format(
+                        "%s:%s",
+                        Tabs.encode(ent.getKey()),
+                        Tabs.encode(ent.getValue())
+                    )
+                );
             }
+            lines.add(String.join("\t", cols));
+        }
+        this.file.toFile().getParentFile().mkdirs();
+        try {
+            Files.write(this.file, lines, StandardCharsets.UTF_8);
         } catch (final IOException ex) {
             throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Encode.
+     * @param txt The text to encode
+     * @return Encoded
+     */
+    private static String encode(final String txt) {
+        try {
+            return URLEncoder.encode(txt, StandardCharsets.UTF_8.toString());
+        } catch (final UnsupportedEncodingException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    /**
+     * Decode.
+     * @param txt The text to decode
+     * @return Decoded
+     */
+    private static String decode(final String txt) {
+        try {
+            return URLDecoder.decode(txt, StandardCharsets.UTF_8.toString());
+        } catch (final UnsupportedEncodingException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 

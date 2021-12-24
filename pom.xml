@@ -39,10 +39,18 @@ SOFTWARE.
     <dependency>
       <groupId>javax.json</groupId>
       <artifactId>javax.json-api</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>5.5.2</version>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
