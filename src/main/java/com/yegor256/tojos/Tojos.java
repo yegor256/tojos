@@ -29,7 +29,7 @@ import java.util.function.Function;
 /**
  * Text Object Java Object (TOJO) in a storage.
  *
- * @since 0.12
+ * @since 0.3.0
  */
 public interface Tojos {
 

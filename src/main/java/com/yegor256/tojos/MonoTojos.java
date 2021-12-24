@@ -39,7 +39,7 @@ import java.util.function.Function;
  *
  * The class is NOT thread-safe.
  *
- * @since 0.12
+ * @since 0.3.0
  */
 public final class MonoTojos implements Tojos {
 

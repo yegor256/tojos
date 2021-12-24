@@ -45,7 +45,7 @@ import javax.json.JsonWriter;
  *
  * The class is NOT thread-safe.
  *
- * @since 0.17
+ * @since 0.3.0
  */
 public final class Json implements Mono {
 

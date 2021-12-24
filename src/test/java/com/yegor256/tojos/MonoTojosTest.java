@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Test case for {@link MonoTojos}.
  *
- * @since 0.12
+ * @since 0.3.0
  */
 public final class MonoTojosTest {
 

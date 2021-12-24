@@ -26,7 +26,7 @@ package com.yegor256.tojos;
 /**
  * One tojo.
  *
- * @since 0.12
+ * @since 0.3.0
  */
 public interface Tojo {
 

@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Collection of rows, read/write.
  *
- * @since 0.12
+ * @since 0.3.0
  */
 public interface Mono {
 

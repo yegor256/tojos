@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * The class is NOT thread-safe.
  *
- * @since 0.12
+ * @since 0.3.0
  */
 final class MonoTojo implements Tojo {
 

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Test case for {@link Json}.
  *
- * @since 0.17
+ * @since 0.3.0
  */
 public final class JsonTest {
 
