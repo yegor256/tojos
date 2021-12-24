@@ -6,7 +6,7 @@
 
 [![mvn](https://github.com/yegor256/tojos/actions/workflows/mvn.yml/badge.svg)](https://github.com/yegor256/tojos/actions/workflows/mvn.yml)
 [![PDD status](http://www.0pdd.com/svg?name=yegor256/tojos)](http://www.0pdd.com/p?name=yegor256/tojos)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e4f7ed144919f7f0d58c/maintainability)](https://codeclimate.com/github/yegor256/tojos/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/742bde48ea6fabdba1ce/maintainability)](https://codeclimate.com/github/yegor256/tojos/maintainability)
 [![Maven Central](https://img.shields.io/maven-central/v/com.yegor256/tojos.svg)](https://maven-badges.herokuapp.com/maven-central/com.yegor256/tojos)
 
 [![codecov](https://codecov.io/gh/yegor256/tojos/branch/master/graph/badge.svg)](https://codecov.io/gh/yegor256/tojos)
