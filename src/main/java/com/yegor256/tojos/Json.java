@@ -23,11 +23,13 @@
  */
 package com.yegor256.tojos;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,6 +58,27 @@ public final class Json implements Mono {
      * Ctor.
      *
      * @param path The path to the file
+     * @since 0.4.0
+     */
+    public Json(final String path) {
+        this(Paths.get(path));
+    }
+
+    /**
+     * Ctor.
+     *
+     * @param path The path to the file
+     * @since 0.4.0
+     */
+    public Json(final File path) {
+        this(path.toPath());
+    }
+
+    /**
+     * Ctor.
+     *
+     * @param path The path to the file
+     * @since 0.4.0
      */
     public Json(final Path path) {
         this.file = path;

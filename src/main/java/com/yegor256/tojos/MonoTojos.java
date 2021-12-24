@@ -25,6 +25,7 @@ package com.yegor256.tojos;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +46,16 @@ public final class MonoTojos implements Tojos {
      * The mono.
      */
     private final Mono mono;
+
+    /**
+     * Ctor.
+     *
+     * @param path The path to the file
+     * @since 0.4.0
+     */
+    public MonoTojos(final String path) {
+        this(Paths.get(path));
+    }
 
     /**
      * Ctor.
