@@ -59,4 +59,19 @@ public final class CsvTest {
         );
     }
 
+    @Test
+    public void ignoresEmptyElements(@TempDir final Path temp) {
+        final Mono csv = new Csv(temp.resolve("foo/bar/xx.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
+        final Map<String, String> row = new HashMap<>(0);
+        row.put("x", "1");
+        row.put("y", "");
+        rows.add(row);
+        csv.write(rows);
+        MatcherAssert.assertThat(
+            csv.read().iterator().next().containsKey("y"),
+            Matchers.equalTo(false)
+        );
+    }
+
 }

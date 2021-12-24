@@ -98,6 +98,9 @@ public final class Csv implements Mono {
                     }
                     final Map<String, String> row = new HashMap<>(header.length);
                     for (int pos = 0; pos < next.length; ++pos) {
+                        if (next[pos].isEmpty()) {
+                            continue;
+                        }
                         row.put(header[pos], next[pos]);
                     }
                     rows.add(row);
