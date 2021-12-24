@@ -51,7 +51,7 @@ provided they don't violate our quality standards. To avoid frustration,
 before sending us your pull request please run full Maven build:
 
 ```bash
-$ ./mvnw clean install -Pqulice
+$ mvn clean install -Pqulice
 ```
 
 You will need Maven 3.3+ and Java 8+.
