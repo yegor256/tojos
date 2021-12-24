@@ -23,7 +23,7 @@
  */
 package com.yegor256.tojos;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -49,6 +49,6 @@ public interface Tojos {
      * @param filter The filter
      * @return Collection of them
      */
-    Collection<Tojo> select(Function<Tojo, Boolean> filter);
+    List<Tojo> select(Function<Tojo, Boolean> filter);
 
 }

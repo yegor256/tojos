@@ -23,7 +23,7 @@
  */
 package com.yegor256.tojos;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -75,7 +75,7 @@ public final class SmartTojos implements Tojos {
     }
 
     @Override
-    public Collection<Tojo> select(final Function<Tojo, Boolean> filter) {
+    public List<Tojo> select(final Function<Tojo, Boolean> filter) {
         return this.origin.select(filter);
     }
 }

@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -101,9 +102,9 @@ public final class MonoTojos implements Tojos {
     }
 
     @Override
-    public Collection<Tojo> select(final Function<Tojo, Boolean> filter) {
+    public List<Tojo> select(final Function<Tojo, Boolean> filter) {
         final Collection<Map<String, String>> rows = this.mono.read();
-        final Collection<Tojo> tojos = new ArrayList<>(rows.size());
+        final List<Tojo> tojos = new ArrayList<>(rows.size());
         for (final Map<String, String> row : rows) {
             final Tojo tojo = new MonoTojo(this.mono, row.get("id"));
             if (filter.apply(tojo)) {

@@ -76,6 +76,8 @@ public final class Csv implements Mono {
     /**
      * Ctor.
      *
+     * <p>If the directory doesn't exist, it will automatically be created.
+     *
      * @param path The path to the file
      */
     public Csv(final Path path) {
