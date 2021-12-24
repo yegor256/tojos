@@ -34,7 +34,7 @@ Then, to manage `books.csv` file:
 import com.yegor256.tojos.Tojos;
 import com.yegor256.tojos.MonoTojos;
 
-Tojos tojos = new MonoTojos(new CSV("books.csv"))
+Tojos tojos = new MonoTojos(new CSV("books.csv"));
 Tojo t1 = tojos.add("Object Thinking");
 t1.set("author", "David West");
 Tojo t2 = tojos.select(
