@@ -39,7 +39,7 @@ Tojos tojos = new MonoTojos(new CSV("books.csv"));
 Tojo t1 = tojos.add("Object Thinking");
 t1.set("author", "David West");
 Tojo t2 = tojos.select(
-  t -> t.get("author").equals("Elegant Objects")
+  t -> t.get("author").equals("David West")
 ).get(0);
 ```
 
