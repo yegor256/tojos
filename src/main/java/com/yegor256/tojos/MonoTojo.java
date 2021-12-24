@@ -83,12 +83,12 @@ final class MonoTojo implements Tojo {
     }
 
     @Override
-    public Tojo set(final String key, final String value) {
+    public Tojo set(final String key, final Object value) {
         final Collection<Map<String, String>> rows = this.mono.read();
         final Map<String, String> row = rows.stream().filter(
             r -> r.get("id").equals(this.name)
         ).findFirst().get();
-        row.put(key, value);
+        row.put(key, value.toString());
         this.mono.write(rows);
         return this;
     }

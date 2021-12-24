@@ -53,6 +53,6 @@ public interface Tojo {
      * @param value The value
      * @return Itself
      */
-    Tojo set(String key, String value);
+    Tojo set(String key, Object value);
 
 }
