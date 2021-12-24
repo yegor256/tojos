@@ -31,8 +31,9 @@ You add this to your `pom.xml`:
 Then, to manage `books.csv` file:
 
 ```java
-import com.yegor256.tojos.Tojos;
+import com.yegor256.tojos.CSV;
 import com.yegor256.tojos.MonoTojos;
+import com.yegor256.tojos.Tojos;
 
 Tojos tojos = new MonoTojos(new CSV("books.csv"));
 Tojo t1 = tojos.add("Object Thinking");
