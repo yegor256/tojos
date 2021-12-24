@@ -29,6 +29,13 @@ import java.util.function.Function;
 /**
  * Text Object Java Object (TOJO) in a storage.
  *
+ * <p>Use it like this:
+ *
+ * <pre> Tojos tojos = new MonoTojos(new Csv("hello.csv"));
+ * Tojo tojo = tojos.add("Jeff");
+ * tojo.set("age", 35);
+ * </pre>
+ *
  * @since 0.3.0
  */
 public interface Tojos {

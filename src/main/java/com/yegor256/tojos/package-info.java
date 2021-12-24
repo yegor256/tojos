@@ -23,7 +23,14 @@
  */
 
 /**
- * TOJOs.
+ * Text Object Java Object (TOJO) in a storage.
+ *
+ * <p>Use it like this:
+ *
+ * <pre> Tojos tojos = new MonoTojos(new Csv("hello.csv"));
+ * Tojo tojo = tojos.add("Jeff");
+ * tojo.set("age", 35);
+ * </pre>
  *
  * @since 0.1
  */

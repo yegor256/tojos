@@ -40,7 +40,7 @@ public final class MonoTojosTest {
     @ParameterizedTest
     @ValueSource(strings = {"a.csv", "a.json"})
     public void simpleScenario(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(temp.resolve(file));
+        final Tojos tojos = new MonoTojos(new Csv(temp.resolve(file)));
         tojos.add("foo").set("k", "v").set("a", "b");
         tojos.select(t -> t.exists("k")).iterator().next();
         MatcherAssert.assertThat(
@@ -52,7 +52,7 @@ public final class MonoTojosTest {
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
     public void addTojo(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(temp.resolve(file));
+        final Tojos tojos = new MonoTojos(new Json(temp.resolve(file)));
         tojos.add("foo-1");
         MatcherAssert.assertThat(
             new SmartTojos(tojos).size(),
@@ -63,7 +63,7 @@ public final class MonoTojosTest {
     @ParameterizedTest
     @ValueSource(strings = {"y.csv", "y.json"})
     public void uniqueIds(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(temp.resolve(file));
+        final Tojos tojos = new MonoTojos(new Tabs(temp.resolve(file)));
         final String name = "foo11";
         tojos.add(name);
         tojos.add(name);
