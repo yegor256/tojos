@@ -24,8 +24,10 @@
 package com.yegor256.tojos;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 import com.opencsv.ICSVWriter;
+import com.opencsv.RFC4180ParserBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +46,7 @@ import java.util.Set;
  * CSV file.
  *
  * The class is NOT thread-safe.
- *
+ * @see <a href="https://geekprompt.github.io/Properly-handling-backshlash-while-using-openCSV/"/>
  * @since 0.3.0
  */
 public final class Csv implements Mono {
@@ -89,7 +91,13 @@ public final class Csv implements Mono {
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> rows = new LinkedList<>();
         if (Files.exists(this.file)) {
-            try (CSVReader reader = new CSVReader(Files.newBufferedReader(this.file))) {
+            try (
+                CSVReader reader = new CSVReaderBuilder(
+                    Files.newBufferedReader(this.file)
+                ).withCSVParser(
+                    new RFC4180ParserBuilder().build()
+                ).build()
+            ) {
                 final String[] header = reader.readNext();
                 while (true) {
                     final String[] next = reader.readNext();

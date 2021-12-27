@@ -74,4 +74,18 @@ public final class CsvTest {
         );
     }
 
+    @Test
+    public void keepsBackslash(@TempDir final Path temp) {
+        final Mono csv = new Csv(temp.resolve("foo/bar/slash.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
+        final Map<String, String> row = new HashMap<>(0);
+        final String path = "\\my\\windows\\path\\to\\here";
+        row.put("a", path);
+        rows.add(row);
+        csv.write(rows);
+        MatcherAssert.assertThat(
+            csv.read().iterator().next().get("a"),
+            Matchers.equalTo(path)
+        );
+    }
 }
