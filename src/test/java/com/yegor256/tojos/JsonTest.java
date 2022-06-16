@@ -23,6 +23,9 @@
  */
 package com.yegor256.tojos;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,6 +70,24 @@ public final class JsonTest {
         MatcherAssert.assertThat(
             json.read(),
             Matchers.empty()
+        );
+    }
+
+    @Test
+    public void prettyPrint(@TempDir final Path temp) throws IOException {
+        final Path path = temp.resolve("z.json");
+        final Mono json = new Json(path);
+        final Collection<Map<String, String>> rows = json.read();
+        final Map<String, String> row = new HashMap<>(0);
+        final String key = "id";
+        final String value = "hello, world!";
+        row.put(key, value);
+        rows.add(row);
+        rows.add(row);
+        json.write(rows);
+        MatcherAssert.assertThat(
+            new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
+            Matchers.containsString("},\n")
         );
     }
 

@@ -59,7 +59,7 @@ final class MonoTojo implements Tojo {
     @Override
     public boolean exists(final String key) {
         return this.mono.read().stream()
-            .filter(row -> row.get("id").equals(this.name))
+            .filter(row -> row.get(Tojos.KEY).equals(this.name))
             .findFirst()
             .get()
             .containsKey(key);
@@ -68,7 +68,7 @@ final class MonoTojo implements Tojo {
     @Override
     public String get(final String key) {
         final String value = this.mono.read().stream()
-            .filter(row -> row.get("id").equals(this.name))
+            .filter(row -> row.get(Tojos.KEY).equals(this.name))
             .findFirst()
             .get()
             .get(key);
@@ -86,7 +86,7 @@ final class MonoTojo implements Tojo {
     public Tojo set(final String key, final Object value) {
         final Collection<Map<String, String>> rows = this.mono.read();
         final Map<String, String> row = rows.stream().filter(
-            r -> r.get("id").equals(this.name)
+            r -> r.get(Tojos.KEY).equals(this.name)
         ).findFirst().get();
         row.put(key, value.toString());
         this.mono.write(rows);

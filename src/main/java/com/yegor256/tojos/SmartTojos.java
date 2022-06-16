@@ -56,7 +56,7 @@ public final class SmartTojos implements Tojos {
      */
     public Tojo getById(final String name) {
         return this.origin
-            .select(tojo -> name.equals(tojo.get("id")))
+            .select(tojo -> name.equals(tojo.get(Tojos.KEY)))
             .iterator()
             .next();
     }

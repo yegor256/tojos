@@ -41,6 +41,11 @@ import java.util.function.Function;
 public interface Tojos {
 
     /**
+     * Name of ID attribute in all tojos.
+     */
+    String KEY = "id";
+
+    /**
      * Add new tojo with the given ID.
      *
      * If another tojo already exists with this ID, it will be returned.

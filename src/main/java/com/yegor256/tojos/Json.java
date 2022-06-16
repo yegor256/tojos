@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +40,8 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 
 /**
  * JSON file.
@@ -48,6 +51,11 @@ import javax.json.JsonWriter;
  * @since 0.3.0
  */
 public final class Json implements Mono {
+
+    /**
+     * The factory of writers.
+     */
+    private static final JsonWriterFactory JWF = Json.factory();
 
     /**
      * The file path.
@@ -108,9 +116,9 @@ public final class Json implements Mono {
     public void write(final Collection<Map<String, String>> rows) {
         this.file.toFile().getParentFile().mkdirs();
         try (
-            Writer writer = Files.newBufferedWriter(this.file, StandardOpenOption.CREATE);
-            JsonWriter json = javax.json.Json.createWriter(writer)
+            Writer writer = Files.newBufferedWriter(this.file, StandardOpenOption.CREATE)
         ) {
+            final JsonWriter json = Json.JWF.createWriter(writer);
             json.write(javax.json.Json.createArrayBuilder(rows).build());
         } catch (final IOException ex) {
             throw new IllegalArgumentException(ex);
@@ -136,6 +144,16 @@ public final class Json implements Mono {
      */
     private static String asString(final JsonValue value) {
         return JsonString.class.cast(value).getString();
+    }
+
+    /**
+     * Make factory for JSON printing.
+     * @return Factory
+     */
+    private static JsonWriterFactory factory() {
+        final Map<String, Object> properties = new HashMap<>(1);
+        properties.put(JsonGenerator.PRETTY_PRINTING, true);
+        return javax.json.Json.createWriterFactory(properties);
     }
 
 }
