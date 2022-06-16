@@ -23,10 +23,14 @@
  */
 package com.yegor256.tojos;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -86,6 +90,28 @@ public final class CsvTest {
         MatcherAssert.assertThat(
             csv.read().iterator().next().get("a"),
             Matchers.equalTo(path)
+        );
+    }
+
+    @Test
+    public void putsKeyFirst(@TempDir final Path temp) throws IOException {
+        final Path path = temp.resolve("key-test.json");
+        final Mono csv = new Csv(path);
+        final Collection<Map<String, String>> rows = csv.read();
+        final Map<String, String> row = new HashMap<>(0);
+        row.put(Tojos.KEY, "xyz");
+        row.put("_x", "");
+        row.put("zzzz", "");
+        rows.add(row);
+        csv.write(rows);
+        MatcherAssert.assertThat(
+            new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
+            Matchers.matchesPattern(
+                Pattern.compile(
+                    String.format("^\"%s\",.*", Tojos.KEY),
+                    Pattern.MULTILINE | Pattern.DOTALL
+                )
+            )
         );
     }
 }

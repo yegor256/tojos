@@ -34,11 +34,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -129,16 +132,20 @@ public final class Csv implements Mono {
         for (final Map<String, String> row : rows) {
             keys.addAll(row.keySet());
         }
-        final String[] header = keys.toArray(new String[0]);
-        Arrays.sort(header);
-        final String[] values = new String[header.length];
+        final List<String> header = new ArrayList<>(keys.size());
+        header.addAll(keys);
+        Collections.sort(header);
+        if (header.contains(Tojos.KEY)) {
+            Collections.swap(header, 0, header.indexOf(Tojos.KEY));
+        }
+        final String[] values = new String[header.size()];
         this.file.toFile().getParentFile().mkdirs();
         try (ICSVWriter writer = new CSVWriter(Files.newBufferedWriter(this.file))) {
-            writer.writeNext(header);
+            writer.writeNext(header.toArray(new String[] {}));
             for (final Map<String, String> row : rows) {
                 Arrays.fill(values, "");
                 for (final Map.Entry<String, String> ent : row.entrySet()) {
-                    values[Arrays.binarySearch(header, ent.getKey())] = ent.getValue();
+                    values[header.indexOf(ent.getKey())] = ent.getValue();
                 }
                 writer.writeNext(values);
             }
