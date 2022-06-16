@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -117,12 +119,24 @@ public final class Json implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
+        final JsonArrayBuilder array = javax.json.Json.createArrayBuilder();
+        for (final Map<String, String> row : rows) {
+            final JsonObjectBuilder obj = javax.json.Json.createObjectBuilder();
+            obj.add(Tojos.KEY, row.get(Tojos.KEY));
+            for (final Map.Entry<String, String> ent : row.entrySet()) {
+                if (ent.getKey().equals(Tojos.KEY)) {
+                    continue;
+                }
+                obj.add(ent.getKey(), ent.getValue());
+            }
+            array.add(obj);
+        }
         this.file.toFile().getParentFile().mkdirs();
         try (
             Writer writer = Files.newBufferedWriter(this.file, StandardOpenOption.CREATE)
         ) {
             final JsonWriter json = Json.JWF.createWriter(writer);
-            json.write(javax.json.Json.createArrayBuilder(rows).build());
+            json.write(array.build());
         } catch (final IOException ex) {
             throw new IllegalArgumentException(
                 String.format(

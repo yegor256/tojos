@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ public final class JsonTest {
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
-        final String key = "id";
+        final String key = Tojos.KEY;
         final String value = "привет,\t\r\n друг!";
         row.put(key, value);
         rows.add(row);
@@ -79,7 +80,7 @@ public final class JsonTest {
         final Mono json = new Json(path);
         final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
-        final String key = "id";
+        final String key = Tojos.KEY;
         final String value = "hello, world!";
         row.put(key, value);
         rows.add(row);
@@ -88,6 +89,28 @@ public final class JsonTest {
         MatcherAssert.assertThat(
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.containsString("},\n")
+        );
+    }
+
+    @Test
+    public void keyAtFirstPosition(@TempDir final Path temp) throws IOException {
+        final Path path = temp.resolve("key-test.json");
+        final Mono json = new Json(path);
+        final Collection<Map<String, String>> rows = json.read();
+        final Map<String, String> row = new HashMap<>(0);
+        row.put(Tojos.KEY, "xyz");
+        row.put("_x", "");
+        row.put("zzzz", "");
+        rows.add(row);
+        json.write(rows);
+        MatcherAssert.assertThat(
+            new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
+            Matchers.matchesPattern(
+                Pattern.compile(
+                    String.format(".*\\{\\s+\"%s\":.*", Tojos.KEY),
+                    Pattern.MULTILINE | Pattern.DOTALL
+                )
+            )
         );
     }
 
