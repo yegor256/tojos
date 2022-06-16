@@ -122,7 +122,9 @@ public final class Json implements Mono {
         final JsonArrayBuilder array = javax.json.Json.createArrayBuilder();
         for (final Map<String, String> row : rows) {
             final JsonObjectBuilder obj = javax.json.Json.createObjectBuilder();
-            obj.add(Tojos.KEY, row.get(Tojos.KEY));
+            if (row.containsKey(Tojos.KEY)) {
+                obj.add(Tojos.KEY, row.get(Tojos.KEY));
+            }
             for (final Map.Entry<String, String> ent : row.entrySet()) {
                 if (ent.getKey().equals(Tojos.KEY)) {
                     continue;
