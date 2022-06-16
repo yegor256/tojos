@@ -106,7 +106,10 @@ public final class Json implements Mono {
                     .map(Json::asMap)
                     .forEach(rows::add);
             } catch (final IOException ex) {
-                throw new IllegalArgumentException(ex);
+                throw new IllegalArgumentException(
+                    String.format("Failed to read JSON from '%s'", this.file),
+                    ex
+                );
             }
         }
         return rows;
@@ -121,7 +124,13 @@ public final class Json implements Mono {
             final JsonWriter json = Json.JWF.createWriter(writer);
             json.write(javax.json.Json.createArrayBuilder(rows).build());
         } catch (final IOException ex) {
-            throw new IllegalArgumentException(ex);
+            throw new IllegalArgumentException(
+                String.format(
+                    "Failed to write %d rows into '%s'",
+                    rows.size(), this.file
+                ),
+                ex
+            );
         }
     }
 

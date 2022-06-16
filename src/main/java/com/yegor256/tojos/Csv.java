@@ -114,7 +114,10 @@ public final class Csv implements Mono {
                     rows.add(row);
                 }
             } catch (final IOException | CsvValidationException ex) {
-                throw new IllegalArgumentException(ex);
+                throw new IllegalArgumentException(
+                    String.format("Failed to read JSON from '%s'", this.file),
+                    ex
+                );
             }
         }
         return rows;
@@ -140,7 +143,13 @@ public final class Csv implements Mono {
                 writer.writeNext(values);
             }
         } catch (final IOException ex) {
-            throw new IllegalArgumentException(ex);
+            throw new IllegalArgumentException(
+                String.format(
+                    "Failed to write %d rows into '%s'",
+                    rows.size(), this.file
+                ),
+                ex
+            );
         }
     }
 

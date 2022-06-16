@@ -100,7 +100,10 @@ public final class Tabs implements Mono {
                     this.file, StandardCharsets.UTF_8
                 );
             } catch (final IOException ex) {
-                throw new IllegalArgumentException(ex);
+                throw new IllegalArgumentException(
+                    String.format("Failed to read JSON from '%s'", this.file),
+                    ex
+                );
             }
             for (final String line : lines) {
                 final Map<String, String> row = new HashMap<>(1);
@@ -135,7 +138,13 @@ public final class Tabs implements Mono {
         try {
             Files.write(this.file, lines, StandardCharsets.UTF_8);
         } catch (final IOException ex) {
-            throw new IllegalArgumentException(ex);
+            throw new IllegalArgumentException(
+                String.format(
+                    "Failed to write %d rows into '%s'",
+                    rows.size(), this.file
+                ),
+                ex
+            );
         }
     }
 
