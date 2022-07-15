@@ -27,7 +27,7 @@ SOFTWARE.
   <parent>
     <groupId>com.jcabi</groupId>
     <artifactId>parent</artifactId>
-    <version>0.57.0</version>
+    <version>0.59.0</version>
   </parent>
   <groupId>com.yegor256</groupId>
   <artifactId>tojos</artifactId>
@@ -35,6 +35,52 @@ SOFTWARE.
   <packaging>jar</packaging>
   <name>tojos</name>
   <description>Text Objects Java Objects</description>
+  <url>https://github.com/yegor256/tojos</url>
+  <inceptionYear>2021</inceptionYear>
+  <organization>
+    <name>yegor256</name>
+    <url>https://www.yegor256.com</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://raw.githubusercontent.com/yegor256/tojos/master/LICENSE.txt</url>
+      <distribution>site</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>1</id>
+      <name>Yegor Bugayenko</name>
+      <email>yegor256@gmail.com</email>
+      <organization>yegor256.com</organization>
+      <organizationUrl>https://www.yegor256.com</organizationUrl>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>+3</timezone>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/yegor256/tojos/issues</url>
+  </issueManagement>
+  <scm>
+    <connection>scm:git:git@github.com:yegor256/tojos.git</connection>
+    <developerConnection>scm:git:git@github.com:yegor256/tojos.git</developerConnection>
+    <url>https://github.com/yegor256/tojos</url>
+  </scm>
+  <ciManagement>
+    <system>rultor</system>
+    <url>https://www.rultor.com/s/yegor256/tojos</url>
+  </ciManagement>
+  <distributionManagement>
+    <site>
+      <id>github-pages</id>
+      <url>https://github.com/yegor256/tojos</url>
+    </site>
+  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>org.yaml</groupId>
