@@ -95,6 +95,11 @@ public final class Json implements Mono {
     }
 
     @Override
+    public String toString() {
+        return this.file.toString();
+    }
+
+    @Override
     public Collection<Map<String, String>> read() {
         final LinkedList<Map<String, String>> rows = new LinkedList<>();
         if (this.file.toFile().exists()) {

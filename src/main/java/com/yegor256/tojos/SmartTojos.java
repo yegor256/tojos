@@ -49,6 +49,11 @@ public final class SmartTojos implements Tojos {
         this.origin = tojos;
     }
 
+    @Override
+    public String toString() {
+        return this.origin.toString();
+    }
+
     /**
      * Get one tojo by ID.
      * @param name The id

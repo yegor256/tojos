@@ -55,6 +55,11 @@ public final class MonoTojos implements Tojos {
     }
 
     @Override
+    public String toString() {
+        return this.mono.toString();
+    }
+
+    @Override
     public Tojo add(final String name) {
         final Collection<Map<String, String>> rows = this.mono.read();
         final Optional<Map<String, String>> before = rows.stream().filter(

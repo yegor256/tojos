@@ -68,6 +68,11 @@ public final class Yaml implements Mono {
     }
 
     @Override
+    public String toString() {
+        return this.destination.toString();
+    }
+
+    @Override
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> result = new LinkedList<>();
         try {

@@ -91,6 +91,11 @@ public final class Tabs implements Mono {
     }
 
     @Override
+    public String toString() {
+        return this.file.toString();
+    }
+
+    @Override
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> rows = new LinkedList<>();
         if (Files.exists(this.file)) {
