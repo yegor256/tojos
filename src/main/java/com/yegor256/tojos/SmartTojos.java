@@ -24,7 +24,7 @@
 package com.yegor256.tojos;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * All file-objects.
@@ -80,7 +80,7 @@ public final class SmartTojos implements Tojos {
     }
 
     @Override
-    public List<Tojo> select(final Function<Tojo, Boolean> filter) {
+    public List<Tojo> select(final Predicate<Tojo> filter) {
         return this.origin.select(filter);
     }
 }
