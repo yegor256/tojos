@@ -45,7 +45,7 @@ class CachedTojosTest {
         tojos.add("C0").set(keys[0], "v30").set(keys[1], "vv30");
         final Tojos cached = new CachedTojos(tojos);
         cached.select(x -> true);
-        cached.add("D0").set("k10", "v40").set("k20", "vv40");
+        cached.add("D0").set(keys[0], "v40").set(keys[1], "vv40");
         MatcherAssert.assertThat(
             cached.select(x -> true).size(),
             Matchers.equalTo(4)
@@ -61,7 +61,7 @@ class CachedTojosTest {
         tojos.add("C1").set(keys[0], "v31").set(keys[1], "vv31");
         final Tojos cached = new CachedTojos(tojos);
         cached.select(x -> true);
-        tojos.add("D1").set("k11", "v41").set("k21", "vv41");
+        tojos.add("D1").set(keys[0], "v41").set(keys[1], "vv41");
         MatcherAssert.assertThat(
             cached.select(x -> true).size(),
             Matchers.equalTo(3)
