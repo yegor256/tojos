@@ -24,7 +24,7 @@
 package com.yegor256.tojos;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Text Object Java Object (TOJO) in a storage.
@@ -61,6 +61,6 @@ public interface Tojos {
      * @param filter The filter
      * @return Collection of them
      */
-    List<Tojo> select(Function<Tojo, Boolean> filter);
+    List<Tojo> select(Predicate<Tojo> filter);
 
 }
