@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 /**
  * The wrapper which caches underlying tojos.
  * Modify operation clears the cache.
+ * This class is NOT thread-safe.
  */
 public class CachedTojos implements Tojos {
 
