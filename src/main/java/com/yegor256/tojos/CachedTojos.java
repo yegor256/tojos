@@ -31,8 +31,9 @@ import java.util.stream.Collectors;
 /**
  * The wrapper which caches underlying tojos.
  * Modify operation clears the cache.
+ * @since 1.0
  */
-public class CachedTojos implements Tojos {
+public final class CachedTojos implements Tojos {
 
     /**
      * Underlying tojos.
@@ -42,7 +43,7 @@ public class CachedTojos implements Tojos {
     /**
      * Cache for tojos.
      */
-    private final List<Tojo> cache = new ArrayList<>(0);
+    private final List<Tojo> cache;
 
     /**
      * Ctor.
@@ -50,12 +51,13 @@ public class CachedTojos implements Tojos {
      */
     public CachedTojos(final Tojos wrapped) {
         this.wrapped = wrapped;
+        this.cache = new ArrayList<>(0);
     }
 
     @Override
     public Tojo add(final String name) {
-        cache.clear();
-        return wrapped.add(name);
+        this.cache.clear();
+        return this.wrapped.add(name);
     }
 
     @Override
