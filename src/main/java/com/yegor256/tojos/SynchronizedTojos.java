@@ -65,8 +65,8 @@ public class SynchronizedTojos implements Tojos {
             final Tojo tojo = this.wrapped.add(id);
             this.sync.add(tojo);
             return tojo;
-        } catch (final ConcurrentModificationException exception) {
-            throw new IllegalStateException(exception);
+        } catch (final ConcurrentModificationException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 
