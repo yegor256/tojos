@@ -72,9 +72,8 @@ public class SynchronizedTojos implements Tojos {
 
     @Override
     public final List<Tojo> select(final Predicate<Tojo> filter) {
-        if (this.sync.isEmpty()) {
-            this.sync.addAll(this.wrapped.select(t -> true));
-        }
+        this.sync.clear();
+        this.sync.addAll(this.wrapped.select(t -> true));
         return this.sync.stream()
             .filter(filter)
             .collect(Collectors.toList());
