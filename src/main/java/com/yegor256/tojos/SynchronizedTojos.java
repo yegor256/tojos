@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,37 @@ public class SynchronizedTojos implements Tojos {
         this.sync = Collections.synchronizedCollection(wrapped.select(t -> true));
     }
 
+    /**
+     * Get one tojo by ID.
+     *
+     * @param id The id
+     * @return The tojo if found
+     */
+    public Tojo tojoById(final String id) {
+        try {
+            return this.sync
+                .stream()
+                .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
+                .iterator()
+                .next();
+        } catch (final ConcurrentModificationException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    /**
+     * Removes tojo by ID.
+     *
+     * @param id The id of removable
+     */
+    public void removeById(final String id) {
+        try {
+            this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
+        } catch (final ConcurrentModificationException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
     @Override
     public final Tojo add(final String id) {
         try {
@@ -72,8 +104,6 @@ public class SynchronizedTojos implements Tojos {
 
     @Override
     public final List<Tojo> select(final Predicate<Tojo> filter) {
-        this.sync.clear();
-        this.sync.addAll(this.wrapped.select(t -> true));
         return this.sync.stream()
             .filter(filter)
             .collect(Collectors.toList());
