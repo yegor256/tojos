@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  *
  * The class is thread-safe.
  *
- * @since 0.3.0
+ * @since 1.0
  */
 public class SynchronizedTojos implements Tojos {
 
