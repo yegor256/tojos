@@ -67,46 +67,54 @@ public class SynchronizedTojos implements Tojos {
      * @return The tojo if found
      */
     public Tojo tojoById(final String id) {
-        try {
-            return this.sync
-                .stream()
-                .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
-                .iterator()
-                .next();
-        } catch (final ConcurrentModificationException ex) {
-            throw new IllegalStateException(ex);
+        synchronized (id) {
+            try {
+                return this.sync
+                    .stream()
+                    .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
+                    .iterator()
+                    .next();
+            } catch (final ConcurrentModificationException ex) {
+                throw new IllegalStateException(ex);
+            }
         }
     }
 
     /**
-     * Removes tojo by ID.
+     * Removes one tojo by ID.
      *
      * @param id The id of removable
      */
     public void removeById(final String id) {
-        try {
-            this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
-        } catch (final ConcurrentModificationException ex) {
-            throw new IllegalStateException(ex);
+        synchronized (id) {
+            try {
+                this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
+            } catch (final ConcurrentModificationException ex) {
+                throw new IllegalStateException(ex);
+            }
         }
     }
 
     @Override
     public final Tojo add(final String id) {
-        try {
-            final Tojo tojo = this.wrapped.add(id);
-            this.sync.add(tojo);
-            return tojo;
-        } catch (final ConcurrentModificationException ex) {
-            throw new IllegalStateException(ex);
+        synchronized (id) {
+            try {
+                final Tojo tojo = this.wrapped.add(id);
+                this.sync.add(tojo);
+                return tojo;
+            } catch (final ConcurrentModificationException ex) {
+                throw new IllegalStateException(ex);
+            }
         }
     }
 
     @Override
     public final List<Tojo> select(final Predicate<Tojo> filter) {
-        return this.sync.stream()
-            .filter(filter)
-            .collect(Collectors.toList());
+        synchronized (filter) {
+            return this.sync.stream()
+                .filter(filter)
+                .collect(Collectors.toList());
+        }
     }
 
 }
