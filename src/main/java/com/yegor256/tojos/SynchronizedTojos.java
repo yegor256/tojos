@@ -26,7 +26,6 @@ package com.yegor256.tojos;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -70,15 +69,11 @@ public class SynchronizedTojos implements Tojos {
      */
     public Tojo tojoById(final String id) {
         synchronized (this.sync) {
-            try {
-                return this.sync
-                    .stream()
-                    .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
-                    .iterator()
-                    .next();
-            } catch (final ConcurrentModificationException ex) {
-                throw new IllegalStateException(ex);
-            }
+            return this.sync
+                .stream()
+                .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
+                .iterator()
+                .next();
         }
     }
 
@@ -89,32 +84,24 @@ public class SynchronizedTojos implements Tojos {
      */
     public void removeById(final String id) {
         synchronized (this.sync) {
-            try {
-                this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
-            } catch (final ConcurrentModificationException ex) {
-                throw new IllegalStateException(ex);
-            }
+            this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
         }
     }
 
     @Override
     public final Tojo add(final String id) {
         synchronized (this.sync) {
-            try {
-                final AtomicReference<Tojo> tojo = new AtomicReference<>(this.wrapped.add(id));
-                this.sync
-                    .stream()
-                    .parallel()
-                    .filter(t -> Objects.equals(t.get(Tojos.KEY), id))
-                    .findAny()
-                    .ifPresentOrElse(
-                        tojo::set,
-                        () -> this.sync.add(tojo.get())
-                    );
-                return tojo.get();
-            } catch (final ConcurrentModificationException ex) {
-                throw new IllegalStateException("Addition failed.", ex);
-            }
+            final AtomicReference<Tojo> tojo = new AtomicReference<>(this.wrapped.add(id));
+            this.sync
+                .stream()
+                .parallel()
+                .filter(t -> Objects.equals(t.get(Tojos.KEY), id))
+                .findAny()
+                .ifPresentOrElse(
+                    tojo::set,
+                    () -> this.sync.add(tojo.get())
+                );
+            return tojo.get();
         }
     }
 
