@@ -23,11 +23,13 @@
  */
 package com.yegor256.tojos;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -67,7 +69,7 @@ public class SynchronizedTojos implements Tojos {
      * @return The tojo if found
      */
     public Tojo tojoById(final String id) {
-        synchronized (id) {
+        synchronized (this.sync) {
             try {
                 return this.sync
                     .stream()
@@ -86,7 +88,7 @@ public class SynchronizedTojos implements Tojos {
      * @param id The id of removable
      */
     public void removeById(final String id) {
-        synchronized (id) {
+        synchronized (this.sync) {
             try {
                 this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
             } catch (final ConcurrentModificationException ex) {
@@ -97,23 +99,31 @@ public class SynchronizedTojos implements Tojos {
 
     @Override
     public final Tojo add(final String id) {
-        synchronized (id) {
+        synchronized (this.sync) {
             try {
-                final Tojo tojo = this.wrapped.add(id);
-                this.sync.add(tojo);
-                return tojo;
+                final AtomicReference<Tojo> tojo = new AtomicReference<>(this.wrapped.add(id));
+                this.sync
+                    .stream()
+                    .parallel()
+                    .filter(t -> Objects.equals(t.get(Tojos.KEY), id))
+                    .findAny()
+                    .ifPresentOrElse(
+                        tojo::set,
+                        () -> this.sync.add(tojo.get())
+                    );
+                return tojo.get();
             } catch (final ConcurrentModificationException ex) {
-                throw new IllegalStateException(ex);
+                throw new IllegalStateException("Addition failed.", ex);
             }
         }
     }
 
     @Override
     public final List<Tojo> select(final Predicate<Tojo> filter) {
-        synchronized (filter) {
+        synchronized (this.sync) {
             return this.sync.stream()
                 .filter(filter)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
         }
     }
 
