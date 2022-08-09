@@ -7,7 +7,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/742bde48ea6fabdba1ce/maintainability)](https://codeclimate.com/github/yegor256/tojos/maintainability)
 [![Maven Central](https://img.shields.io/maven-central/v/com.yegor256/tojos.svg)](https://maven-badges.herokuapp.com/maven-central/com.yegor256/tojos)
 [![Javadoc](http://www.javadoc.io/badge/com.yegor256/tojos.svg)](http://www.javadoc.io/doc/com.yegor256/tojos)
-
 [![codecov](https://codecov.io/gh/yegor256/tojos/branch/master/graph/badge.svg)](https://codecov.io/gh/yegor256/tojos)
 [![Hits-of-Code](https://hitsofcode.com/github/yegor256/tojos)](https://hitsofcode.com/view/github/yegor256/tojos)
 ![Lines of code](https://img.shields.io/tokei/lines/github/yegor256/tojos)
