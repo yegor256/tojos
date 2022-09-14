@@ -81,7 +81,7 @@ public class SynchronizedTojos implements Tojos {
                     throw new IllegalStateException(
                         String.format(
                             "%s is already presented",
-                            tj.get(id)
+                            id
                         )
                     );
                 }
