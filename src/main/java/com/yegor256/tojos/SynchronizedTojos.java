@@ -23,18 +23,15 @@
  */
 package com.yegor256.tojos;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Tojos thread-safe implementation.
- *
+ * <p>
  * The class is thread-safe.
  *
  * @since 1.0
@@ -47,18 +44,12 @@ public class SynchronizedTojos implements Tojos {
     private final Tojos wrapped;
 
     /**
-     * Synchronized collection.
-     */
-    private final Collection<Tojo> sync;
-
-    /**
      * Ctor.
      *
      * @param wrapped The Tojos to decorate
      */
     public SynchronizedTojos(final Tojos wrapped) {
         this.wrapped = wrapped;
-        this.sync = Collections.synchronizedCollection(wrapped.select(t -> true));
     }
 
     /**
@@ -67,51 +58,44 @@ public class SynchronizedTojos implements Tojos {
      * @param id The id
      * @return The tojo if found
      */
-    public Tojo tojoById(final String id) {
-        synchronized (this.sync) {
-            return this.sync
-                .stream()
-                .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
-                .iterator()
-                .next();
-        }
-    }
-
-    /**
-     * Removes one tojo by ID.
-     *
-     * @param id The id of removable
-     */
-    public void removeById(final String id) {
-        synchronized (this.sync) {
-            this.sync.removeIf(tojo -> Objects.equals(tojo.get(Tojos.KEY), id));
-        }
+    public synchronized Tojo getById(final String id) {
+        return Collections.synchronizedCollection(
+            this.wrapped.select(tj -> true)
+        )
+            .stream()
+            .filter(tojo -> Objects.equals(tojo.get(Tojos.KEY), id))
+            .iterator()
+            .next();
     }
 
     @Override
-    public final Tojo add(final String id) {
-        synchronized (this.sync) {
-            final AtomicReference<Tojo> tojo = new AtomicReference<>(this.wrapped.add(id));
-            this.sync
-                .stream()
-                .parallel()
-                .filter(t -> Objects.equals(t.get(Tojos.KEY), id))
-                .findAny()
-                .ifPresentOrElse(
-                    tojo::set,
-                    () -> this.sync.add(tojo.get())
-                );
-            return tojo.get();
-        }
+    public final synchronized Tojo add(final String id) {
+        Collections.synchronizedCollection(
+            this.wrapped.select(tj -> true)
+        )
+            .stream()
+            .filter(tj -> Objects.equals(id, tj.get(Tojos.KEY)))
+            .findFirst()
+            .ifPresent(
+                tj -> {
+                    throw new IllegalStateException(
+                        String.format(
+                            "%s is already presented",
+                            tj.get(id)
+                        )
+                    );
+                }
+            );
+        return this.wrapped.add(id);
     }
 
     @Override
     public final List<Tojo> select(final Predicate<Tojo> filter) {
-        synchronized (this.sync) {
-            return this.sync.stream()
-                .filter(filter)
-                .collect(Collectors.toCollection(ArrayList::new));
-        }
+        return Collections.synchronizedCollection(
+            this.wrapped.select(t -> true)
+        )
+            .stream()
+            .filter(filter)
+            .collect(Collectors.toList());
     }
-
 }
