@@ -64,4 +64,13 @@ final class MnPostponedTest {
         );
     }
 
+    @Test
+    void avoidsSavingAfterDestruction(@TempDir final Path temp) {
+        final Mono mono = new MnJson(temp.resolve("x/y/z/data.json"));
+        final Tojos tojos = new TjDefault(
+            new MnPostponed(mono, 500L)
+        );
+        tojos.add("hello");
+    }
+
 }
