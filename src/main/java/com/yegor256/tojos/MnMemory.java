@@ -23,40 +23,36 @@
  */
 package com.yegor256.tojos;
 
-import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Test case for {@link Tabs}.
+ * In memory {@link Mono}.
  *
- * @since 0.7.0
+ * The class is thread-safe.
+ *
+ * @since 0.12.0
  */
-public final class TabsTest {
+public final class MnMemory implements Mono {
 
-    @Test
-    public void simpleScenario(@TempDir final Path temp) {
-        final Mono tabs = new Tabs(temp.resolve("foo/bar/a.tabs"));
-        final Collection<Map<String, String>> rows = tabs.read();
-        MatcherAssert.assertThat(
-            tabs.read().size(),
-            Matchers.equalTo(0)
-        );
-        final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
-        final String value = "привет,\t\r\n друг!";
-        row.put(key, value);
-        rows.add(row);
-        tabs.write(rows);
-        MatcherAssert.assertThat(
-            tabs.read().iterator().next().get(key),
-            Matchers.equalTo(value)
-        );
+    /**
+     * The list of rows.
+     */
+    private final Collection<Map<String, String>> mem = new CopyOnWriteArrayList<>();
+
+    @Override
+    public Collection<Map<String, String>> read() {
+        return Collections.unmodifiableCollection(this.mem);
+    }
+
+    @Override
+    public void write(final Collection<Map<String, String>> rows) {
+        for (final Map<String, String> row : rows) {
+            this.mem.removeIf(r -> r.get(Tojos.KEY).equals(row.get(Tojos.KEY)));
+            this.mem.add(row);
+        }
     }
 
 }

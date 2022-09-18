@@ -52,7 +52,7 @@ public final class CsvTest {
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
-        final String key = "id";
+        final String key = Tojos.KEY;
         final String value = "привет,\t\n \"друг\"!";
         row.put(key, value);
         rows.add(row);

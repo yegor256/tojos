@@ -23,40 +23,60 @@
  */
 package com.yegor256.tojos;
 
-import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link Tabs}.
+ * This decorator prevents multiple reads.
  *
- * @since 0.7.0
+ * You should use this one ONLY if you are sure that nobody else
+ * is touching the file/mono. Otherwise, there will be synchronization
+ * issues.
+ *
+ * The class is NOT thread-safe.
+ *
+ * @since 0.12.0
  */
-public final class TabsTest {
+public final class StickyMono implements Mono {
 
-    @Test
-    public void simpleScenario(@TempDir final Path temp) {
-        final Mono tabs = new Tabs(temp.resolve("foo/bar/a.tabs"));
-        final Collection<Map<String, String>> rows = tabs.read();
-        MatcherAssert.assertThat(
-            tabs.read().size(),
-            Matchers.equalTo(0)
-        );
-        final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
-        final String value = "привет,\t\r\n друг!";
-        row.put(key, value);
-        rows.add(row);
-        tabs.write(rows);
-        MatcherAssert.assertThat(
-            tabs.read().iterator().next().get(key),
-            Matchers.equalTo(value)
-        );
+    /**
+     * Original Mono.
+     */
+    private final Mono origin;
+
+    /**
+     * Cached rows.
+     */
+    private Collection<Map<String, String>> cache;
+
+    /**
+     * Ctor.
+     *
+     * @param mono The original one
+     */
+    public StickyMono(final Mono mono) {
+        this.origin = mono;
+    }
+
+    @Override
+    public Collection<Map<String, String>> read() {
+        if (this.cache == null) {
+            this.cache = this.origin.read();
+        }
+        return Collections.unmodifiableCollection(this.cache);
+    }
+
+    @Override
+    public void write(final Collection<Map<String, String>> rows) {
+        if (this.cache == null) {
+            this.cache = this.origin.read();
+        }
+        this.origin.write(rows);
+        for (final Map<String, String> row : rows) {
+            this.cache.removeIf(r -> r.get(Tojos.KEY).equals(row.get(Tojos.KEY)));
+            this.cache.add(row);
+        }
     }
 
 }
