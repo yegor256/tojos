@@ -120,6 +120,11 @@ public final class MnPostponed implements Mono {
         );
         thr.setDaemon(false);
         thr.start();
+        Runtime.getRuntime().addShutdownHook(
+            new Thread(
+                () -> main.write(cache.read())
+            )
+        );
         return thr;
     }
 
