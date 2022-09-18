@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This decorator prevents multiple reads.
+ * This decorator prevents immediate write to the disk.
  *
  * You should use this one ONLY if you are sure that nobody else
  * is touching the file/mono. Otherwise, there will be synchronization
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @since 0.12.0
  */
-public final class MnSticky implements Mono {
+public final class MnPostponed implements Mono {
 
     /**
      * Original Mono.
@@ -56,14 +56,31 @@ public final class MnSticky implements Mono {
     private final AtomicBoolean first;
 
     /**
+     * Writer.
+     */
+    @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
+    private final Thread writer;
+
+    /**
      * Ctor.
      *
      * @param mono The original one
      */
-    public MnSticky(final Mono mono) {
+    public MnPostponed(final Mono mono) {
+        this(mono, 100L);
+    }
+
+    /**
+     * Ctor.
+     *
+     * @param mono The original one
+     * @param msec Delay between write operations, in milliseconds
+     */
+    public MnPostponed(final Mono mono, final long msec) {
         this.origin = mono;
         this.mem = new MnMemory();
         this.first = new AtomicBoolean(true);
+        this.writer = MnPostponed.start(mono, this.mem, msec);
     }
 
     @Override
@@ -76,8 +93,34 @@ public final class MnSticky implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        this.origin.write(rows);
         this.mem.write(rows);
+    }
+
+    /**
+     * Make a thread that writes.
+     *
+     * @param main The main one
+     * @param cache The cache
+     * @param msec Delay between write operations, in milliseconds
+     * @return A writing thread
+     */
+    private static Thread start(final Mono main, final Mono cache, final long msec) {
+        final Thread thr = new Thread(
+            () -> {
+                while (true) {
+                    try {
+                        Thread.sleep(msec);
+                    } catch (final InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                    main.write(cache.read());
+                }
+            }
+        );
+        thr.setDaemon(false);
+        thr.start();
+        return thr;
     }
 
 }

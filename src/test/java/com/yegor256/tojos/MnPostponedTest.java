@@ -26,50 +26,41 @@ package com.yegor256.tojos;
 import java.nio.file.Path;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Test case for {@link TjDefault}.
  *
  * @since 0.3.0
  */
-final class TjDefaultTest {
+final class MnPostponedTest {
 
-    @ParameterizedTest
-    @ValueSource(strings = {"a.csv", "a.json"})
-    void simpleScenario(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve(file)));
-        tojos.add("foo").set("k", "v").set("a", "b");
-        tojos.select(t -> t.exists("k")).iterator().next();
-        MatcherAssert.assertThat(
-            tojos.select(t -> t.exists("k")).iterator().next().get("a"),
-            Matchers.equalTo("b")
+    @Test
+    void massiveWrite(@TempDir final Path temp) throws InterruptedException {
+        final Mono mono = new MnJson(temp.resolve("big-data.json"));
+        final long delay = 500L;
+        final Tojos tojos = new TjDefault(
+            new MnPostponed(mono, delay)
         );
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"x.csv", "x.json"})
-    void addTojo(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new TjDefault(new MnJson(temp.resolve(file)));
-        tojos.add("foo-1");
+        final int total = 200;
+        for (int idx = 0; idx < total; ++idx) {
+            final String key = String.format("k%d", idx);
+            tojos.add(String.format("key-%d", idx))
+                .set(key, String.format("v%d", idx));
+            MatcherAssert.assertThat(
+                tojos.select(r -> r.exists(key)),
+                Matchers.iterableWithSize(1)
+            );
+        }
         MatcherAssert.assertThat(
-            new TjSmart(tojos).size(),
-            Matchers.equalTo(1)
+            tojos.select(r -> true),
+            Matchers.iterableWithSize(total)
         );
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"y.csv", "y.json"})
-    void uniqueIds(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new TjDefault(new MnTabs(temp.resolve(file)));
-        final String name = "foo11";
-        tojos.add(name);
-        tojos.add(name);
+        Thread.sleep(delay + 1L);
         MatcherAssert.assertThat(
-            new TjSmart(tojos).size(),
-            Matchers.equalTo(1)
+            new TjDefault(mono).select(r -> true),
+            Matchers.iterableWithSize(total)
         );
     }
 
