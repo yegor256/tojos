@@ -35,6 +35,9 @@ public interface Mono {
 
     /**
      * Read them all.
+     *
+     * The list returned is modifiable.
+     *
      * @return The list of all lines
      */
     Collection<Map<String, String>> read();

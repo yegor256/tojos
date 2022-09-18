@@ -41,10 +41,10 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.3.0
  */
-public final class MnCsvTest {
+final class MnCsvTest {
 
     @Test
-    public void simpleScenario(@TempDir final Path temp) {
+    void simpleScenario(@TempDir final Path temp) {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
         final Collection<Map<String, String>> rows = csv.read();
         MatcherAssert.assertThat(
@@ -64,7 +64,7 @@ public final class MnCsvTest {
     }
 
     @Test
-    public void ignoresEmptyElements(@TempDir final Path temp) {
+    void ignoresEmptyElements(@TempDir final Path temp) {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/xx.csv"));
         final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
@@ -79,7 +79,7 @@ public final class MnCsvTest {
     }
 
     @Test
-    public void keepsBackslash(@TempDir final Path temp) {
+    void keepsBackslash(@TempDir final Path temp) {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/slash.csv"));
         final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
@@ -94,7 +94,7 @@ public final class MnCsvTest {
     }
 
     @Test
-    public void putsKeyFirst(@TempDir final Path temp) throws IOException {
+    void putsKeyFirst(@TempDir final Path temp) throws IOException {
         final Path path = temp.resolve("key-test.json");
         final Mono csv = new MnCsv(path);
         final Collection<Map<String, String>> rows = csv.read();

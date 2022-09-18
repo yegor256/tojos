@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
@@ -105,7 +106,7 @@ public final class MnJson implements Mono {
         if (this.file.toFile().exists()) {
             try (
                 Reader reader = Files.newBufferedReader(this.file);
-                JsonReader json = javax.json.Json.createReader(reader)
+                JsonReader json = Json.createReader(reader)
             ) {
                 json
                     .readArray()
@@ -124,9 +125,9 @@ public final class MnJson implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        final JsonArrayBuilder array = javax.json.Json.createArrayBuilder();
+        final JsonArrayBuilder array = Json.createArrayBuilder();
         for (final Map<String, String> row : rows) {
-            final JsonObjectBuilder obj = javax.json.Json.createObjectBuilder();
+            final JsonObjectBuilder obj = Json.createObjectBuilder();
             if (row.containsKey(Tojos.KEY)) {
                 obj.add(Tojos.KEY, row.get(Tojos.KEY));
             }
@@ -183,7 +184,7 @@ public final class MnJson implements Mono {
     private static JsonWriterFactory factory() {
         final Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
-        return javax.json.Json.createWriterFactory(properties);
+        return Json.createWriterFactory(properties);
     }
 
 }

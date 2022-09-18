@@ -23,8 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -44,7 +44,9 @@ public final class MnMemory implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        return Collections.unmodifiableCollection(this.mem);
+        final Collection<Map<String, String>> list = new ArrayList<>(this.mem.size());
+        list.addAll(this.mem);
+        return list;
     }
 
     @Override

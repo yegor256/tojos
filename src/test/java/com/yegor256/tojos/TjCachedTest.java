@@ -24,44 +24,47 @@
 package com.yegor256.tojos;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link MnSticky}.
+ * Test for {@link TjCached}.
  *
- * @since 0.12.0
+ * @since 1.0
  */
-public final class StickyMonoTest {
+final class TjCachedTest {
 
     @Test
-    public void emptyRead() {
-        final Mono mono = new MnSticky(new MnMemory());
+    void testAddClearsCache(@TempDir final Path temp) {
+        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-1.csv")));
+        final String[] keys = {"k10", "k20"};
+        tojos.add("A0").set(keys[0], "v10").set(keys[1], "vv10");
+        tojos.add("B0").set(keys[0], "v20").set(keys[1], "vv20");
+        tojos.add("C0").set(keys[0], "v30").set(keys[1], "vv30");
+        final Tojos cached = new TjCached(tojos);
+        cached.select(x -> true);
+        cached.add("D0").set(keys[0], "v40").set(keys[1], "vv40");
         MatcherAssert.assertThat(
-            mono.read().size(),
-            Matchers.equalTo(0)
+            cached.select(x -> true).size(),
+            Matchers.equalTo(4)
         );
     }
 
     @Test
-    public void simpleScenario(@TempDir final Path temp) {
-        final Mono sticky = new MnSticky(new MnCsv(temp.resolve("x.csv")));
-        final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
-        final String value = "привет,\t\n \"друг\"!";
-        row.put(key, value);
-        final Collection<Map<String, String>> rows = new ArrayList<>(0);
-        rows.add(row);
-        sticky.write(rows);
+    void testSelectFromCached(@TempDir final Path temp) {
+        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-2.csv")));
+        final String[] keys = {"k11", "k21"};
+        tojos.add("A1").set(keys[0], "v11").set(keys[1], "vv11");
+        tojos.add("B1").set(keys[0], "v21").set(keys[1], "vv21");
+        tojos.add("C1").set(keys[0], "v31").set(keys[1], "vv31");
+        final Tojos cached = new TjCached(tojos);
+        cached.select(x -> true);
+        tojos.add("D1").set(keys[0], "v41").set(keys[1], "vv41");
         MatcherAssert.assertThat(
-            sticky.read().iterator().next().get(key),
-            Matchers.equalTo(value)
+            cached.select(x -> true).size(),
+            Matchers.equalTo(3)
         );
     }
 }

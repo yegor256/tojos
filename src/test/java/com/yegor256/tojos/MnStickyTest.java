@@ -24,53 +24,44 @@
 package com.yegor256.tojos;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 /**
- * Test case for {@link TjDefault}.
+ * Test case for {@link MnSticky}.
  *
- * @since 0.3.0
+ * @since 0.12.0
  */
-public final class MonoTojosTest {
+final class MnStickyTest {
 
-    @ParameterizedTest
-    @ValueSource(strings = {"a.csv", "a.json"})
-    public void simpleScenario(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve(file)));
-        tojos.add("foo").set("k", "v").set("a", "b");
-        tojos.select(t -> t.exists("k")).iterator().next();
+    @Test
+    void emptyRead() {
+        final Mono mono = new MnSticky(new MnMemory());
         MatcherAssert.assertThat(
-            tojos.select(t -> t.exists("k")).iterator().next().get("a"),
-            Matchers.equalTo("b")
+            mono.read().size(),
+            Matchers.equalTo(0)
         );
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"x.csv", "x.json"})
-    public void addTojo(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new TjDefault(new MnJson(temp.resolve(file)));
-        tojos.add("foo-1");
+    @Test
+    void simpleScenario(@TempDir final Path temp) {
+        final Mono sticky = new MnSticky(new MnCsv(temp.resolve("x.csv")));
+        final Map<String, String> row = new HashMap<>(0);
+        final String key = Tojos.KEY;
+        final String value = "привет,\t\n \"друг\"!";
+        row.put(key, value);
+        final Collection<Map<String, String>> rows = new ArrayList<>(0);
+        rows.add(row);
+        sticky.write(rows);
         MatcherAssert.assertThat(
-            new TjSmart(tojos).size(),
-            Matchers.equalTo(1)
+            sticky.read().iterator().next().get(key),
+            Matchers.equalTo(value)
         );
     }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"y.csv", "y.json"})
-    public void uniqueIds(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new TjDefault(new MnTabs(temp.resolve(file)));
-        final String name = "foo11";
-        tojos.add(name);
-        tojos.add(name);
-        MatcherAssert.assertThat(
-            new TjSmart(tojos).size(),
-            Matchers.equalTo(1)
-        );
-    }
-
 }

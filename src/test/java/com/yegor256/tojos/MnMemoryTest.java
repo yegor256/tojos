@@ -36,10 +36,10 @@ import org.junit.jupiter.api.Test;
  *
  * @since 0.12.0
  */
-public final class MnMemoryTest {
+final class MnMemoryTest {
 
     @Test
-    public void readsEmpty() {
+    void readsEmpty() {
         final Mono mono = new MnMemory();
         MatcherAssert.assertThat(
             mono.read().size(),
@@ -48,7 +48,7 @@ public final class MnMemoryTest {
     }
 
     @Test
-    public void simpleScenario() {
+    void simpleScenario() {
         final Mono mono = new MnMemory();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.KEY;

@@ -38,10 +38,10 @@ import org.junit.jupiter.api.io.TempDir;
  * Test case for {@link MnYaml}.
  * @since 0.9.2
  */
-public class MnYamlTest {
+final class MnYamlTest {
 
     @Test
-    public void writesAndReads(@TempDir final Path temp) {
+    void writesAndReads(@TempDir final Path temp) {
         final File file = temp.resolve("test.yml").toFile();
         final Map<String, String> keys = new HashMap<>();
         final List<Map<String, String>> tojo = new LinkedList<>();

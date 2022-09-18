@@ -37,10 +37,10 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.7.0
  */
-public final class MnTabsTest {
+final class MnTabsTest {
 
     @Test
-    public void simpleScenario(@TempDir final Path temp) {
+    void simpleScenario(@TempDir final Path temp) {
         final Mono tabs = new MnTabs(temp.resolve("foo/bar/a.tabs"));
         final Collection<Map<String, String>> rows = tabs.read();
         MatcherAssert.assertThat(
