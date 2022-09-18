@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link StickyMono}.
+ * Test case for {@link MnSticky}.
  *
  * @since 0.12.0
  */
@@ -42,7 +42,7 @@ public final class StickyMonoTest {
 
     @Test
     public void emptyRead() {
-        final Mono mono = new StickyMono(new MnMemory());
+        final Mono mono = new MnSticky(new MnMemory());
         MatcherAssert.assertThat(
             mono.read().size(),
             Matchers.equalTo(0)
@@ -51,7 +51,7 @@ public final class StickyMonoTest {
 
     @Test
     public void simpleScenario(@TempDir final Path temp) {
-        final Mono sticky = new StickyMono(new Csv(temp.resolve("x.csv")));
+        final Mono sticky = new MnSticky(new MnCsv(temp.resolve("x.csv")));
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.KEY;
         final String value = "привет,\t\n \"друг\"!";

@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -38,80 +37,81 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link Json}.
+ * Test case for {@link MnCsv}.
  *
  * @since 0.3.0
  */
-public final class JsonTest {
+public final class MnCsvTest {
 
     @Test
     public void simpleScenario(@TempDir final Path temp) {
-        final Mono json = new Json(temp.resolve("foo/bar/a.json"));
-        final Collection<Map<String, String>> rows = json.read();
+        final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
         MatcherAssert.assertThat(
-            json.read().size(),
+            csv.read().size(),
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.KEY;
-        final String value = "привет,\t\r\n друг!";
+        final String value = "привет,\t\n \"друг\"!";
         row.put(key, value);
         rows.add(row);
-        json.write(rows);
+        csv.write(rows);
         MatcherAssert.assertThat(
-            json.read().iterator().next().get(key),
+            csv.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
     }
 
     @Test
-    public void writesEmptyCollection(@TempDir final Path temp) {
-        final Mono json = new Json(temp.resolve("foo/bar/b.json"));
-        json.write(Collections.emptyList());
-        MatcherAssert.assertThat(
-            json.read(),
-            Matchers.empty()
-        );
-    }
-
-    @Test
-    public void prettyPrint(@TempDir final Path temp) throws IOException {
-        final Path path = temp.resolve("z.json");
-        final Mono json = new Json(path);
-        final Collection<Map<String, String>> rows = json.read();
+    public void ignoresEmptyElements(@TempDir final Path temp) {
+        final Mono csv = new MnCsv(temp.resolve("foo/bar/xx.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
-        final String value = "hello, world!";
-        row.put(key, value);
+        row.put("x", "1");
+        row.put("y", "");
         rows.add(row);
-        rows.add(row);
-        json.write(rows);
+        csv.write(rows);
         MatcherAssert.assertThat(
-            new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
-            Matchers.containsString("},\n")
+            csv.read().iterator().next().containsKey("y"),
+            Matchers.equalTo(false)
         );
     }
 
     @Test
-    public void keyAtFirstPosition(@TempDir final Path temp) throws IOException {
+    public void keepsBackslash(@TempDir final Path temp) {
+        final Mono csv = new MnCsv(temp.resolve("foo/bar/slash.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
+        final Map<String, String> row = new HashMap<>(0);
+        final String path = "\\my\\windows\\path\\to\\here";
+        row.put("a", path);
+        rows.add(row);
+        csv.write(rows);
+        MatcherAssert.assertThat(
+            csv.read().iterator().next().get("a"),
+            Matchers.equalTo(path)
+        );
+    }
+
+    @Test
+    public void putsKeyFirst(@TempDir final Path temp) throws IOException {
         final Path path = temp.resolve("key-test.json");
-        final Mono json = new Json(path);
-        final Collection<Map<String, String>> rows = json.read();
+        final Mono csv = new MnCsv(path);
+        final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
         row.put(Tojos.KEY, "xyz");
         row.put("_x", "");
         row.put("zzzz", "");
         rows.add(row);
-        json.write(rows);
+        csv.write(rows);
         MatcherAssert.assertThat(
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.matchesPattern(
                 Pattern.compile(
-                    String.format(".*\\{\\s+\"%s\":.*", Tojos.KEY),
+                    String.format("^\"%s\",.*", Tojos.KEY),
                     Pattern.MULTILINE | Pattern.DOTALL
                 )
             )
         );
     }
-
 }

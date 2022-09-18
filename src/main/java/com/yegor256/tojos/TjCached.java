@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * This class is NOT thread-safe.
  * @since 1.0
  */
-public final class CachedTojos implements Tojos {
+public final class TjCached implements Tojos {
 
     /**
      * Underlying tojos.
@@ -50,7 +50,7 @@ public final class CachedTojos implements Tojos {
      * Ctor.
      * @param wrapped Tojos which need to be cached
      */
-    public CachedTojos(final Tojos wrapped) {
+    public TjCached(final Tojos wrapped) {
         this.wrapped = wrapped;
         this.cache = new ArrayList<>(0);
     }

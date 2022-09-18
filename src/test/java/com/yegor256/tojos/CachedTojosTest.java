@@ -38,12 +38,12 @@ class CachedTojosTest {
 
     @Test
     void testAddClearsCache(@TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(new Csv(temp.resolve("my-tojos-1.csv")));
+        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-1.csv")));
         final String[] keys = new String[] {"k10", "k20"};
         tojos.add("A0").set(keys[0], "v10").set(keys[1], "vv10");
         tojos.add("B0").set(keys[0], "v20").set(keys[1], "vv20");
         tojos.add("C0").set(keys[0], "v30").set(keys[1], "vv30");
-        final Tojos cached = new CachedTojos(tojos);
+        final Tojos cached = new TjCached(tojos);
         cached.select(x -> true);
         cached.add("D0").set(keys[0], "v40").set(keys[1], "vv40");
         MatcherAssert.assertThat(
@@ -54,12 +54,12 @@ class CachedTojosTest {
 
     @Test
     void testSelectFromCached(@TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(new Csv(temp.resolve("my-tojos-2.csv")));
+        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-2.csv")));
         final String[] keys = new String[] {"k11", "k21"};
         tojos.add("A1").set(keys[0], "v11").set(keys[1], "vv11");
         tojos.add("B1").set(keys[0], "v21").set(keys[1], "vv21");
         tojos.add("C1").set(keys[0], "v31").set(keys[1], "vv31");
-        final Tojos cached = new CachedTojos(tojos);
+        final Tojos cached = new TjCached(tojos);
         cached.select(x -> true);
         tojos.add("D1").set(keys[0], "v41").set(keys[1], "vv41");
         MatcherAssert.assertThat(

@@ -52,12 +52,12 @@ import javax.json.stream.JsonGenerator;
  *
  * @since 0.3.0
  */
-public final class Json implements Mono {
+public final class MnJson implements Mono {
 
     /**
      * The factory of writers.
      */
-    private static final JsonWriterFactory JWF = Json.factory();
+    private static final JsonWriterFactory JWF = MnJson.factory();
 
     /**
      * The file path.
@@ -70,7 +70,7 @@ public final class Json implements Mono {
      * @param path The path to the file
      * @since 0.4.0
      */
-    public Json(final String path) {
+    public MnJson(final String path) {
         this(Paths.get(path));
     }
 
@@ -80,7 +80,7 @@ public final class Json implements Mono {
      * @param path The path to the file
      * @since 0.4.0
      */
-    public Json(final File path) {
+    public MnJson(final File path) {
         this(path.toPath());
     }
 
@@ -90,7 +90,7 @@ public final class Json implements Mono {
      * @param path The path to the file
      * @since 0.4.0
      */
-    public Json(final Path path) {
+    public MnJson(final Path path) {
         this.file = path;
     }
 
@@ -110,7 +110,7 @@ public final class Json implements Mono {
                 json
                     .readArray()
                     .stream()
-                    .map(Json::asMap)
+                    .map(MnJson::asMap)
                     .forEach(rows::add);
             } catch (final IOException ex) {
                 throw new IllegalArgumentException(
@@ -142,7 +142,7 @@ public final class Json implements Mono {
         try (
             Writer writer = Files.newBufferedWriter(this.file, StandardOpenOption.CREATE)
         ) {
-            final JsonWriter json = Json.JWF.createWriter(writer);
+            final JsonWriter json = MnJson.JWF.createWriter(writer);
             json.write(array.build());
         } catch (final IOException ex) {
             throw new IllegalArgumentException(
@@ -164,7 +164,7 @@ public final class Json implements Mono {
         return value.asJsonObject()
             .entrySet()
             .stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, ent -> Json.asString(ent.getValue())));
+            .collect(Collectors.toMap(Map.Entry::getKey, ent -> MnJson.asString(ent.getValue())));
     }
 
     /**

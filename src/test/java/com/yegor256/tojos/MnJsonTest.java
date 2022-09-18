@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -37,81 +38,80 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link Csv}.
+ * Test case for {@link MnJson}.
  *
  * @since 0.3.0
  */
-public final class CsvTest {
+public final class MnJsonTest {
 
     @Test
     public void simpleScenario(@TempDir final Path temp) {
-        final Mono csv = new Csv(temp.resolve("foo/bar/a.csv"));
-        final Collection<Map<String, String>> rows = csv.read();
+        final Mono json = new MnJson(temp.resolve("foo/bar/a.json"));
+        final Collection<Map<String, String>> rows = json.read();
         MatcherAssert.assertThat(
-            csv.read().size(),
+            json.read().size(),
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.KEY;
-        final String value = "привет,\t\n \"друг\"!";
+        final String value = "привет,\t\r\n друг!";
         row.put(key, value);
         rows.add(row);
-        csv.write(rows);
+        json.write(rows);
         MatcherAssert.assertThat(
-            csv.read().iterator().next().get(key),
+            json.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
     }
 
     @Test
-    public void ignoresEmptyElements(@TempDir final Path temp) {
-        final Mono csv = new Csv(temp.resolve("foo/bar/xx.csv"));
-        final Collection<Map<String, String>> rows = csv.read();
-        final Map<String, String> row = new HashMap<>(0);
-        row.put("x", "1");
-        row.put("y", "");
-        rows.add(row);
-        csv.write(rows);
+    public void writesEmptyCollection(@TempDir final Path temp) {
+        final Mono json = new MnJson(temp.resolve("foo/bar/b.json"));
+        json.write(Collections.emptyList());
         MatcherAssert.assertThat(
-            csv.read().iterator().next().containsKey("y"),
-            Matchers.equalTo(false)
+            json.read(),
+            Matchers.empty()
         );
     }
 
     @Test
-    public void keepsBackslash(@TempDir final Path temp) {
-        final Mono csv = new Csv(temp.resolve("foo/bar/slash.csv"));
-        final Collection<Map<String, String>> rows = csv.read();
+    public void prettyPrint(@TempDir final Path temp) throws IOException {
+        final Path path = temp.resolve("z.json");
+        final Mono json = new MnJson(path);
+        final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
-        final String path = "\\my\\windows\\path\\to\\here";
-        row.put("a", path);
+        final String key = Tojos.KEY;
+        final String value = "hello, world!";
+        row.put(key, value);
         rows.add(row);
-        csv.write(rows);
+        rows.add(row);
+        json.write(rows);
         MatcherAssert.assertThat(
-            csv.read().iterator().next().get("a"),
-            Matchers.equalTo(path)
+            new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
+            Matchers.containsString("},\n")
         );
     }
 
     @Test
-    public void putsKeyFirst(@TempDir final Path temp) throws IOException {
+    public void keyAtFirstPosition(@TempDir final Path temp) throws IOException {
         final Path path = temp.resolve("key-test.json");
-        final Mono csv = new Csv(path);
-        final Collection<Map<String, String>> rows = csv.read();
+        final Mono json = new MnJson(path);
+        final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
         row.put(Tojos.KEY, "xyz");
         row.put("_x", "");
         row.put("zzzz", "");
         rows.add(row);
-        csv.write(rows);
+        json.write(rows);
         MatcherAssert.assertThat(
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.matchesPattern(
                 Pattern.compile(
-                    String.format("^\"%s\",.*", Tojos.KEY),
+                    String.format(".*\\{\\s+\"%s\":.*", Tojos.KEY),
                     Pattern.MULTILINE | Pattern.DOTALL
                 )
             )
         );
     }
+
 }

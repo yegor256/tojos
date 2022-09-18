@@ -29,15 +29,13 @@ You add this to your `pom.xml`:
 Then, to manage `books.csv` file:
 
 ```java
-import com.yegor256.tojos.Csv;
-import com.yegor256.tojos.MonoTojos;
-import com.yegor256.tojos.Tojos;
 
-Tojos tojos = new MonoTojos(new Csv("books.csv"));
-Tojo t1 = tojos.add("Object Thinking"); // unique ID
-t1.set("author", "David West");
-Tojo t2 = tojos.select(
-  t -> t.get("author").equals("David West")
+
+Tojos tojos=new TjMono(new Csv("books.csv"));
+Tojo t1=tojos.add("Object Thinking"); // unique ID
+t1.set("author","David West");
+Tojo t2=tojos.select(
+    t->t.get("author").equals("David West")
 ).get(0);
 ```
 

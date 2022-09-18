@@ -23,67 +23,60 @@
  */
 package com.yegor256.tojos;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
- * All tojos in a {@link Mono}.
+ * This decorator prevents multiple reads.
+ *
+ * You should use this one ONLY if you are sure that nobody else
+ * is touching the file/mono. Otherwise, there will be synchronization
+ * issues.
  *
  * The class is NOT thread-safe.
  *
- * @since 0.3.0
+ * @since 0.12.0
  */
-public final class MonoTojos implements Tojos {
+public final class MnSticky implements Mono {
 
     /**
-     * The mono.
+     * Original Mono.
      */
-    private final Mono mono;
+    private final Mono origin;
+
+    /**
+     * Cached rows.
+     */
+    private Collection<Map<String, String>> cache;
 
     /**
      * Ctor.
      *
-     * @param mno The Mono (CSV or JSON)
+     * @param mono The original one
      */
-    public MonoTojos(final Mono mno) {
-        this.mono = mno;
+    public MnSticky(final Mono mono) {
+        this.origin = mono;
     }
 
     @Override
-    public String toString() {
-        return this.mono.toString();
-    }
-
-    @Override
-    public Tojo add(final String name) {
-        final Collection<Map<String, String>> rows = this.mono.read();
-        final Optional<Map<String, String>> before = rows.stream().filter(
-            r -> r.get(Tojos.KEY).equals(name)
-        ).findFirst();
-        if (!before.isPresent()) {
-            final Map<String, String> row = new HashMap<>(1);
-            row.put(Tojos.KEY, name);
-            rows.add(row);
-            this.mono.write(rows);
+    public Collection<Map<String, String>> read() {
+        if (this.cache == null) {
+            this.cache = this.origin.read();
         }
-        return new MonoTojo(this.mono, name);
+        return Collections.unmodifiableCollection(this.cache);
     }
 
     @Override
-    public List<Tojo> select(final Predicate<Tojo> filter) {
-        final Collection<Map<String, String>> rows = this.mono.read();
-        final List<Tojo> tojos = new ArrayList<>(rows.size());
+    public void write(final Collection<Map<String, String>> rows) {
+        if (this.cache == null) {
+            this.cache = this.origin.read();
+        }
+        this.origin.write(rows);
         for (final Map<String, String> row : rows) {
-            final Tojo tojo = new MonoTojo(this.mono, row.get(Tojos.KEY));
-            if (filter.test(tojo)) {
-                tojos.add(tojo);
-            }
+            this.cache.removeIf(r -> r.get(Tojos.KEY).equals(row.get(Tojos.KEY)));
+            this.cache.add(row);
         }
-        return tojos;
     }
+
 }

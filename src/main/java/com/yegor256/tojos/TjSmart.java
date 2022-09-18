@@ -23,40 +23,64 @@
  */
 package com.yegor256.tojos;
 
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
- * Test case for {@link Tabs}.
+ * All file-objects.
  *
- * @since 0.7.0
+ * The class is NOT thread-safe.
+ *
+ * @since 0.3.0
  */
-public final class TabsTest {
+public final class TjSmart implements Tojos {
 
-    @Test
-    public void simpleScenario(@TempDir final Path temp) {
-        final Mono tabs = new Tabs(temp.resolve("foo/bar/a.tabs"));
-        final Collection<Map<String, String>> rows = tabs.read();
-        MatcherAssert.assertThat(
-            tabs.read().size(),
-            Matchers.equalTo(0)
-        );
-        final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
-        final String value = "привет,\t\r\n друг!";
-        row.put(key, value);
-        rows.add(row);
-        tabs.write(rows);
-        MatcherAssert.assertThat(
-            tabs.read().iterator().next().get(key),
-            Matchers.equalTo(value)
-        );
+    /**
+     * The original.
+     */
+    private final Tojos origin;
+
+    /**
+     * Ctor.
+     *
+     * @param tojos The origin
+     */
+    public TjSmart(final Tojos tojos) {
+        this.origin = tojos;
     }
 
+    @Override
+    public String toString() {
+        return this.origin.toString();
+    }
+
+    /**
+     * Get one tojo by ID.
+     * @param name The id
+     * @return The tojo if found
+     */
+    public Tojo getById(final String name) {
+        return this.origin
+            .select(tojo -> name.equals(tojo.get(Tojos.KEY)))
+            .iterator()
+            .next();
+    }
+
+    /**
+     * Get size.
+     * @return Total count
+     */
+    public int size() {
+        return this.origin.select(t -> true).size();
+    }
+
+    @Override
+    public Tojo add(final String name) {
+        return this.origin.add(name);
+    }
+
+    @Override
+    public List<Tojo> select(final Predicate<Tojo> filter) {
+        return this.origin.select(filter);
+    }
 }

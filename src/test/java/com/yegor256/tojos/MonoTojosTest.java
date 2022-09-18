@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
- * Test case for {@link MonoTojos}.
+ * Test case for {@link TjDefault}.
  *
  * @since 0.3.0
  */
@@ -40,7 +40,7 @@ public final class MonoTojosTest {
     @ParameterizedTest
     @ValueSource(strings = {"a.csv", "a.json"})
     public void simpleScenario(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(new Csv(temp.resolve(file)));
+        final Tojos tojos = new TjDefault(new MnCsv(temp.resolve(file)));
         tojos.add("foo").set("k", "v").set("a", "b");
         tojos.select(t -> t.exists("k")).iterator().next();
         MatcherAssert.assertThat(
@@ -52,10 +52,10 @@ public final class MonoTojosTest {
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
     public void addTojo(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(new Json(temp.resolve(file)));
+        final Tojos tojos = new TjDefault(new MnJson(temp.resolve(file)));
         tojos.add("foo-1");
         MatcherAssert.assertThat(
-            new SmartTojos(tojos).size(),
+            new TjSmart(tojos).size(),
             Matchers.equalTo(1)
         );
     }
@@ -63,12 +63,12 @@ public final class MonoTojosTest {
     @ParameterizedTest
     @ValueSource(strings = {"y.csv", "y.json"})
     public void uniqueIds(final String file, @TempDir final Path temp) {
-        final Tojos tojos = new MonoTojos(new Tabs(temp.resolve(file)));
+        final Tojos tojos = new TjDefault(new MnTabs(temp.resolve(file)));
         final String name = "foo11";
         tojos.add(name);
         tojos.add(name);
         MatcherAssert.assertThat(
-            new SmartTojos(tojos).size(),
+            new TjSmart(tojos).size(),
             Matchers.equalTo(1)
         );
     }

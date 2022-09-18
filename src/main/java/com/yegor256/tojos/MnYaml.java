@@ -37,7 +37,7 @@ import java.util.Map;
  * YAML file.
  * @since 0.9.2
  */
-public final class Yaml implements Mono {
+public final class MnYaml implements Mono {
     /**
      * Where the YAML is stored.
      */
@@ -47,7 +47,7 @@ public final class Yaml implements Mono {
      * Ctor.
      * @param path Destination where to keep the data
      */
-    public Yaml(final Path path) {
+    public MnYaml(final Path path) {
         this.destination = path;
     }
 
@@ -55,7 +55,7 @@ public final class Yaml implements Mono {
      * Ctor.
      * @param path Path to the file
      */
-    public Yaml(final File path) {
+    public MnYaml(final File path) {
         this(path.toPath());
     }
 
@@ -63,7 +63,7 @@ public final class Yaml implements Mono {
      * Ctor.
      * @param path Path to the file
      */
-    public Yaml(final String path) {
+    public MnYaml(final String path) {
         this(new File(path));
     }
 

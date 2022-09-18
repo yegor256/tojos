@@ -35,10 +35,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Test case for {@link Yaml}.
+ * Test case for {@link MnYaml}.
  * @since 0.9.2
  */
-public class YamlTest {
+public class MnYamlTest {
 
     @Test
     public void writesAndReads(@TempDir final Path temp) {
@@ -48,7 +48,7 @@ public class YamlTest {
         final String key = "key";
         tojo.add(keys);
         keys.put(key, "value");
-        final Mono yaml = new Yaml(file);
+        final Mono yaml = new MnYaml(file);
         yaml.write(tojo);
         MatcherAssert.assertThat(
             keys.get(key),
