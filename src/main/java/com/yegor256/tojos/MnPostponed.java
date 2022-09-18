@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * is touching the file/mono. Otherwise, there will be synchronization
  * issues.
  *
- * The class is NOT thread-safe.
+ * The class is thread-safe.
  *
  * @since 0.12.0
  */
@@ -56,10 +56,15 @@ public final class MnPostponed implements Mono {
     private final AtomicBoolean first;
 
     /**
-     * Writer.
+     * The cache is dirty and need to be flashed to the read mono?
+     */
+    private final AtomicBoolean dirty;
+
+    /**
+     * Flushing thread.
      */
     @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
-    private final Thread writer;
+    private final Thread flush;
 
     /**
      * Ctor.
@@ -80,7 +85,8 @@ public final class MnPostponed implements Mono {
         this.origin = mono;
         this.mem = new MnMemory();
         this.first = new AtomicBoolean(true);
-        this.writer = MnPostponed.start(mono, this.mem, msec);
+        this.dirty = new AtomicBoolean(false);
+        this.flush = MnPostponed.start(mono, this.mem, msec, this.dirty);
     }
 
     @Override
@@ -93,7 +99,10 @@ public final class MnPostponed implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        this.mem.write(rows);
+        synchronized (this.dirty) {
+            this.mem.write(rows);
+            this.dirty.set(true);
+        }
     }
 
     /**
@@ -102,9 +111,12 @@ public final class MnPostponed implements Mono {
      * @param main The main one
      * @param cache The cache
      * @param msec Delay between write operations, in milliseconds
+     * @param flag Is it required to flush?
      * @return A writing thread
+     * @checkstyle ParameterNumberCheck (5 lines)
      */
-    private static Thread start(final Mono main, final Mono cache, final long msec) {
+    private static Thread start(final Mono main, final Mono cache,
+        final long msec, final AtomicBoolean flag) {
         final Thread thr = new Thread(
             () -> {
                 while (true) {
@@ -114,7 +126,11 @@ public final class MnPostponed implements Mono {
                         Thread.currentThread().interrupt();
                         break;
                     }
-                    main.write(cache.read());
+                    synchronized (flag) {
+                        if (flag.compareAndSet(true, false)) {
+                            main.write(cache.read());
+                        }
+                    }
                 }
             }
         );
@@ -122,7 +138,11 @@ public final class MnPostponed implements Mono {
         thr.start();
         Runtime.getRuntime().addShutdownHook(
             new Thread(
-                () -> main.write(cache.read())
+                () -> {
+                    if (flag.compareAndSet(true, false)) {
+                        main.write(cache.read());
+                    }
+                }
             )
         );
         return thr;
