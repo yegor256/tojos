@@ -49,10 +49,8 @@ public final class MnMemory implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        for (final Map<String, String> row : rows) {
-            this.mem.removeIf(r -> r.get(Tojos.KEY).equals(row.get(Tojos.KEY)));
-            this.mem.add(row);
-        }
+        this.mem.clear();
+        this.mem.addAll(rows);
     }
 
 }

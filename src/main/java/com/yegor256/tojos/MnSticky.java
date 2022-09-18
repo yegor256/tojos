@@ -24,8 +24,8 @@
 package com.yegor256.tojos;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This decorator prevents multiple reads.
@@ -48,7 +48,12 @@ public final class MnSticky implements Mono {
     /**
      * Cached rows.
      */
-    private Collection<Map<String, String>> cache;
+    private final MnMemory mem;
+
+    /**
+     * Is it the first time?.
+     */
+    private final AtomicBoolean first;
 
     /**
      * Ctor.
@@ -57,26 +62,22 @@ public final class MnSticky implements Mono {
      */
     public MnSticky(final Mono mono) {
         this.origin = mono;
+        this.mem = new MnMemory();
+        this.first = new AtomicBoolean(true);
     }
 
     @Override
     public Collection<Map<String, String>> read() {
-        if (this.cache == null) {
-            this.cache = this.origin.read();
+        if (this.first.compareAndSet(true, false)) {
+            this.mem.write(this.origin.read());
         }
-        return Collections.unmodifiableCollection(this.cache);
+        return this.mem.read();
     }
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        if (this.cache == null) {
-            this.cache = this.origin.read();
-        }
         this.origin.write(rows);
-        for (final Map<String, String> row : rows) {
-            this.cache.removeIf(r -> r.get(Tojos.KEY).equals(row.get(Tojos.KEY)));
-            this.cache.add(row);
-        }
+        this.mem.write(rows);
     }
 
 }
