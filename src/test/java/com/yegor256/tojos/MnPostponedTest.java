@@ -57,7 +57,7 @@ final class MnPostponedTest {
             tojos.select(r -> true),
             Matchers.iterableWithSize(total)
         );
-        Thread.sleep(delay + 1L);
+        Thread.sleep(delay + 100L);
         MatcherAssert.assertThat(
             new TjDefault(mono).select(r -> true),
             Matchers.iterableWithSize(total)
