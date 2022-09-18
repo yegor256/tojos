@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -80,4 +81,8 @@ public final class MnSticky implements Mono {
         this.mem.write(rows);
     }
 
+    @Override
+    public void close() throws IOException {
+        this.origin.close();
+    }
 }

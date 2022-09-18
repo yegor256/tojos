@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * YAML file.
@@ -77,7 +78,7 @@ public final class MnYaml implements Mono {
         final Collection<Map<String, String>> result = new LinkedList<>();
         try {
             final InputStream source = Files.newInputStream(this.destination);
-            result.addAll(new org.yaml.snakeyaml.Yaml().<List<Map<String, String>>>load(source));
+            result.addAll(new Yaml().<List<Map<String, String>>>load(source));
         } catch (final IOException exception) {
             throw new IllegalArgumentException(
                 String.format("Failed to read YAML from '%s'", this.destination),
@@ -90,7 +91,7 @@ public final class MnYaml implements Mono {
     @Override
     public void write(final Collection<Map<String, String>> rows) {
         try {
-            new org.yaml.snakeyaml.Yaml().dump(
+            new Yaml().dump(
                 rows,
                 Files.newBufferedWriter(this.destination)
             );
@@ -101,4 +102,10 @@ public final class MnYaml implements Mono {
             );
         }
     }
+
+    @Override
+    public void close() {
+        // nothing to close here
+    }
+
 }

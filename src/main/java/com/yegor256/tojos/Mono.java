@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.Closeable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ import java.util.Map;
  *
  * @since 0.3.0
  */
-public interface Mono {
+public interface Mono extends Closeable {
 
     /**
      * Read them all.

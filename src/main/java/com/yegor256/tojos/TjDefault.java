@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,5 +86,10 @@ public final class TjDefault implements Tojos {
             }
         }
         return tojos;
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.mono.close();
     }
 }

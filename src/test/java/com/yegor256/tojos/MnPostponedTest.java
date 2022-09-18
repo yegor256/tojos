@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 final class MnPostponedTest {
 
     @Test
-    void massiveWrite(@TempDir final Path temp) throws InterruptedException {
+    void massiveWrite(@TempDir final Path temp) throws Exception {
         final Mono mono = new MnJson(temp.resolve("big-data.json"));
         final long delay = 500L;
         final Tojos tojos = new TjDefault(
@@ -57,7 +57,7 @@ final class MnPostponedTest {
             tojos.select(r -> true),
             Matchers.iterableWithSize(total)
         );
-        Thread.sleep(delay + 100L);
+        tojos.close();
         MatcherAssert.assertThat(
             new TjDefault(mono).select(r -> true),
             Matchers.iterableWithSize(total)

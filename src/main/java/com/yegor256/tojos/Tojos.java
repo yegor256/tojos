@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -38,7 +39,7 @@ import java.util.function.Predicate;
  *
  * @since 0.3.0
  */
-public interface Tojos {
+public interface Tojos extends Closeable {
 
     /**
      * Name of ID attribute in all tojos.

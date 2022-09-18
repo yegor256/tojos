@@ -55,4 +55,8 @@ public final class MnMemory implements Mono {
         this.mem.addAll(rows);
     }
 
+    @Override
+    public void close() {
+        // nothing to close here
+    }
 }

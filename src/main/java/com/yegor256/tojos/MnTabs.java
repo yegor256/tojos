@@ -153,6 +153,11 @@ public final class MnTabs implements Mono {
         }
     }
 
+    @Override
+    public void close() {
+        // nothing to close here
+    }
+
     /**
      * Encode.
      * @param txt The text to encode

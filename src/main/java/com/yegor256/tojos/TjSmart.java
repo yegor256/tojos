@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -82,5 +83,10 @@ public final class TjSmart implements Tojos {
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
         return this.origin.select(filter);
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.origin.close();
     }
 }

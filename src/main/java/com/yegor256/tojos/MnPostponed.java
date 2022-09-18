@@ -105,6 +105,13 @@ public final class MnPostponed implements Mono {
         }
     }
 
+    @Override
+    public void close() {
+        if (this.dirty.compareAndSet(true, false)) {
+            this.origin.write(this.mem.read());
+        }
+    }
+
     /**
      * Make a thread that writes.
      *
@@ -136,15 +143,6 @@ public final class MnPostponed implements Mono {
         );
         thr.setDaemon(false);
         thr.start();
-        Runtime.getRuntime().addShutdownHook(
-            new Thread(
-                () -> {
-                    if (flag.compareAndSet(true, false)) {
-                        main.write(cache.read());
-                    }
-                }
-            )
-        );
         return thr;
     }
 

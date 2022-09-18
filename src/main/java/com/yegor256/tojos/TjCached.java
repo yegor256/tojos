@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -39,7 +40,7 @@ public final class TjCached implements Tojos {
     /**
      * Underlying tojos.
      */
-    private final Tojos wrapped;
+    private final Tojos origin;
 
     /**
      * Cache for tojos.
@@ -48,26 +49,31 @@ public final class TjCached implements Tojos {
 
     /**
      * Ctor.
-     * @param wrapped Tojos which need to be cached
+     * @param tojos Tojos which need to be cached
      */
-    public TjCached(final Tojos wrapped) {
-        this.wrapped = wrapped;
+    public TjCached(final Tojos tojos) {
+        this.origin = tojos;
         this.cache = new ArrayList<>(0);
     }
 
     @Override
     public Tojo add(final String name) {
         this.cache.clear();
-        return this.wrapped.add(name);
+        return this.origin.add(name);
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
         if (this.cache.isEmpty()) {
-            this.cache.addAll(this.wrapped.select(x -> true));
+            this.cache.addAll(this.origin.select(x -> true));
         }
         return this.cache.stream()
             .filter(filter)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.origin.close();
     }
 }

@@ -165,4 +165,8 @@ public final class MnCsv implements Mono {
         }
     }
 
+    @Override
+    public void close() {
+        // nothing to close here
+    }
 }

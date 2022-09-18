@@ -156,6 +156,11 @@ public final class MnJson implements Mono {
         }
     }
 
+    @Override
+    public void close() {
+        // nothing to close here
+    }
+
     /**
      * Covert JsonValue to Map.
      * @param value Value
