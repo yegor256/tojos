@@ -5,8 +5,10 @@ on:
     branches:
       - master
   pull_request:
+    branches:
+      - master
 jobs:
-  maven-build:
+  mvn:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
