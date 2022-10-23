@@ -34,7 +34,7 @@ import java.util.function.Predicate;
  *
  * @since 0.3.0
  */
-public class TjSynchronized implements Tojos {
+public final class TjSynchronized implements Tojos {
 
     /**
      * The wrapped tojos.
@@ -51,21 +51,21 @@ public class TjSynchronized implements Tojos {
     }
 
     @Override
-    public final Tojo add(final String name) {
+    public Tojo add(final String name) {
         synchronized (this.wrapped) {
             return this.wrapped.add(name);
         }
     }
 
     @Override
-    public final List<Tojo> select(final Predicate<Tojo> filter) {
+    public List<Tojo> select(final Predicate<Tojo> filter) {
         synchronized (this.wrapped) {
             return this.wrapped.select(filter);
         }
     }
 
     @Override
-    public final void close() throws IOException {
+    public void close() throws IOException {
         this.wrapped.close();
     }
 }
