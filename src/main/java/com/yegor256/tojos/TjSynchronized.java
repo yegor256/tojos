@@ -59,9 +59,7 @@ public final class TjSynchronized implements Tojos {
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        synchronized (this.wrapped) {
-            return this.wrapped.select(filter);
-        }
+        return this.wrapped.select(filter);
     }
 
     @Override
