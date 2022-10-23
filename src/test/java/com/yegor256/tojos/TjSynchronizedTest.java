@@ -63,7 +63,7 @@ class TjSynchronizedTest {
         assert service.awaitTermination(1, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
             new TjSmart(tojos).size(),
-            Matchers.equalTo(100)
+            Matchers.equalTo(threads)
         );
     }
 }
