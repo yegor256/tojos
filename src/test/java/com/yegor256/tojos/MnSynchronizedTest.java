@@ -49,22 +49,21 @@ class MnSynchronizedTest {
     @Test
     void concurrentScenario(@TempDir final Path temp) throws InterruptedException {
         final Mono sync = new MnSynchronized(new MnJson(temp.resolve("foo/bar/baz.json")));
-        final int threads = 300;
+        final int threads = 30;
         final ExecutorService service = Executors.newFixedThreadPool(threads);
         final CountDownLatch latch = new CountDownLatch(1);
-        final Collection<Collection<Map<String, String>>> actual =
+        final Collection<Collection<Map<String, String>>> acum =
             Collections.synchronizedList(new ArrayList<>(0));
         for (int trds = 0; trds < threads; ++trds) {
-            final int curr = trds;
+            final Map<String, String> row = new HashMap<>(0);
+            row.put(Tojos.KEY, String.format("%d", trds));
             service.submit(
                 () -> {
                     latch.await();
-                    final Map<String, String> row = new HashMap<>(0);
-                    row.put(Tojos.KEY, String.format("%d", curr));
                     final Collection<Map<String, String>> rows = sync.read();
                     rows.add(row);
                     sync.write(rows);
-                    actual.add(rows);
+                    acum.add(rows);
                     return rows;
                 }
             );
@@ -72,10 +71,10 @@ class MnSynchronizedTest {
         latch.countDown();
         service.shutdown();
         assert service.awaitTermination(10L, TimeUnit.SECONDS);
-        final AtomicInteger real = new AtomicInteger();
-        actual.forEach(rows -> real.addAndGet(rows.size()));
+        final AtomicInteger actual = new AtomicInteger();
+        acum.forEach(rows -> actual.addAndGet(rows.size()));
         MatcherAssert.assertThat(
-            real.get(),
+            actual.get(),
             Matchers.equalTo(MnSynchronizedTest.expected(threads))
         );
     }
@@ -92,7 +91,7 @@ class MnSynchronizedTest {
             acm.add(rows);
         }
         final AtomicInteger res = new AtomicInteger();
-        acm.forEach(rs -> res.addAndGet(rs.size()));
+        acm.forEach(rows -> res.addAndGet(rows.size()));
         return res.get();
     }
 }

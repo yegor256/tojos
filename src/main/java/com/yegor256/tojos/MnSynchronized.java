@@ -38,9 +38,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public final class MnSynchronized implements Mono {
 
     /**
-     * The ReadWriteLock.
+     * The read-write lock.
      */
-    private final ReadWriteLock locks;
+    private final ReadWriteLock rwlck;
 
     /**
      * The wrapped mono.
@@ -54,31 +54,28 @@ public final class MnSynchronized implements Mono {
      */
     public MnSynchronized(final Mono mono) {
         this.wrapped = mono;
-        this.locks = new ReentrantReadWriteLock();
+        this.rwlck = new ReentrantReadWriteLock();
     }
 
     @Override
     public Collection<Map<String, String>> read() {
-        final Lock lock = this.locks.writeLock();
-        lock.lock();
+        final Lock rlck = this.rwlck.readLock();
+        rlck.lock();
         try {
             return this.wrapped.read();
         } finally {
-            lock.unlock();
+            rlck.unlock();
         }
     }
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        final Lock rlck = this.locks.readLock();
-        final Lock wlck = this.locks.writeLock();
+        final Lock wlck = this.rwlck.writeLock();
         wlck.lock();
-        rlck.lock();
         try {
             this.wrapped.write(rows);
         } finally {
             wlck.unlock();
-            rlck.unlock();
         }
     }
 
