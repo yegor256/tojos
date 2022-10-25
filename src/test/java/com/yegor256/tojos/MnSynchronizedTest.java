@@ -24,14 +24,16 @@
 package com.yegor256.tojos;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -45,31 +47,52 @@ import org.junit.jupiter.api.io.TempDir;
 class MnSynchronizedTest {
 
     @Test
-    void simpleConcurrentScenario(@TempDir final Path temp) throws InterruptedException {
+    void concurrentScenario(@TempDir final Path temp) throws InterruptedException {
         final Mono sync = new MnSynchronized(new MnJson(temp.resolve("foo/bar/baz.json")));
-        final Map<String, String> row = new HashMap<>(0);
-        row.put(Tojos.KEY, "hi!");
-        final int threads = 1000;
-        final Collection<Map<String, String>> rows = sync.read();
+        final int threads = 300;
         final ExecutorService service = Executors.newFixedThreadPool(threads);
         final CountDownLatch latch = new CountDownLatch(1);
-        for (int idx = 0; idx < threads; ++idx) {
-            final int curr = idx;
+        final Collection<Collection<Map<String, String>>> actual =
+            Collections.synchronizedList(new ArrayList<>(0));
+        for (int trds = 0; trds < threads; ++trds) {
+            final int curr = trds;
             service.submit(
-                (Callable<?>) () -> {
+                () -> {
                     latch.await();
+                    final Map<String, String> row = new HashMap<>(0);
+                    row.put(Tojos.KEY, String.format("%d", curr));
+                    final Collection<Map<String, String>> rows = sync.read();
                     rows.add(row);
                     sync.write(rows);
-                    return curr;
+                    actual.add(rows);
+                    return rows;
                 }
             );
         }
         latch.countDown();
         service.shutdown();
-        assert service.awaitTermination(1L, TimeUnit.MINUTES);
+        assert service.awaitTermination(10L, TimeUnit.SECONDS);
+        final AtomicInteger real = new AtomicInteger();
+        actual.forEach(rows -> real.addAndGet(rows.size()));
         MatcherAssert.assertThat(
-            sync.read().size(),
-            Matchers.equalTo(threads)
+            real.get(),
+            Matchers.equalTo(MnSynchronizedTest.expected(threads))
         );
+    }
+
+    private static Integer expected(final int range) {
+        final Collection<Collection<Map<String, String>>> acm = new ArrayList<>(0);
+        for (int idx = 0; idx < range; ++idx) {
+            final Collection<Map<String, String>> rows = new ArrayList<>(0);
+            for (int jdx = 0; jdx <= idx; ++jdx) {
+                final Map<String, String> row = new HashMap<>(0);
+                row.put(Tojos.KEY, String.format("%d", jdx));
+                rows.add(row);
+            }
+            acm.add(rows);
+        }
+        final AtomicInteger res = new AtomicInteger();
+        acm.forEach(rs -> res.addAndGet(rs.size()));
+        return res.get();
     }
 }
