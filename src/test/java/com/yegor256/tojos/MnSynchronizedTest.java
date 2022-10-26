@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -46,52 +47,76 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class MnSynchronizedTest {
 
+    static final int THREADS = 5;
+
+    private Mono sync;
+
+    private ExecutorService executors;
+
+    private CountDownLatch latch;
+
+    private Collection<Collection<Map<String, String>>> acum;
+
+    @BeforeEach
+    final void setUp(@TempDir final Path temp) {
+        this.sync = new MnSynchronized(
+            new MnJson(
+                temp.resolve("foo/bar/baz.json")
+            )
+        );
+        this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
+        this.latch = new CountDownLatch(1);
+        this.acum = Collections.synchronizedList(new ArrayList<>(0));
+    }
+
     @Test
-    void concurrentScenario(@TempDir final Path temp) throws InterruptedException {
-        final Mono sync = new MnSynchronized(new MnJson(temp.resolve("foo/bar/baz.json")));
-        final int threads = 30;
-        final ExecutorService service = Executors.newFixedThreadPool(threads);
-        final CountDownLatch latch = new CountDownLatch(1);
-        final Collection<Collection<Map<String, String>>> acum =
-            Collections.synchronizedList(new ArrayList<>(0));
-        for (int trds = 0; trds < threads; ++trds) {
+    final void concurrentScenario() throws InterruptedException {
+        for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
             final Map<String, String> row = new HashMap<>(0);
             row.put(Tojos.KEY, String.format("%d", trds));
-            service.submit(
+            this.executors.submit(
                 () -> {
-                    latch.await();
-                    final Collection<Map<String, String>> rows = sync.read();
+                    this.latch.await();
+                    final Collection<Map<String, String>> rows = this.sync.read();
                     rows.add(row);
-                    sync.write(rows);
-                    acum.add(rows);
+                    this.sync.write(rows);
+                    this.acum.add(rows);
                     return rows;
                 }
             );
         }
-        latch.countDown();
-        service.shutdown();
-        assert service.awaitTermination(10L, TimeUnit.SECONDS);
-        final AtomicInteger actual = new AtomicInteger();
-        acum.forEach(rows -> actual.addAndGet(rows.size()));
+        this.waitTillEnd();
+        final AtomicInteger actual = MnSynchronizedTest.totalSize(this.acum);
         MatcherAssert.assertThat(
             actual.get(),
-            Matchers.equalTo(MnSynchronizedTest.expected(threads))
+            Matchers.equalTo(MnSynchronizedTest.expected())
         );
     }
 
-    private static Integer expected(final int range) {
-        final Collection<Collection<Map<String, String>>> acm = new ArrayList<>(0);
-        for (int idx = 0; idx < range; ++idx) {
+    private void waitTillEnd() throws InterruptedException {
+        this.latch.countDown();
+        this.executors.shutdown();
+        assert this.executors.awaitTermination(10L, TimeUnit.SECONDS);
+    }
+
+    private static Integer expected() {
+        final Collection<Collection<Map<String, String>>> acum = new ArrayList<>(0);
+        for (int idx = 0; idx < MnSynchronizedTest.THREADS; ++idx) {
             final Collection<Map<String, String>> rows = new ArrayList<>(0);
             for (int jdx = 0; jdx <= idx; ++jdx) {
                 final Map<String, String> row = new HashMap<>(0);
                 row.put(Tojos.KEY, String.format("%d", jdx));
                 rows.add(row);
             }
-            acm.add(rows);
+            acum.add(rows);
         }
+        final AtomicInteger res = MnSynchronizedTest.totalSize(acum);
+        return res.get();
+    }
+
+    private static AtomicInteger totalSize(final Iterable<Collection<Map<String, String>>> acm) {
         final AtomicInteger res = new AtomicInteger();
         acm.forEach(rows -> res.addAndGet(rows.size()));
-        return res.get();
+        return res;
     }
 }
