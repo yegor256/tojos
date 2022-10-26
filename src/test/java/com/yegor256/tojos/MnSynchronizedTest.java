@@ -47,26 +47,41 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class MnSynchronizedTest {
 
+    /**
+     * Number of threads.
+     */
     static final int THREADS = 5;
 
-    private Mono sync;
+    /**
+     * The mono under test.
+     */
+    private Mono mono;
 
+    /**
+     * The executor service.
+     */
     private ExecutorService executors;
 
+    /**
+     * The latch.
+     */
     private CountDownLatch latch;
 
-    private Collection<Collection<Map<String, String>>> acum;
+    /**
+     * The accumulator that contains a changes in the under test mono.
+     */
+    private Collection<Collection<Map<String, String>>> accum;
 
     @BeforeEach
     final void setUp(@TempDir final Path temp) {
-        this.sync = new MnSynchronized(
+        this.mono = new MnSynchronized(
             new MnJson(
                 temp.resolve("foo/bar/baz.json")
             )
         );
         this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);
-        this.acum = Collections.synchronizedList(new ArrayList<>(0));
+        this.accum = Collections.synchronizedList(new ArrayList<>(0));
     }
 
     @Test
@@ -77,16 +92,16 @@ class MnSynchronizedTest {
             this.executors.submit(
                 () -> {
                     this.latch.await();
-                    final Collection<Map<String, String>> rows = this.sync.read();
+                    final Collection<Map<String, String>> rows = this.mono.read();
                     rows.add(row);
-                    this.sync.write(rows);
-                    this.acum.add(rows);
+                    this.mono.write(rows);
+                    this.accum.add(rows);
                     return rows;
                 }
             );
         }
         this.waitTillEnd();
-        final AtomicInteger actual = MnSynchronizedTest.totalSize(this.acum);
+        final AtomicInteger actual = MnSynchronizedTest.totalSize(this.accum);
         MatcherAssert.assertThat(
             actual.get(),
             Matchers.equalTo(MnSynchronizedTest.expected())
@@ -100,7 +115,7 @@ class MnSynchronizedTest {
     }
 
     private static Integer expected() {
-        final Collection<Collection<Map<String, String>>> acum = new ArrayList<>(0);
+        final Collection<Collection<Map<String, String>>> accum = new ArrayList<>(0);
         for (int idx = 0; idx < MnSynchronizedTest.THREADS; ++idx) {
             final Collection<Map<String, String>> rows = new ArrayList<>(0);
             for (int jdx = 0; jdx <= idx; ++jdx) {
@@ -108,15 +123,15 @@ class MnSynchronizedTest {
                 row.put(Tojos.KEY, String.format("%d", jdx));
                 rows.add(row);
             }
-            acum.add(rows);
+            accum.add(rows);
         }
-        final AtomicInteger res = MnSynchronizedTest.totalSize(acum);
+        final AtomicInteger res = MnSynchronizedTest.totalSize(accum);
         return res.get();
     }
 
-    private static AtomicInteger totalSize(final Iterable<Collection<Map<String, String>>> acm) {
+    private static AtomicInteger totalSize(final Iterable<Collection<Map<String, String>>> accm) {
         final AtomicInteger res = new AtomicInteger();
-        acm.forEach(rows -> res.addAndGet(rows.size()));
+        accm.forEach(rows -> res.addAndGet(rows.size()));
         return res;
     }
 }
