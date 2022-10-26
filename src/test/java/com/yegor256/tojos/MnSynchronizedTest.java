@@ -50,7 +50,7 @@ class MnSynchronizedTest {
     /**
      * Number of threads.
      */
-    static final int THREADS = 50;
+    static final int THREADS = 10;
 
     /**
      * The mono under test.
@@ -119,18 +119,14 @@ class MnSynchronizedTest {
         assert this.executors.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
+    /**
+     * The expected.
+     *
+     * @return Summary of arithmetic progression from 1 to number of threads
+     */
     private static Integer expectedSize() {
-        final Collection<Collection<Map<String, String>>> accum = new ArrayList<>(0);
-        for (int idx = 0; idx < MnSynchronizedTest.THREADS; ++idx) {
-            final Collection<Map<String, String>> rows = new ArrayList<>(0);
-            for (int jdx = 0; jdx <= idx; ++jdx) {
-                final Map<String, String> row = new HashMap<>(0);
-                row.put(Tojos.KEY, String.format("%d", jdx));
-                rows.add(row);
-            }
-            accum.add(rows);
-        }
-        return MnSynchronizedTest.totalSize(accum);
+        final int len = MnSynchronizedTest.THREADS;
+        return len + (len - 1) * len / 2;
     }
 
     private static Integer totalSize(final Iterable<Collection<Map<String, String>>> accm) {
