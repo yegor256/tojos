@@ -50,7 +50,7 @@ class MnSynchronizedTest {
     /**
      * Number of threads.
      */
-    static final int THREADS = 5;
+    static final int THREADS = 50;
 
     /**
      * The mono under test.
@@ -92,20 +92,25 @@ class MnSynchronizedTest {
             this.executors.submit(
                 () -> {
                     this.latch.await();
-                    final Collection<Map<String, String>> rows = this.mono.read();
-                    rows.add(row);
-                    this.mono.write(rows);
+                    final Collection<Map<String, String>> rows = this.modifyMono(row);
                     this.accum.add(rows);
                     return rows;
                 }
             );
         }
         this.waitTillEnd();
-        final AtomicInteger actual = MnSynchronizedTest.totalSize(this.accum);
+        final AtomicInteger size = MnSynchronizedTest.totalSize(this.accum);
         MatcherAssert.assertThat(
-            actual.get(),
-            Matchers.equalTo(MnSynchronizedTest.expected())
+            size.get(),
+            Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
+    }
+
+    private Collection<Map<String, String>> modifyMono(final Map<String, String> row) {
+        final Collection<Map<String, String>> rows = this.mono.read();
+        rows.add(row);
+        this.mono.write(rows);
+        return rows;
     }
 
     private void waitTillEnd() throws InterruptedException {
@@ -114,7 +119,7 @@ class MnSynchronizedTest {
         assert this.executors.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
-    private static Integer expected() {
+    private static Integer expectedSize() {
         final Collection<Collection<Map<String, String>>> accum = new ArrayList<>(0);
         for (int idx = 0; idx < MnSynchronizedTest.THREADS; ++idx) {
             final Collection<Map<String, String>> rows = new ArrayList<>(0);
