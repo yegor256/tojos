@@ -99,9 +99,9 @@ class MnSynchronizedTest {
             );
         }
         this.waitTillEnd();
-        final AtomicInteger size = MnSynchronizedTest.totalSize(this.accum);
+        final Integer size = MnSynchronizedTest.totalSize(this.accum);
         MatcherAssert.assertThat(
-            size.get(),
+            size,
             Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
     }
@@ -130,13 +130,12 @@ class MnSynchronizedTest {
             }
             accum.add(rows);
         }
-        final AtomicInteger res = MnSynchronizedTest.totalSize(accum);
-        return res.get();
+        return MnSynchronizedTest.totalSize(accum);
     }
 
-    private static AtomicInteger totalSize(final Iterable<Collection<Map<String, String>>> accm) {
+    private static Integer totalSize(final Iterable<Collection<Map<String, String>>> accm) {
         final AtomicInteger res = new AtomicInteger();
         accm.forEach(rows -> res.addAndGet(rows.size()));
-        return res;
+        return res.get();
     }
 }
