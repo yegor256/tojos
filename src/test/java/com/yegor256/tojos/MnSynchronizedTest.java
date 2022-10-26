@@ -84,6 +84,13 @@ class MnSynchronizedTest {
         this.accum = Collections.synchronizedList(new ArrayList<>(0));
     }
 
+    /**
+     * Thread-safety test.
+     * In this test example, we compare the number of changes in MnSynchronized mono.
+     * It should be equal to the sum of the arithmetic progression over the number of threads.
+     *
+     * @throws InterruptedException When fails
+     */
     @Test
     final void concurrentScenario() throws InterruptedException {
         for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
