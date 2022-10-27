@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,7 +51,7 @@ class MnSynchronizedTest {
     /**
      * Number of threads.
      */
-    static final int THREADS = 10;
+    static final int THREADS = 3;
 
     /**
      * The mono under test.
@@ -72,16 +73,17 @@ class MnSynchronizedTest {
      */
     private Collection<Collection<Map<String, String>>> accum;
 
+    /**
+     * The row.
+     */
+    private Map<String, String> row;
     @BeforeEach
     final void setUp(@TempDir final Path temp) {
-        this.mono = new MnSynchronized(
-            new MnJson(
-                temp.resolve("foo/bar/baz.json")
-            )
-        );
-        this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
+        this.mono = new MnJson(temp.resolve("foo/bar/baz.json"));
         this.latch = new CountDownLatch(1);
+        this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.accum = Collections.synchronizedList(new ArrayList<>(0));
+        this.row = new HashMap<>(0);
     }
 
     /**
@@ -94,14 +96,15 @@ class MnSynchronizedTest {
     @Test
     final void concurrentScenario() throws InterruptedException {
         for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
-            final Map<String, String> row = new HashMap<>(0);
-            row.put(Tojos.KEY, String.format("%d", trds));
+            this.row.put(Tojos.KEY, String.format("%d", trds));
             this.executors.submit(
-                () -> {
+                (Callable<?>) () -> {
                     this.latch.await();
-                    final Collection<Map<String, String>> rows = this.modifyMono(row);
+                    final Collection<Map<String, String>> rows = this.mono.read();
+                    rows.add(this.row);
+                    this.mono.write(rows);
                     this.accum.add(rows);
-                    return rows;
+                    return this.latch;
                 }
             );
         }
@@ -111,13 +114,6 @@ class MnSynchronizedTest {
             size,
             Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
-    }
-
-    private Collection<Map<String, String>> modifyMono(final Map<String, String> row) {
-        final Collection<Map<String, String>> rows = this.mono.read();
-        rows.add(row);
-        this.mono.write(rows);
-        return rows;
     }
 
     private void waitTillEnd() throws InterruptedException {

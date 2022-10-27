@@ -26,7 +26,6 @@ package com.yegor256.tojos;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -59,23 +58,21 @@ public final class MnSynchronized implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        final Lock rlck = this.rwlck.readLock();
-        rlck.lock();
+        this.rwlck.readLock().lock();
         try {
             return this.wrapped.read();
         } finally {
-            rlck.unlock();
+            this.rwlck.readLock().unlock();
         }
     }
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        final Lock wlck = this.rwlck.writeLock();
-        wlck.lock();
+        this.rwlck.writeLock().lock();
         try {
             this.wrapped.write(rows);
         } finally {
-            wlck.unlock();
+            this.rwlck.writeLock().unlock();
         }
     }
 
