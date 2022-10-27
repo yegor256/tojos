@@ -71,7 +71,7 @@ class MnSynchronizedTest {
     /**
      * The accumulator that contains a changes in the under test mono.
      */
-    private Collection<Collection<Map<String, String>>> accum;
+    private Collection<Collection<Map<String, String>>> changes;
 
     /**
      * The row.
@@ -83,7 +83,7 @@ class MnSynchronizedTest {
         this.mono = new MnJson(temp.resolve("foo/bar/baz.json"));
         this.latch = new CountDownLatch(1);
         this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
-        this.accum = Collections.synchronizedList(new ArrayList<>(0));
+        this.changes = Collections.synchronizedList(new ArrayList<>(0));
         this.row = Collections.synchronizedMap(new HashMap<>(0));
     }
 
@@ -104,15 +104,14 @@ class MnSynchronizedTest {
                     final Collection<Map<String, String>> rows = this.mono.read();
                     rows.add(this.row);
                     this.mono.write(rows);
-                    this.accum.add(rows);
+                    this.changes.add(rows);
                     return this.latch;
                 }
             );
         }
         this.waitTillEnd();
-        final Integer size = MnSynchronizedTest.totalSize(this.accum);
         MatcherAssert.assertThat(
-            size,
+            MnSynchronizedTest.totalSize(this.changes),
             Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
     }
