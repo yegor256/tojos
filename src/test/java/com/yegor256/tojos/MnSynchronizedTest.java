@@ -35,6 +35,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +55,12 @@ class MnSynchronizedTest {
      * Number of threads.
      */
     static final int THREADS = 5;
+
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER =
+        Logger.getLogger(MnSynchronizedTest.class.getName());
 
     /**
      * The mono under test.
@@ -98,22 +107,36 @@ class MnSynchronizedTest {
     final void concurrentScenario() throws InterruptedException {
         for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
             this.row.put(Tojos.KEY, String.valueOf(trds));
-            this.executors.submit(
-                (Callable<?>) () -> {
-                    this.latch.await();
-                    final Collection<Map<String, String>> rows = this.mono.read();
-                    rows.add(this.row);
-                    this.mono.write(rows);
-                    this.changes.add(rows);
-                    return this.latch;
-                }
-            );
+            this.executors.submit(this.testCase(trds));
         }
         this.waitTillEnd();
         MatcherAssert.assertThat(
             MnSynchronizedTest.totalSize(this.changes),
             Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
+    }
+
+    private Callable<?> testCase(final int current) {
+        final AtomicReference<Collection<Map<String, String>>> rows = new AtomicReference<>();
+        return () -> {
+            try {
+                this.latch.await();
+                rows.set(this.mono.read());
+                rows.get().add(this.row);
+                this.mono.write(rows.get());
+                this.changes.add(rows.get());
+                return this.latch;
+            } finally {
+                MnSynchronizedTest.LOGGER.log(
+                    Level.INFO,
+                    String.format(
+                        "Finished at thread %d, written %d rows",
+                        current,
+                        rows.get().size()
+                    )
+                );
+            }
+        };
     }
 
     private void waitTillEnd() throws InterruptedException {
