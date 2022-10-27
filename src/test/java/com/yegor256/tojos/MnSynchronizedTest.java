@@ -77,18 +77,19 @@ class MnSynchronizedTest {
      * The row.
      */
     private Map<String, String> row;
+
     @BeforeEach
     final void setUp(@TempDir final Path temp) {
         this.mono = new MnJson(temp.resolve("foo/bar/baz.json"));
         this.latch = new CountDownLatch(1);
         this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.accum = Collections.synchronizedList(new ArrayList<>(0));
-        this.row = new HashMap<>(0);
+        this.row = Collections.synchronizedMap(new HashMap<>(0));
     }
 
     /**
      * Thread-safety test.
-     * In this test example, we compare the number of changes in MnSynchronized mono.
+     * In this test, we check the number of changes in MnSynchronized mono.
      * It should be equal to the sum of the arithmetic progression over the number of threads.
      *
      * @throws InterruptedException When fails
