@@ -26,8 +26,7 @@ package com.yegor256.tojos;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class is thread-safe.
@@ -39,7 +38,7 @@ public final class MnSynchronized implements Mono {
     /**
      * The read-write lock.
      */
-    private final ReadWriteLock rwlck;
+    private final ReentrantLock reentrant;
 
     /**
      * The wrapped mono.
@@ -53,26 +52,26 @@ public final class MnSynchronized implements Mono {
      */
     public MnSynchronized(final Mono mono) {
         this.wrapped = mono;
-        this.rwlck = new ReentrantReadWriteLock();
+        this.reentrant = new ReentrantLock();
     }
 
     @Override
     public Collection<Map<String, String>> read() {
-        this.rwlck.readLock().lock();
+        this.reentrant.lock();
         try {
             return this.wrapped.read();
         } finally {
-            this.rwlck.readLock().unlock();
+            this.reentrant.unlock();
         }
     }
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        this.rwlck.writeLock().lock();
+        this.reentrant.lock();
         try {
             this.wrapped.write(rows);
         } finally {
-            this.rwlck.writeLock().unlock();
+            this.reentrant.unlock();
         }
     }
 

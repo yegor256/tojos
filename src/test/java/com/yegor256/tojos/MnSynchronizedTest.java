@@ -51,7 +51,7 @@ class MnSynchronizedTest {
     /**
      * Number of threads.
      */
-    static final int THREADS = 3;
+    static final int THREADS = 5;
 
     /**
      * The mono under test.
@@ -80,8 +80,8 @@ class MnSynchronizedTest {
 
     @BeforeEach
     final void setUp(@TempDir final Path temp) {
-        this.mono = new MnJson(temp.resolve("foo/bar/baz.json"));
         this.latch = new CountDownLatch(1);
+        this.mono = new MnSynchronized(new MnJson(temp.resolve("foo/bar/baz.json")));
         this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.changes = Collections.synchronizedList(new ArrayList<>(0));
         this.row = Collections.synchronizedMap(new HashMap<>(0));
@@ -97,7 +97,7 @@ class MnSynchronizedTest {
     @Test
     final void concurrentScenario() throws InterruptedException {
         for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
-            this.row.put(Tojos.KEY, String.format("%d", trds));
+            this.row.put(Tojos.KEY, String.valueOf(trds));
             this.executors.submit(
                 (Callable<?>) () -> {
                     this.latch.await();
