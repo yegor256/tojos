@@ -23,26 +23,22 @@
  */
 package com.yegor256.tojos;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Test case for {@link MnSynchronized}.
@@ -57,10 +53,9 @@ class MnSynchronizedTest {
     static final int THREADS = 5;
 
     /**
-     * The logger.
+     * The accumulator that contains a changes in the under test mono.
      */
-    private static final Logger LOGGER =
-        Logger.getLogger(MnSynchronizedTest.class.getName());
+    private static Collection<Collection<Map<String, String>>> changes;
 
     /**
      * The mono under test.
@@ -68,19 +63,14 @@ class MnSynchronizedTest {
     private Mono mono;
 
     /**
-     * The executor service.
+     * The executor.
      */
-    private ExecutorService executors;
+    private ThreadPoolExecutor executor;
 
     /**
-     * The latch.
+     * The blocking queue.
      */
-    private CountDownLatch latch;
-
-    /**
-     * The accumulator that contains a changes in the under test mono.
-     */
-    private Collection<Collection<Map<String, String>>> changes;
+    private BlockingQueue<Runnable> queue;
 
     /**
      * The row.
@@ -88,12 +78,19 @@ class MnSynchronizedTest {
     private Map<String, String> row;
 
     @BeforeEach
-    final void setUp(@TempDir final Path temp) {
-        this.latch = new CountDownLatch(1);
-        this.mono = new MnSynchronized(new MnJson(temp.resolve("foo/bar/baz.json")));
-        this.executors = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
-        this.changes = Collections.synchronizedList(new ArrayList<>(0));
+    final void setUp() {
+        this.mono = new MnSynchronized(new MnMemory());
+        MnSynchronizedTest.changes = Collections.synchronizedList(new ArrayList<>(0));
         this.row = Collections.synchronizedMap(new HashMap<>(0));
+        this.queue = new LinkedBlockingQueue<>(MnSynchronizedTest.THREADS);
+        this.executor = new ThreadPoolExecutor(
+            MnSynchronizedTest.THREADS,
+            MnSynchronizedTest.THREADS,
+            5L,
+            TimeUnit.SECONDS,
+            this.queue,
+            new ThreadPoolExecutor.CallerRunsPolicy()
+        );
     }
 
     /**
@@ -105,50 +102,25 @@ class MnSynchronizedTest {
      */
     @Test
     final void concurrentScenario() throws InterruptedException {
+        this.executor.prestartAllCoreThreads();
         for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
             this.row.put(Tojos.KEY, String.valueOf(trds));
-            this.executors.submit(this.testCase(trds));
+            if (!this.queue.offer(new MnSynchronizedTest.TestTask(trds, this.mono, this.row))) {
+                throw new IllegalStateException("Can't put runnable test");
+            }
         }
-        this.waitTillEnd();
+        this.executor.shutdown();
+        assert this.executor.awaitTermination(5L, TimeUnit.SECONDS);
         MatcherAssert.assertThat(
-            MnSynchronizedTest.totalSize(this.changes),
+            MnSynchronizedTest.totalSize(MnSynchronizedTest.changes),
             Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
-    }
-
-    private Callable<?> testCase(final int current) {
-        final AtomicReference<Collection<Map<String, String>>> rows = new AtomicReference<>();
-        return () -> {
-            try {
-                this.latch.await();
-                rows.set(this.mono.read());
-                rows.get().add(this.row);
-                this.mono.write(rows.get());
-                this.changes.add(rows.get());
-                return this.latch;
-            } finally {
-                MnSynchronizedTest.LOGGER.log(
-                    Level.INFO,
-                    String.format(
-                        "Finished at thread %d, written %d rows",
-                        current,
-                        rows.get().size()
-                    )
-                );
-            }
-        };
-    }
-
-    private void waitTillEnd() throws InterruptedException {
-        this.latch.countDown();
-        this.executors.shutdown();
-        assert this.executors.awaitTermination(10L, TimeUnit.SECONDS);
     }
 
     /**
      * The expected.
      *
-     * @return Summary of arithmetic progression from 1 to number of threads
+     * @return Sum of arithmetic progression from 1 to number of threads
      */
     private static Integer expectedSize() {
         final int len = MnSynchronizedTest.THREADS;
@@ -159,5 +131,64 @@ class MnSynchronizedTest {
         final AtomicInteger res = new AtomicInteger();
         accm.forEach(rows -> res.addAndGet(rows.size()));
         return res.get();
+    }
+
+    /**
+     * The test task to concurrent read and write operations.
+     *
+     * @since 0.3.0
+     */
+    private static final class TestTask implements Runnable {
+
+        /**
+         * The logger.
+         */
+        private static final Logger LOGGER =
+            Logger.getLogger(MnSynchronizedTest.class.getName());
+
+        /**
+         * The id of thread.
+         */
+        private final int idx;
+
+        /**
+         * Local mono.
+         */
+        private final Mono mono;
+
+        /**
+         * Row to write into mono.
+         */
+        private final Map<String, String> row;
+
+        /**
+         * Ctor.
+         *
+         * @param idx The id
+         * @param mno The mono
+         * @param row The row
+         */
+        TestTask(final int idx, final Mono mno, final Map<String, String> row) {
+            this.idx = idx;
+            this.mono = mno;
+            this.row = row;
+        }
+
+        @Override
+        public void run() {
+            this.row.put(Tojos.KEY, String.valueOf(this.idx));
+            final Collection<Map<String, String>> rows = this.mono.read();
+            rows.add(this.row);
+            this.mono.write(rows);
+            MnSynchronizedTest.changes.add(rows);
+            MnSynchronizedTest.TestTask.LOGGER.log(
+                Level.INFO,
+                String.format(
+                    "Thread %d, written %d rows",
+                    this.idx,
+                    rows.size()
+                )
+            );
+        }
     }
 }
