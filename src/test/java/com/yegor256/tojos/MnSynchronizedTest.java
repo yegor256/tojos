@@ -176,7 +176,6 @@ class MnSynchronizedTest {
 
         @Override
         public void run() {
-            this.row.put(Tojos.KEY, String.valueOf(this.idx));
             final Collection<Map<String, String>> rows = this.mono.read();
             rows.add(this.row);
             this.mono.write(rows);
