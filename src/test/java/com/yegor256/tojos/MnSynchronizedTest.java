@@ -23,9 +23,7 @@
  */
 package com.yegor256.tojos;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -53,9 +51,9 @@ class MnSynchronizedTest {
     static final int THREADS = 5;
 
     /**
-     * The accumulator that contains a changes in the under test mono.
+     * The number of changes in under-test mono.
      */
-    private static Collection<Collection<Map<String, String>>> changes;
+    private final AtomicInteger actual = new AtomicInteger(0);
 
     /**
      * The mono under test.
@@ -72,16 +70,9 @@ class MnSynchronizedTest {
      */
     private BlockingQueue<Runnable> queue;
 
-    /**
-     * The row.
-     */
-    private Map<String, String> row;
-
     @BeforeEach
     final void setUp() {
         this.mono = new MnSynchronized(new MnMemory());
-        MnSynchronizedTest.changes = Collections.synchronizedList(new ArrayList<>(0));
-        this.row = Collections.synchronizedMap(new HashMap<>(0));
         this.queue = new LinkedBlockingQueue<>(MnSynchronizedTest.THREADS);
         this.executor = new ThreadPoolExecutor(
             MnSynchronizedTest.THREADS,
@@ -104,15 +95,18 @@ class MnSynchronizedTest {
     final void concurrentScenario() throws InterruptedException {
         this.executor.prestartAllCoreThreads();
         for (int trds = 0; trds < MnSynchronizedTest.THREADS; ++trds) {
-            this.row.put(Tojos.KEY, String.valueOf(trds));
-            if (!this.queue.offer(new MnSynchronizedTest.TestTask(trds, this.mono, this.row))) {
-                throw new IllegalStateException("Can't put runnable test");
-            }
+            this.queue.offer(
+                new MnSynchronizedTest.TestTask(
+                    trds,
+                    this.mono,
+                    this.actual
+                )
+            );
         }
         this.executor.shutdown();
         assert this.executor.awaitTermination(5L, TimeUnit.SECONDS);
         MatcherAssert.assertThat(
-            MnSynchronizedTest.totalSize(MnSynchronizedTest.changes),
+            this.actual.get(),
             Matchers.equalTo(MnSynchronizedTest.expectedSize())
         );
     }
@@ -125,12 +119,6 @@ class MnSynchronizedTest {
     private static Integer expectedSize() {
         final int len = MnSynchronizedTest.THREADS;
         return len + (len - 1) * len / 2;
-    }
-
-    private static Integer totalSize(final Iterable<Collection<Map<String, String>>> accm) {
-        final AtomicInteger res = new AtomicInteger();
-        accm.forEach(rows -> res.addAndGet(rows.size()));
-        return res.get();
     }
 
     /**
@@ -162,24 +150,35 @@ class MnSynchronizedTest {
         private final Map<String, String> row;
 
         /**
+         * The counter.
+         */
+        private final AtomicInteger counter;
+
+        /**
          * Ctor.
          *
          * @param idx The id
          * @param mno The mono
-         * @param row The row
+         * @param cntr The counter
          */
-        TestTask(final int idx, final Mono mno, final Map<String, String> row) {
+        TestTask(
+            final int idx,
+            final Mono mno,
+            final AtomicInteger cntr
+        ) {
             this.idx = idx;
             this.mono = mno;
-            this.row = row;
+            this.row = new HashMap<>(0);
+            this.counter = cntr;
         }
 
         @Override
         public void run() {
+            this.row.put(Tojos.KEY, String.valueOf(this.idx));
             final Collection<Map<String, String>> rows = this.mono.read();
             rows.add(this.row);
             this.mono.write(rows);
-            MnSynchronizedTest.changes.add(rows);
+            this.counter.addAndGet(rows.size());
             MnSynchronizedTest.TestTask.LOGGER.log(
                 Level.INFO,
                 String.format(
