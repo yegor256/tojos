@@ -60,11 +60,6 @@ class MnSynchronizedTest {
     private ExecutorService executor;
 
     /**
-     * An additional rows.
-     */
-    private Collection<Map<String, String>> additional;
-
-    /**
      * The latch.
      */
     private CountDownLatch latch;
@@ -74,7 +69,6 @@ class MnSynchronizedTest {
         this.shared = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
         this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);
-        this.additional = MnSynchronizedTest.rowsByThreads();
     }
 
     @Test
@@ -84,7 +78,7 @@ class MnSynchronizedTest {
                 () -> {
                     this.latch.await();
                     final Collection<Map<String, String>> increased = this.shared.read();
-                    increased.addAll(this.additional);
+                    increased.addAll(MnSynchronizedTest.rowsByThreads());
                     this.shared.write(increased);
                     return this.shared.read().size();
                 }
