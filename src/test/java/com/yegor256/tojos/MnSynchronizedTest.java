@@ -62,6 +62,9 @@ class MnSynchronizedTest {
      */
     private ExecutorService executor;
 
+    /**
+     * The latch.
+     */
     private CountDownLatch latch;
 
     @BeforeEach
@@ -71,22 +74,15 @@ class MnSynchronizedTest {
         this.latch = new CountDownLatch(1);
     }
 
-    /**
-     * Thread-safety test.
-     * In this test, we check the number of changes in MnSynchronized mono.
-     * It should be equal to the sum of the arithmetic progression over the number of threads.
-     *
-     * @throws InterruptedException When fails
-     */
     @Test
     final void concurrentScenario() throws InterruptedException {
-        final Collection<Map<String, String>> addition = rowsByThreads();
+        final Collection<Map<String, String>> additional = rowsByThreads();
         for (int trds = 1; trds <= MnSynchronizedTest.THREADS; ++trds) {
             this.executor.submit(
                 () -> {
                     this.latch.await();
                     final Collection<Map<String, String>> increased = this.shared.read();
-                    increased.addAll(addition);
+                    increased.addAll(additional);
                     this.shared.write(increased);
                     return this.shared.read().size();
                 }
