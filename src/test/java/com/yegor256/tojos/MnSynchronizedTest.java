@@ -68,14 +68,14 @@ class MnSynchronizedTest {
 
     @BeforeEach
     final void setUp(@TempDir final Path temp) {
-        this.shared = new MnSynchronized(new MnJson(temp.resolve("/bar/baz/a.json")));
+        this.shared = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
         this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);
         this.additional = rowsByThreads();
     }
 
     @Test
-    final void concurrentScenario() throws InterruptedException {
+    final void writesConcurrently() throws InterruptedException {
         for (int trds = 1; trds <= MnSynchronizedTest.THREADS; ++trds) {
             this.executor.submit(
                 () -> {
@@ -92,7 +92,9 @@ class MnSynchronizedTest {
         assert this.executor.awaitTermination(1, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
             this.shared.read().size(),
-            Matchers.equalTo(25)
+            Matchers.equalTo(
+                MnSynchronizedTest.THREADS * MnSynchronizedTest.THREADS
+            )
         );
     }
 
@@ -102,12 +104,12 @@ class MnSynchronizedTest {
      * @return Collection of rows
      */
     private static Collection<Map<String, String>> rowsByThreads() {
-        final Map<String, String> row = new HashMap<>(0);
-        row.put(Tojos.KEY, String.valueOf(MnSynchronizedTest.THREADS));
-        final Collection<Map<String, String>> res = new ArrayList<>(MnSynchronizedTest.THREADS);
-        for (int idx = 0; idx < MnSynchronizedTest.THREADS; ++idx) {
-            res.add(row);
-        }
-        return res;
+        return Collections.nCopies(
+            MnSynchronizedTest.THREADS,
+            Collections.singletonMap(
+                Tojos.KEY,
+                String.valueOf(MnSynchronizedTest.THREADS)
+            )
+        );
     }
 }
