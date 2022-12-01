@@ -74,7 +74,7 @@ class MnSynchronizedTest {
         this.shared = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
         this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);
-        this.additional = rowsByThreads();
+        this.additional = MnSynchronizedTest.rowsByThreads();
     }
 
     @Test
@@ -94,10 +94,8 @@ class MnSynchronizedTest {
         this.executor.shutdown();
         assert this.executor.awaitTermination(1L, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
-            this.shared.read().size(),
-            Matchers.equalTo(
-                MnSynchronizedTest.THREADS * MnSynchronizedTest.THREADS
-            )
+            this.shared.read().containsAll(MnSynchronizedTest.rowsByThreads()),
+            Matchers.equalTo(true)
         );
     }
 
