@@ -89,7 +89,7 @@ class MnSynchronizedTest {
         }
         this.latch.countDown();
         this.executor.shutdown();
-        assert this.executor.awaitTermination(30, TimeUnit.SECONDS);
+        assert this.executor.awaitTermination(1, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
             this.shared.read().size(),
             Matchers.equalTo(25)
