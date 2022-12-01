@@ -42,12 +42,6 @@ import org.junit.jupiter.api.io.TempDir;
 class MnSynchronizedTest {
 
     /**
-     * The logger.
-     */
-    private static final Logger LOGGER =
-            Logger.getLogger(MnSynchronizedTest.class.getName());
-
-    /**
      * Number of threads.
      */
     static final int THREADS = 5;
@@ -63,6 +57,11 @@ class MnSynchronizedTest {
     private ExecutorService executor;
 
     /**
+     * An additional rows.
+     */
+    private Collection<Map<String, String>> additional;
+
+    /**
      * The latch.
      */
     private CountDownLatch latch;
@@ -72,23 +71,25 @@ class MnSynchronizedTest {
         this.shared = new MnSynchronized(new MnJson(temp.resolve("/bar/baz/a.json")));
         this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);
+        this.additional = rowsByThreads();
     }
 
     @Test
     final void concurrentScenario() throws InterruptedException {
-        final Collection<Map<String, String>> additional = rowsByThreads();
         for (int trds = 1; trds <= MnSynchronizedTest.THREADS; ++trds) {
             this.executor.submit(
                 () -> {
                     this.latch.await();
                     final Collection<Map<String, String>> increased = this.shared.read();
-                    increased.addAll(additional);
+                    increased.addAll(this.additional);
                     this.shared.write(increased);
                     return this.shared.read().size();
                 }
             );
         }
         this.latch.countDown();
+        System.out.println("latch");
+        this.executor.shutdown();
         assert this.executor.awaitTermination(30, TimeUnit.SECONDS);
         MatcherAssert.assertThat(
             this.shared.read().size(),
