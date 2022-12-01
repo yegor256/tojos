@@ -24,10 +24,13 @@
 package com.yegor256.tojos;
 
 import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.logging.Logger;
-
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +92,7 @@ class MnSynchronizedTest {
         }
         this.latch.countDown();
         this.executor.shutdown();
-        assert this.executor.awaitTermination(1, TimeUnit.MINUTES);
+        assert this.executor.awaitTermination(1L, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
             this.shared.read().size(),
             Matchers.equalTo(
