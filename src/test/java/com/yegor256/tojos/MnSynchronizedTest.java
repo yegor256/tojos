@@ -99,7 +99,7 @@ class MnSynchronizedTest {
     }
 
     /**
-     * The rows to write.
+     * The rows which size equal to number of threads.
      *
      * @return Collection of rows
      */
