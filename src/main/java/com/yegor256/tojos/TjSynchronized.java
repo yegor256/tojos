@@ -25,6 +25,8 @@ package com.yegor256.tojos;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 
 /**
@@ -42,24 +44,38 @@ public final class TjSynchronized implements Tojos {
     private final Tojos wrapped;
 
     /**
+     * The read-write lock.
+     */
+    private final ReadWriteLock rwl;
+
+    /**
      * Ctor.
      *
      * @param tojos The tojos
      */
     public TjSynchronized(final Tojos tojos) {
         this.wrapped = tojos;
+        this.rwl = new ReentrantReadWriteLock();
     }
 
     @Override
     public Tojo add(final String name) {
-        synchronized (this.wrapped) {
+        this.rwl.writeLock().lock();
+        try {
             return this.wrapped.add(name);
+        } finally {
+            this.rwl.writeLock().unlock();
         }
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        return this.wrapped.select(filter);
+        this.rwl.readLock().lock();
+        try {
+            return this.wrapped.select(filter);
+        } finally {
+            this.rwl.readLock().unlock();
+        }
     }
 
     @Override
