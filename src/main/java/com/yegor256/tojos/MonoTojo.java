@@ -84,7 +84,7 @@ final class MonoTojo implements Tojo {
 
     @Override
     public Tojo set(final String key, final Object value) {
-//        synchronized (mono) {
+        synchronized (mono) {
             if (key.equals(Tojos.KEY)) {
                 throw new IllegalArgumentException(
                     String.format(
@@ -100,6 +100,6 @@ final class MonoTojo implements Tojo {
             row.put(key, value.toString());
             this.mono.write(rows);
             return this;
-//        }
+        }
     }
 }
