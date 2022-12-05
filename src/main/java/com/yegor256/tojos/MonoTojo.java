@@ -84,7 +84,7 @@ final class MonoTojo implements Tojo {
 
     @Override
     public Tojo set(final String key, final Object value) {
-        synchronized (mono) {
+        synchronized (this.mono) {
             if (key.equals(Tojos.KEY)) {
                 throw new IllegalArgumentException(
                     String.format(
