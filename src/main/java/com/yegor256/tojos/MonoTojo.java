@@ -84,20 +84,22 @@ final class MonoTojo implements Tojo {
 
     @Override
     public Tojo set(final String key, final Object value) {
-        if (key.equals(Tojos.KEY)) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "It's illegal to use #set() to change '%s' attribute",
-                    Tojos.KEY
-                )
-            );
+        synchronized (this.mono) {
+            if (key.equals(Tojos.KEY)) {
+                throw new IllegalArgumentException(
+                    String.format(
+                        "It's illegal to use #set() to change '%s' attribute",
+                        Tojos.KEY
+                    )
+                );
+            }
+            final Collection<Map<String, String>> rows = this.mono.read();
+            final Map<String, String> row = rows.stream().filter(
+                r -> r.get(Tojos.KEY).equals(this.name)
+            ).findFirst().get();
+            row.put(key, value.toString());
+            this.mono.write(rows);
+            return this;
         }
-        final Collection<Map<String, String>> rows = this.mono.read();
-        final Map<String, String> row = rows.stream().filter(
-            r -> r.get(Tojos.KEY).equals(this.name)
-        ).findFirst().get();
-        row.put(key, value.toString());
-        this.mono.write(rows);
-        return this;
     }
 }
