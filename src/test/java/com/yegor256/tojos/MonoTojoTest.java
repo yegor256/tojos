@@ -26,11 +26,15 @@ package com.yegor256.tojos;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.cactoos.Scalar;
+import org.cactoos.experimental.Threads;
+import org.cactoos.number.SumOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +51,7 @@ class MonoTojoTest {
     /**
      * Number of threads.
      */
-    private static final int N_THREADS = 10;
+    private static final int N_THREADS = Runtime.getRuntime().availableProcessors();
 
     /**
      * Tasks executor - emulates concurrent environment.
@@ -62,7 +66,7 @@ class MonoTojoTest {
     /**
      * Shared mono.
      */
-    private MnJson mono;
+    private Mono mono;
 
     @BeforeEach
     void setUp(@TempDir final Path temp) {
@@ -92,5 +96,33 @@ class MonoTojoTest {
         for (final Map<String, String> tojo : result) {
             MatcherAssert.assertThat(tojo.entrySet(), Matchers.hasSize(2));
         }
+    }
+
+    @Test
+    void readsAndWritesConcurrentlyWithHighFrequency() {
+        MatcherAssert.assertThat(
+            new SumOf(
+                new Threads<>(
+                    MonoTojoTest.N_THREADS,
+                    IntStream.range(0, MonoTojoTest.N_THREADS)
+                        .mapToObj(String::valueOf)
+                        .map(this.tojos::add)
+                        .map(
+                            tojo -> (Scalar<Integer>) () -> {
+                                final String key = "uuid";
+                                final String uuid = UUID.randomUUID().toString();
+                                tojo.set(key, uuid);
+                                tojo.get(key);
+                                tojo.set(key, uuid);
+                                tojo.get(key);
+                                tojo.set(key, uuid);
+                                tojo.get(key);
+                                return 1;
+                            }
+                        ).collect(Collectors.toList())
+                )
+            ),
+            Matchers.equalTo(MonoTojoTest.N_THREADS)
+        );
     }
 }
