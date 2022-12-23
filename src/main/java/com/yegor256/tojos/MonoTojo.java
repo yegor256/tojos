@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * One tojo in a {@link Mono}.
  *
- * The class is NOT thread-safe.
+ * The class is thread-safe.
  *
  * @since 0.3.0
  */
@@ -58,28 +58,32 @@ final class MonoTojo implements Tojo {
 
     @Override
     public boolean exists(final String key) {
-        return this.mono.read().stream()
-            .filter(row -> row.get(Tojos.KEY).equals(this.name))
-            .findFirst()
-            .get()
-            .containsKey(key);
+        synchronized (this.mono) {
+            return this.mono.read().stream()
+                .filter(row -> row.get(Tojos.KEY).equals(this.name))
+                .findFirst()
+                .get()
+                .containsKey(key);
+        }
     }
 
     @Override
     public String get(final String key) {
-        final String value = this.mono.read().stream()
-            .filter(row -> row.get(Tojos.KEY).equals(this.name))
-            .findFirst()
-            .get()
-            .get(key);
-        if (value == null) {
-            throw new IllegalStateException(
-                String.format(
-                    "There is no '%s' key in the tojo", key
-                )
-            );
+        synchronized (this.mono) {
+            final String value = this.mono.read().stream()
+                .filter(row -> row.get(Tojos.KEY).equals(this.name))
+                .findFirst()
+                .get()
+                .get(key);
+            if (value == null) {
+                throw new IllegalStateException(
+                    String.format(
+                        "There is no '%s' key in the tojo", key
+                    )
+                );
+            }
+            return value;
         }
-        return value;
     }
 
     @Override
