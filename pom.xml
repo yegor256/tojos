@@ -122,6 +122,12 @@ SOFTWARE.
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.cactoos</groupId>
+      <artifactId>cactoos</artifactId>
+      <version>0.55.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
       <version>5.9.1</version>
