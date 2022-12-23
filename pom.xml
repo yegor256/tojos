@@ -46,7 +46,8 @@ SOFTWARE.
   <licenses>
     <license>
       <name>MIT</name>
-      <url>https://raw.githubusercontent.com/yegor256/tojos/master/LICENSE.txt
+      <url>
+        https://raw.githubusercontent.com/yegor256/tojos/master/LICENSE.txt
       </url>
       <distribution>site</distribution>
     </license>
@@ -71,7 +72,8 @@ SOFTWARE.
   </issueManagement>
   <scm>
     <connection>scm:git:git@github.com:yegor256/tojos.git</connection>
-    <developerConnection>scm:git:git@github.com:yegor256/tojos.git
+    <developerConnection>
+      scm:git:git@github.com:yegor256/tojos.git
     </developerConnection>
     <url>https://github.com/yegor256/tojos</url>
   </scm>
