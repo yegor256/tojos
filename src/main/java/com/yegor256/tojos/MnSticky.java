@@ -69,16 +69,20 @@ public final class MnSticky implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        if (this.first.compareAndSet(true, false)) {
-            this.mem.write(this.origin.read());
+        synchronized (this.mem) {
+            if (this.first.compareAndSet(true, false)) {
+                this.mem.write(this.origin.read());
+            }
+            return this.mem.read();
         }
-        return this.mem.read();
     }
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        this.origin.write(rows);
-        this.mem.write(rows);
+        synchronized (this.mem) {
+            this.mem.write(rows);
+            this.origin.write(rows);
+        }
     }
 
     @Override
