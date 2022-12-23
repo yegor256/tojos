@@ -28,6 +28,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.cactoos.Scalar;
+import org.cactoos.experimental.Threads;
+import org.cactoos.number.SumOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -62,6 +68,36 @@ final class MnStickyTest {
         MatcherAssert.assertThat(
             sticky.read().iterator().next().get(key),
             Matchers.equalTo(value)
+        );
+    }
+
+    @Test
+    void readsAndWritesConcurrentlyWithHighFrequency(@TempDir final Path temp) {
+        final TjDefault tojos = new TjDefault(new MnSticky(new MnJson(temp.resolve("x.json"))));
+        final int processors = Runtime.getRuntime().availableProcessors();
+        MatcherAssert.assertThat(
+            new SumOf(
+                new Threads<>(
+                    processors,
+                    IntStream.range(0, processors)
+                        .mapToObj(String::valueOf)
+                        .map(tojos::add)
+                        .map(
+                            tojo -> (Scalar<Integer>) () -> {
+                                final String key = "uuid";
+                                final String uuid = UUID.randomUUID().toString();
+                                tojo.set(key, uuid);
+                                tojo.get(key);
+                                tojo.set(key, uuid);
+                                tojo.get(key);
+                                tojo.set(key, uuid);
+                                tojo.get(key);
+                                return 1;
+                            }
+                        ).collect(Collectors.toList())
+                )
+            ),
+            Matchers.equalTo(processors)
         );
     }
 }

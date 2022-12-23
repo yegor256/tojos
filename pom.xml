@@ -44,7 +44,9 @@ SOFTWARE.
   <licenses>
     <license>
       <name>MIT</name>
-      <url>https://raw.githubusercontent.com/yegor256/tojos/master/LICENSE.txt</url>
+      <url>
+        https://raw.githubusercontent.com/yegor256/tojos/master/LICENSE.txt
+      </url>
       <distribution>site</distribution>
     </license>
   </licenses>
@@ -68,7 +70,9 @@ SOFTWARE.
   </issueManagement>
   <scm>
     <connection>scm:git:git@github.com:yegor256/tojos.git</connection>
-    <developerConnection>scm:git:git@github.com:yegor256/tojos.git</developerConnection>
+    <developerConnection>
+      scm:git:git@github.com:yegor256/tojos.git
+    </developerConnection>
     <url>https://github.com/yegor256/tojos</url>
   </scm>
   <ciManagement>
@@ -86,6 +90,11 @@ SOFTWARE.
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.33</version>
+    </dependency>
+    <dependency>
+      <groupId>org.cactoos</groupId>
+      <artifactId>cactoos</artifactId>
+      <version>0.55.0</version>
     </dependency>
     <dependency>
       <groupId>javax.json</groupId>
