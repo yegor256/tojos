@@ -39,7 +39,7 @@ final class TjDefaultTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"a.csv", "a.json"})
-    void simpleScenario(final String file, @TempDir final Path temp) {
+    void checksSimpleScenario(final String file, @TempDir final Path temp) {
         final Tojos tojos = new TjDefault(new MnCsv(temp.resolve(file)));
         tojos.add("foo").set("k", "v").set("a", "b");
         tojos.select(t -> t.exists("k")).iterator().next();
@@ -51,7 +51,7 @@ final class TjDefaultTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
-    void addTojo(final String file, @TempDir final Path temp) {
+    void addsTojo(final String file, @TempDir final Path temp) {
         final Tojos tojos = new TjDefault(new MnJson(temp.resolve(file)));
         tojos.add("foo-1");
         MatcherAssert.assertThat(
@@ -62,7 +62,7 @@ final class TjDefaultTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"y.csv", "y.json"})
-    void uniqueIds(final String file, @TempDir final Path temp) {
+    void savesUniqueIds(final String file, @TempDir final Path temp) {
         final Tojos tojos = new TjDefault(new MnTabs(temp.resolve(file)));
         final String name = "foo11";
         tojos.add(name);

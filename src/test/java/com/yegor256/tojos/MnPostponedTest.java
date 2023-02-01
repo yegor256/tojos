@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 final class MnPostponedTest {
 
     @Test
-    void massiveWrite(@TempDir final Path temp) throws Exception {
+    void writesMassively(@TempDir final Path temp) throws Exception {
         final Mono mono = new MnJson(temp.resolve("big-data.json"));
         final long delay = 500L;
         final Tojos tojos = new TjDefault(

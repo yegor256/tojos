@@ -48,7 +48,7 @@ final class MnMemoryTest {
     }
 
     @Test
-    void simpleScenario() {
+    void checksSimpleScenario() {
         final Mono mono = new MnMemory();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.KEY;

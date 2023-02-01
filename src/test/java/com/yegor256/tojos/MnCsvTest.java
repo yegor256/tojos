@@ -44,7 +44,7 @@ import org.junit.jupiter.api.io.TempDir;
 final class MnCsvTest {
 
     @Test
-    void simpleScenario(@TempDir final Path temp) {
+    void checksSimpleScenario(@TempDir final Path temp) {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
         final Collection<Map<String, String>> rows = csv.read();
         MatcherAssert.assertThat(

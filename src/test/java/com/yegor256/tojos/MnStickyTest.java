@@ -47,7 +47,7 @@ import org.junit.jupiter.api.io.TempDir;
 final class MnStickyTest {
 
     @Test
-    void emptyRead() {
+    void readsFromEmpty() {
         final Mono mono = new MnSticky(new MnMemory());
         MatcherAssert.assertThat(
             mono.read().size(),
@@ -56,7 +56,7 @@ final class MnStickyTest {
     }
 
     @Test
-    void simpleScenario(@TempDir final Path temp) {
+    void checksSimpleScenario(@TempDir final Path temp) {
         final Mono sticky = new MnSticky(new MnCsv(temp.resolve("x.csv")));
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.KEY;

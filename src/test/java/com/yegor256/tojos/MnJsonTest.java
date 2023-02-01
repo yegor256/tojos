@@ -45,7 +45,7 @@ import org.junit.jupiter.api.io.TempDir;
 final class MnJsonTest {
 
     @Test
-    void simpleScenario(@TempDir final Path temp) {
+    void checksSimpleScenario(@TempDir final Path temp) {
         final Mono json = new MnJson(temp.resolve("foo/bar/a.json"));
         final Collection<Map<String, String>> rows = json.read();
         MatcherAssert.assertThat(
@@ -75,7 +75,7 @@ final class MnJsonTest {
     }
 
     @Test
-    void prettyPrint(@TempDir final Path temp) throws IOException {
+    void prints(@TempDir final Path temp) throws IOException {
         final Path path = temp.resolve("z.json");
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();
@@ -93,7 +93,7 @@ final class MnJsonTest {
     }
 
     @Test
-    void keyAtFirstPosition(@TempDir final Path temp) throws IOException {
+    void retrievesKeyAtFirstPosition(@TempDir final Path temp) throws IOException {
         final Path path = temp.resolve("key-test.json");
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();

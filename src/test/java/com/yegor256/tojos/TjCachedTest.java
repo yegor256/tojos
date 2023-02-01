@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 final class TjCachedTest {
 
     @Test
-    void testAddClearsCache(@TempDir final Path temp) {
+    void addsClearsCache(@TempDir final Path temp) {
         final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-1.csv")));
         final String[] keys = {"k10", "k20"};
         tojos.add("A0").set(keys[0], "v10").set(keys[1], "vv10");
@@ -53,7 +53,7 @@ final class TjCachedTest {
     }
 
     @Test
-    void testSelectFromCached(@TempDir final Path temp) {
+    void selectsFromCached(@TempDir final Path temp) {
         final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-2.csv")));
         final String[] keys = {"k11", "k21"};
         tojos.add("A1").set(keys[0], "v11").set(keys[1], "vv11");

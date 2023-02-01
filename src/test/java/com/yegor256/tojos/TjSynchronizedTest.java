@@ -44,7 +44,7 @@ class TjSynchronizedTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
-    void addTojoParallel(final String file, @TempDir final Path temp) throws InterruptedException {
+    void addsTojoParallel(final String file, @TempDir final Path temp) throws InterruptedException {
         final Tojos tojos = new TjSynchronized(new TjDefault(new MnJson(temp.resolve(file))));
         final int threads = 100;
         final ExecutorService service = Executors.newFixedThreadPool(threads);
