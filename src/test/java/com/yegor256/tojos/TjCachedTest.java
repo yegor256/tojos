@@ -26,13 +26,11 @@ package com.yegor256.tojos;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -85,10 +83,10 @@ final class TjCachedTest {
         final String[] keys = {"UUID", "Age"};
         final Collection<String> selected = new HashSet<>();
         final int rows = 10_000;
-        for (int i = 0; i < rows; i++) {
+        for (int row = 0; rows > row; row = row + 1) {
             final String uuid = UUID.randomUUID().toString();
-            cached.add(uuid).set(keys[0], uuid).set(keys[1], String.valueOf(i));
-            if (0 == i % 100) {
+            cached.add(uuid).set(keys[0], uuid).set(keys[1], String.valueOf(row));
+            if (0 == row % 100) {
                 selected.add(uuid);
             }
         }

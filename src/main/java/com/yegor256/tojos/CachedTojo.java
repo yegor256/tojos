@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * @since 0.18
  */
-public class CachedTojo implements Tojo {
+public final class CachedTojo implements Tojo {
 
     /**
      * The original tojo.
@@ -41,7 +41,7 @@ public class CachedTojo implements Tojo {
     private final Tojo origin;
 
     /**
-     * Cached keys and values;
+     * Cached keys and values.
      */
     private final Map<? super String, String> cache;
 
