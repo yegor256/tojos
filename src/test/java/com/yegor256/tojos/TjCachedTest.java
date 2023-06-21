@@ -24,9 +24,15 @@
 package com.yegor256.tojos;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -65,6 +71,42 @@ final class TjCachedTest {
         MatcherAssert.assertThat(
             cached.select(x -> true).size(),
             Matchers.equalTo(3)
+        );
+    }
+
+    @Test
+    void selectsRowsFast(@TempDir final Path temp) {
+        final Tojos cached =
+            new TjCached(
+                new TjDefault(
+                    new MnPostponed(new MnCsv(temp.resolve("my-tojos-4.csv")))
+                )
+            );
+        final String[] keys = {"UUID", "Age"};
+        final Collection<String> selected = new HashSet<>();
+        final int rows = 10_000;
+        for (int i = 0; i < rows; i++) {
+            final String uuid = UUID.randomUUID().toString();
+            cached.add(uuid).set(keys[0], uuid).set(keys[1], String.valueOf(i));
+            if (0 == i % 100) {
+                selected.add(uuid);
+            }
+        }
+        final long start = System.nanoTime();
+        cached.select(
+            x -> selected.contains(x.get(keys[0])) && rows / 2 < Integer.parseInt(x.get(keys[1]))
+        );
+        final long end = System.nanoTime();
+        final long actual = TimeUnit.NANOSECONDS.toMillis(end - start);
+        final long expected = 100L;
+        MatcherAssert.assertThat(
+            String.format(
+                "We expect, that select() will take less than %d ms but was %d ms",
+                expected,
+                actual
+            ),
+            actual,
+            Matchers.lessThan(expected)
         );
     }
 }

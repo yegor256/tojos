@@ -23,57 +23,63 @@
  */
 package com.yegor256.tojos;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * The wrapper which caches underlying tojos.
- * This class is NOT thread-safe.
- * @since 1.0
+ * The wrapper class around Tojo class.
+ * Caches simple tojo keys and values in order to avoid excessive
+ * reading from filesystem or any other expensive resource.
+ *
+ * @since 0.18
  */
-public final class TjCached implements Tojos {
+public class CachedTojo implements Tojo {
 
     /**
-     * Underlying tojos.
+     * The original tojo.
      */
-    private final Tojos origin;
+    private final Tojo origin;
 
     /**
-     * Cache for tojos.
+     * Cached keys and values;
      */
-    private final List<Tojo> cache;
+    private final Map<? super String, String> cache;
 
     /**
-     * Ctor.
-     * @param tojos Tojos which need to be cached
+     * Constructor.
+     * @param tojo The original tojo.
      */
-    public TjCached(final Tojos tojos) {
-        this.origin = tojos;
-        this.cache = new ArrayList<>(0);
+    CachedTojo(final Tojo tojo) {
+        this(tojo, new HashMap<>());
+    }
+
+    /**
+     * Constructor.
+     * @param tojo The original tojo
+     * @param cache Cache container.
+     */
+    private CachedTojo(
+        final Tojo tojo,
+        final Map<? super String, String> cache
+    ) {
+        this.origin = tojo;
+        this.cache = cache;
     }
 
     @Override
-    public Tojo add(final String name) {
-        final Tojo tojo = new CachedTojo(this.origin.add(name));
-        this.cache.add(tojo);
-        return tojo;
+    public boolean exists(final String key) {
+        return this.cache.containsKey(key);
     }
 
     @Override
-    public List<Tojo> select(final Predicate<Tojo> filter) {
-        if (this.cache.isEmpty()) {
-            this.cache.addAll(this.origin.select(x -> true));
-        }
-        return this.cache.stream()
-            .filter(filter)
-            .collect(Collectors.toList());
+    public String get(final String key) {
+        return this.cache.get(key);
     }
 
     @Override
-    public void close() throws IOException {
-        this.origin.close();
+    public Tojo set(final String key, final Object value) {
+        this.cache.put(key, String.valueOf(value));
+        this.origin.set(key, value);
+        return this;
     }
 }
