@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import java.util.Map;
+
 /**
  * One tojo.
  *
@@ -58,4 +60,9 @@ public interface Tojo {
      */
     Tojo set(String key, Object value);
 
+    /**
+     * Get all attributes as a map.
+     * @return The map of attributes.
+     */
+    Map<String, String> toMap();
 }

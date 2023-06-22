@@ -24,6 +24,7 @@
 package com.yegor256.tojos;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -99,11 +100,36 @@ final class MonoTojo implements Tojo {
             }
             final Collection<Map<String, String>> rows = this.mono.read();
             final Map<String, String> row = rows.stream().filter(
-                r -> r.get(Tojos.ID_KEY).equals(this.name)
-            ).findFirst().get();
+                    r -> r.get(Tojos.ID_KEY).equals(this.name)
+                )
+                .findFirst()
+                .orElseThrow(NotFoundException::new);
             row.put(key, value.toString());
             this.mono.write(rows);
             return this;
+        }
+    }
+
+    @Override
+    public Map<String, String> toMap() {
+        return Collections.unmodifiableMap(
+            this.mono.read().stream()
+                .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
+                .findFirst().orElseThrow(NotFoundException::new)
+        );
+    }
+
+    /**
+     * Not found exception.
+     *
+     * @since 0.19.0
+     */
+    private final class NotFoundException extends IllegalStateException {
+
+        private static final long serialVersionUID = 0x7529FAFEL;
+
+        private NotFoundException() {
+            super(String.format("The tojo with id='%s' not found", MonoTojo.this.name));
         }
     }
 }

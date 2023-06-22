@@ -23,6 +23,7 @@
  */
 package com.yegor256.tojos;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ import java.util.Map;
  */
 public final class CachedTojo implements Tojo {
 
+
     /**
      * The original tojo.
      */
@@ -48,14 +50,14 @@ public final class CachedTojo implements Tojo {
     /**
      * Cached keys and values.
      */
-    private final Map<? super String, String> cache;
+    private final Map<String, String> cache;
 
     /**
      * Constructor.
      * @param tojo The original tojo.
      */
     CachedTojo(final Tojo tojo) {
-        this(tojo, new HashMap<>());
+        this(tojo, new HashMap<>(tojo.toMap()));
     }
 
     /**
@@ -65,7 +67,7 @@ public final class CachedTojo implements Tojo {
      */
     private CachedTojo(
         final Tojo tojo,
-        final Map<? super String, String> cache
+        final Map<String, String> cache
     ) {
         this.origin = tojo;
         this.cache = cache;
@@ -73,20 +75,11 @@ public final class CachedTojo implements Tojo {
 
     @Override
     public boolean exists(final String key) {
-        final boolean result;
-        if (key.equals(Tojos.ID_KEY)) {
-            result = true;
-        } else {
-            result = this.cache.containsKey(key);
-        }
-        return result;
+        return this.cache.containsKey(key);
     }
 
     @Override
     public String get(final String key) {
-        if (Tojos.ID_KEY.equals(key) && !this.cache.containsKey(Tojos.ID_KEY)) {
-            this.cache.put(key, this.origin.get(key));
-        }
         return this.cache.get(key);
     }
 
@@ -95,5 +88,10 @@ public final class CachedTojo implements Tojo {
         this.origin.set(key, value);
         this.cache.put(key, String.valueOf(value));
         return this;
+    }
+
+    @Override
+    public Map<String, String> toMap() {
+        return Collections.unmodifiableMap(this.cache);
     }
 }

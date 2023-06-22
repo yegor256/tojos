@@ -96,8 +96,17 @@ public final class TjCached implements Tojos {
      * Fill cache with all tojos.
      */
     private void fill() {
-        this.cache.putAll(this.origin.select(x -> true)
-            .stream()
-            .collect(Collectors.toMap(x -> x.get(Tojos.ID_KEY), x -> x, (x, y) -> x)));
+        this.cache.putAll(
+            this.origin.select(x -> true)
+                .stream()
+                .map(CachedTojo::new)
+                .collect(
+                    Collectors.toMap(
+                        x -> x.get(Tojos.ID_KEY),
+                        x -> x,
+                        (x, y) -> x
+                    )
+                )
+        );
     }
 }
