@@ -44,7 +44,7 @@ public interface Tojos extends Closeable {
     /**
      * Name of ID attribute in all tojos.
      */
-    String KEY = "id";
+    String ID_KEY = "id";
 
     /**
      * Add new tojo with the given ID.

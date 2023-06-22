@@ -64,11 +64,11 @@ public final class TjDefault implements Tojos {
     public Tojo add(final String name) {
         final Collection<Map<String, String>> rows = this.mono.read();
         final Optional<Map<String, String>> before = rows.stream().filter(
-            r -> r.get(Tojos.KEY).equals(name)
+            r -> r.get(Tojos.ID_KEY).equals(name)
         ).findFirst();
         if (!before.isPresent()) {
             final Map<String, String> row = new HashMap<>(1);
-            row.put(Tojos.KEY, name);
+            row.put(Tojos.ID_KEY, name);
             rows.add(row);
             this.mono.write(rows);
         }
@@ -80,7 +80,7 @@ public final class TjDefault implements Tojos {
         final Collection<Map<String, String>> rows = this.mono.read();
         final List<Tojo> tojos = new ArrayList<>(rows.size());
         for (final Map<String, String> row : rows) {
-            final Tojo tojo = new MonoTojo(this.mono, row.get(Tojos.KEY));
+            final Tojo tojo = new MonoTojo(this.mono, row.get(Tojos.ID_KEY));
             if (filter.test(tojo)) {
                 tojos.add(tojo);
             }

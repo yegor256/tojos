@@ -102,7 +102,7 @@ class MnSynchronizedTest {
         return Collections.nCopies(
             MnSynchronizedTest.THREADS,
             Collections.singletonMap(
-                Tojos.KEY,
+                Tojos.ID_KEY,
                 String.valueOf(MnSynchronizedTest.THREADS)
             )
         );

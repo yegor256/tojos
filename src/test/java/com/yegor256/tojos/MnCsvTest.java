@@ -52,7 +52,7 @@ final class MnCsvTest {
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
+        final String key = Tojos.ID_KEY;
         final String value = "привет,\t\n \"друг\"!";
         row.put(key, value);
         rows.add(row);
@@ -99,7 +99,7 @@ final class MnCsvTest {
         final Mono csv = new MnCsv(path);
         final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
-        row.put(Tojos.KEY, "xyz");
+        row.put(Tojos.ID_KEY, "xyz");
         row.put("_x", "");
         row.put("zzzz", "");
         rows.add(row);
@@ -108,7 +108,7 @@ final class MnCsvTest {
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.matchesPattern(
                 Pattern.compile(
-                    String.format("^\"%s\",.*", Tojos.KEY),
+                    String.format("^\"%s\",.*", Tojos.ID_KEY),
                     Pattern.MULTILINE | Pattern.DOTALL
                 )
             )

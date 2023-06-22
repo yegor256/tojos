@@ -128,11 +128,11 @@ public final class MnJson implements Mono {
         final JsonArrayBuilder array = Json.createArrayBuilder();
         for (final Map<String, String> row : rows) {
             final JsonObjectBuilder obj = Json.createObjectBuilder();
-            if (row.containsKey(Tojos.KEY)) {
-                obj.add(Tojos.KEY, row.get(Tojos.KEY));
+            if (row.containsKey(Tojos.ID_KEY)) {
+                obj.add(Tojos.ID_KEY, row.get(Tojos.ID_KEY));
             }
             for (final Map.Entry<String, String> ent : row.entrySet()) {
-                if (ent.getKey().equals(Tojos.KEY)) {
+                if (ent.getKey().equals(Tojos.ID_KEY)) {
                     continue;
                 }
                 obj.add(ent.getKey(), ent.getValue());

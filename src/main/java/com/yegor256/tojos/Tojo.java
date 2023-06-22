@@ -49,7 +49,7 @@ public interface Tojo {
     /**
      * Set attribute.
      *
-     * <p>You can't set {@link Tojos#KEY} attribute. If you try to do
+     * <p>You can't set {@link Tojos#ID_KEY} attribute. If you try to do
      * so, you will get a runtime exception.</p>
      *
      * @param key The name of the attribute

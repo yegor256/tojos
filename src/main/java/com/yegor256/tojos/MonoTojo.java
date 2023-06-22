@@ -60,7 +60,7 @@ final class MonoTojo implements Tojo {
     public boolean exists(final String key) {
         synchronized (this.mono) {
             return this.mono.read().stream()
-                .filter(row -> row.get(Tojos.KEY).equals(this.name))
+                .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
                 .findFirst()
                 .get()
                 .containsKey(key);
@@ -71,7 +71,7 @@ final class MonoTojo implements Tojo {
     public String get(final String key) {
         synchronized (this.mono) {
             final String value = this.mono.read().stream()
-                .filter(row -> row.get(Tojos.KEY).equals(this.name))
+                .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
                 .findFirst()
                 .get()
                 .get(key);
@@ -89,17 +89,17 @@ final class MonoTojo implements Tojo {
     @Override
     public Tojo set(final String key, final Object value) {
         synchronized (this.mono) {
-            if (key.equals(Tojos.KEY)) {
+            if (key.equals(Tojos.ID_KEY)) {
                 throw new IllegalArgumentException(
                     String.format(
                         "It's illegal to use #set() to change '%s' attribute",
-                        Tojos.KEY
+                        Tojos.ID_KEY
                     )
                 );
             }
             final Collection<Map<String, String>> rows = this.mono.read();
             final Map<String, String> row = rows.stream().filter(
-                r -> r.get(Tojos.KEY).equals(this.name)
+                r -> r.get(Tojos.ID_KEY).equals(this.name)
             ).findFirst().get();
             row.put(key, value.toString());
             this.mono.write(rows);

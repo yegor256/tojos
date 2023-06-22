@@ -53,7 +53,7 @@ final class MnJsonTest {
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
+        final String key = Tojos.ID_KEY;
         final String value = "привет,\t\r\n друг!";
         row.put(key, value);
         rows.add(row);
@@ -80,7 +80,7 @@ final class MnJsonTest {
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
+        final String key = Tojos.ID_KEY;
         final String value = "hello, world!";
         row.put(key, value);
         rows.add(row);
@@ -98,7 +98,7 @@ final class MnJsonTest {
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
-        row.put(Tojos.KEY, "xyz");
+        row.put(Tojos.ID_KEY, "xyz");
         row.put("_x", "");
         row.put("zzzz", "");
         rows.add(row);
@@ -107,7 +107,7 @@ final class MnJsonTest {
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.matchesPattern(
                 Pattern.compile(
-                    String.format(".*\\{\\s+\"%s\":.*", Tojos.KEY),
+                    String.format(".*\\{\\s+\"%s\":.*", Tojos.ID_KEY),
                     Pattern.MULTILINE | Pattern.DOTALL
                 )
             )

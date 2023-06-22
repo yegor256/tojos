@@ -62,7 +62,7 @@ public final class TjSmart implements Tojos {
      */
     public Tojo getById(final String name) {
         return this.origin
-            .select(tojo -> name.equals(tojo.get(Tojos.KEY)))
+            .select(tojo -> name.equals(tojo.get(Tojos.ID_KEY)))
             .iterator()
             .next();
     }

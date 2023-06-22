@@ -140,8 +140,8 @@ public final class MnCsv implements Mono {
         final List<String> header = new ArrayList<>(keys.size());
         header.addAll(keys);
         Collections.sort(header);
-        if (header.contains(Tojos.KEY)) {
-            Collections.swap(header, 0, header.indexOf(Tojos.KEY));
+        if (header.contains(Tojos.ID_KEY)) {
+            Collections.swap(header, 0, header.indexOf(Tojos.ID_KEY));
         }
         final String[] values = new String[header.size()];
         this.file.toFile().getParentFile().mkdirs();

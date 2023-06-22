@@ -48,7 +48,7 @@ final class MnTabsTest {
             Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
+        final String key = Tojos.ID_KEY;
         final String value = "привет,\t\r\n друг!";
         row.put(key, value);
         rows.add(row);

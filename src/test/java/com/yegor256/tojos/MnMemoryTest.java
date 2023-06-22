@@ -51,7 +51,7 @@ final class MnMemoryTest {
     void checksSimpleScenario() {
         final Mono mono = new MnMemory();
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.KEY;
+        final String key = Tojos.ID_KEY;
         final String value = "привет,\t\n \"друг\"!";
         row.put(key, value);
         final Collection<Map<String, String>> rows = new ArrayList<>(0);
