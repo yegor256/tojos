@@ -25,7 +25,6 @@ package com.yegor256.tojos;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * The cached wrapper around Tojo class.
@@ -93,12 +92,8 @@ public final class CachedTojo implements Tojo {
 
     @Override
     public Tojo set(final String key, final Object value) {
-        this.cache.put(key, String.valueOf(value));
         this.origin.set(key, value);
+        this.cache.put(key, String.valueOf(value));
         return this;
-    }
-
-    private Optional<String> identifier() {
-        return Optional.ofNullable(this.cache.get(Tojos.ID_KEY));
     }
 }

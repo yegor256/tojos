@@ -25,7 +25,9 @@ package com.yegor256.tojos;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -44,30 +46,43 @@ public final class TjCached implements Tojos {
     /**
      * Cache for tojos.
      */
-    private final List<Tojo> cache;
+    private final Map<String, Tojo> cache;
 
     /**
      * Ctor.
      * @param tojos Tojos which need to be cached
      */
     public TjCached(final Tojos tojos) {
-        this.origin = tojos;
-        this.cache = new ArrayList<>(0);
+        this(tojos, new HashMap<>(0));
+    }
+
+    /**
+     * Ctor.
+     * @param origin Tojos which need to be cached
+     * @param cache Cache container for tojos
+     */
+    public TjCached(
+        final Tojos origin,
+        final Map<String, Tojo> cache
+    ) {
+        this.origin = origin;
+        this.cache = cache;
     }
 
     @Override
     public Tojo add(final String name) {
         final Tojo tojo = new CachedTojo(this.origin.add(name));
-        this.cache.add(tojo);
+        this.cache.put(name, tojo);
         return tojo;
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
         if (this.cache.isEmpty()) {
-            this.cache.addAll(this.origin.select(x -> true));
+            this.fill();
         }
-        return this.cache.stream()
+        return this.cache.values()
+            .stream()
             .filter(filter)
             .collect(Collectors.toList());
     }
@@ -75,5 +90,14 @@ public final class TjCached implements Tojos {
     @Override
     public void close() throws IOException {
         this.origin.close();
+    }
+
+    /**
+     * Fill cache with all tojos.
+     */
+    private void fill() {
+        this.cache.putAll(this.origin.select(x -> true)
+            .stream()
+            .collect(Collectors.toMap(x -> x.get(Tojos.ID_KEY), x -> x, (x, y) -> x)));
     }
 }
