@@ -41,7 +41,6 @@ import java.util.Map;
  */
 public final class CachedTojo implements Tojo {
 
-
     /**
      * The original tojo.
      */

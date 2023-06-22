@@ -99,9 +99,8 @@ final class MonoTojo implements Tojo {
                 );
             }
             final Collection<Map<String, String>> rows = this.mono.read();
-            final Map<String, String> row = rows.stream().filter(
-                    r -> r.get(Tojos.ID_KEY).equals(this.name)
-                )
+            final Map<String, String> row = rows.stream()
+                .filter(r -> r.get(Tojos.ID_KEY).equals(this.name))
                 .findFirst()
                 .orElseThrow(NotFoundException::new);
             row.put(key, value.toString());
@@ -126,8 +125,14 @@ final class MonoTojo implements Tojo {
      */
     private final class NotFoundException extends IllegalStateException {
 
+        /**
+         * Serialization marker.
+         */
         private static final long serialVersionUID = 0x7529FAFEL;
 
+        /**
+         * Ctor.
+         */
         private NotFoundException() {
             super(String.format("The tojo with id='%s' not found", MonoTojo.this.name));
         }
