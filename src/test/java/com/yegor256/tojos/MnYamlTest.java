@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -63,8 +62,8 @@ final class MnYamlTest {
     @Test
     void throwsWhenReadingFromResources() {
         Assertions.assertThrows(
-                ClassCastException.class,
-                () -> new MnYaml("src/test/resources/test.yml").read()
+            ClassCastException.class,
+            () -> new MnYaml("src/test/resources/test.yml").read()
         );
     }
 }
