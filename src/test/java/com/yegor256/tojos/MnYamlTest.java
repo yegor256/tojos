@@ -29,8 +29,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -55,6 +57,14 @@ final class MnYamlTest {
             Matchers.equalTo(
                 yaml.read().stream().findFirst().get().get(key)
             )
+        );
+    }
+
+    @Test
+    void throwsWhenReadingFromResources() {
+        Assertions.assertThrows(
+                ClassCastException.class,
+                () -> new MnYaml("src/test/resources/test.yml").read()
         );
     }
 }
