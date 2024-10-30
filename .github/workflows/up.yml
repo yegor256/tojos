@@ -20,17 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 ---
-name: pdd
+name: up
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
 jobs:
-  pdd:
-    runs-on: ubuntu-22.04
+  up:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-      - uses: g4s8/pdd-action@master
+      - uses: actions/checkout@v4
+      - run: |-
+          git fetch --tags --force && \
+          latest=$(git tag --sort=creatordate | tail -1) && \
+          sed -E -i "s/<version>[^<]+/<version>${latest}/g" README.md
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'new version in README'
+          delete-branch: true
+          title: 'New version in README'
+          assignees: yegor256
+          branch: up
+          base: master

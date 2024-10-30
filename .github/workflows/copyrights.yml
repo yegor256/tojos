@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 ---
-name: pdd
-on:
+name: copyrights
+'on':
   push:
     branches:
       - master
@@ -29,8 +29,24 @@ on:
     branches:
       - master
 jobs:
-  pdd:
-    runs-on: ubuntu-22.04
+  copyrights:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
-      - uses: g4s8/pdd-action@master
+      - uses: actions/checkout@v4
+      - uses: yegor256/copyrights-action@0.0.5
+        with:
+          globs: >-
+            **/LICENSE.txt
+            **/*.sh
+            **/*.yml
+            **/*.yaml
+            **/*.eo
+            **/*.xmir
+            **/*.xml
+            **/*.xsl
+            **/*.xsd
+            **/*.ini
+            **/*.java
+            **/*.g4
+            **/*.properties
+            **/*.groovy
