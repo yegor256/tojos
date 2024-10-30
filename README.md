@@ -1,4 +1,4 @@
-# NoSQL Single-File Database 
+# NoSQL Single-File Database
 
 [![EO principles respected here](https://www.elegantobjects.org/badge.svg)](https://www.elegantobjects.org)
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/tojos)](http://www.rultor.com/p/yegor256/tojos)
