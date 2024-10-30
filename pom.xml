@@ -131,9 +131,6 @@ SOFTWARE.
   <profiles>
     <profile>
       <id>qulice</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
       <build>
         <plugins>
           <plugin>
