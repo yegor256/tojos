@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
 
 /**
  * The wrapper which caches underlying tojos.
- * This class is NOT thread-safe.
+ *
+ * <p>This class is NOT thread-safe.</p>
+ *
  * @since 1.0
  */
 public final class TjCached implements Tojos {

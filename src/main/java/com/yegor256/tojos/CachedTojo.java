@@ -30,13 +30,11 @@ import java.util.Map;
 /**
  * The cached wrapper around Tojo class.
  *
- * <p>
- *   Caches simple tojo keys and values in order to avoid excessive
- *   reading from filesystem or any other expensive resource.
- * </p>
- * <p>
- *   This class is NOT thread-safe.
- * </p>
+ * <p>Caches simple tojo keys and values in order to avoid excessive
+ * reading from filesystem or any other expensive resource.</p>
+ *
+ * <p>This class is NOT thread-safe.</p>
+ *
  * @since 0.18
  */
 public final class CachedTojo implements Tojo {

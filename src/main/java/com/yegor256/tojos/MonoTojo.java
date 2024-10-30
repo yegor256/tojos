@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * One tojo in a {@link Mono}.
  *
- * The class is thread-safe.
+ * <p>The class is thread-safe.</p>
  *
  * @since 0.3.0
  */

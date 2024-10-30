@@ -43,12 +43,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * CSV file.
  *
- * The class is NOT thread-safe.
+ * <p>The class is NOT thread-safe.</p>
+ *
  * @see <a href="https://geekprompt.github.io/Properly-handling-backshlash-while-using-openCSV/"/>
  * @since 0.3.0
  */
@@ -82,7 +82,7 @@ public final class MnCsv implements Mono {
     /**
      * Ctor.
      *
-     * <p>If the directory doesn't exist, it will automatically be created.
+     * <p>If the directory doesn't exist, it will automatically be created.</p>
      *
      * @param path The path to the file
      */
@@ -133,8 +133,9 @@ public final class MnCsv implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        final Set<String> keys = new HashSet<>(0);
-        for (final Map<String, String> row : rows) {
+        final Collection<Map<String, String>> copy = MnCsv.dup(rows);
+        final Collection<String> keys = new HashSet<>(0);
+        for (final Map<String, String> row : copy) {
             keys.addAll(row.keySet());
         }
         final List<String> header = new ArrayList<>(keys.size());
@@ -147,7 +148,7 @@ public final class MnCsv implements Mono {
         this.file.toFile().getParentFile().mkdirs();
         try (ICSVWriter writer = new CSVWriter(Files.newBufferedWriter(this.file))) {
             writer.writeNext(header.toArray(new String[] {}));
-            for (final Map<String, String> row : rows) {
+            for (final Map<String, String> row : copy) {
                 Arrays.fill(values, "");
                 for (final Map.Entry<String, String> ent : row.entrySet()) {
                     values[header.indexOf(ent.getKey())] = ent.getValue();
@@ -168,5 +169,24 @@ public final class MnCsv implements Mono {
     @Override
     public void close() {
         // nothing to close here
+    }
+
+    /**
+     * Make a duplicate of the provided rows.
+     *
+     * <p>This is necessary for making sure the list of rows is not updated
+     * by another thread while we are using it.</p>
+     *
+     * @param rows Original rows
+     * @return Duplicate
+     */
+    private static Collection<Map<String, String>> dup(final Collection<Map<String, String>> rows) {
+        final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
+        for (final Map<String, String> map : rows) {
+            final Map<String, String> copy = new HashMap<>(map.size());
+            copy.putAll(map);
+            list.add(copy);
+        }
+        return list;
     }
 }

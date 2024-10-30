@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 /**
  * All file-objects.
  *
- * The class is NOT thread-safe.
+ * <p>The class is NOT thread-safe.</p>
  *
  * @since 0.3.0
  */

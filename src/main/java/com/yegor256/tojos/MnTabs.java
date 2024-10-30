@@ -48,7 +48,7 @@ import java.util.Map;
  * id:Walter%20Sobchak   salary: $4,000   age: 40
  * </pre>
  *
- * The class is NOT thread-safe.
+ * <p>The class is NOT thread-safe.</p>
  *
  * @since 0.7.0
  */

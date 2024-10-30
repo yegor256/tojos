@@ -79,6 +79,28 @@ final class MnCsvTest {
     }
 
     @Test
+    void savesSparseData(@TempDir final Path temp) {
+        final Mono csv = new MnCsv(temp.resolve("foo/something.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
+        final Map<String, String> row = new HashMap<>(0);
+        row.put("x", "1");
+        row.put(Tojos.ID_KEY, "alpha");
+        rows.add(row);
+        row.clear();
+        row.put("z", "1");
+        row.put("X", "1");
+        row.put(Tojos.ID_KEY, "beta");
+        rows.add(row);
+        row.clear();
+        rows.add(row);
+        csv.write(rows);
+        MatcherAssert.assertThat(
+            csv.read().size(),
+            Matchers.equalTo(3)
+        );
+    }
+
+    @Test
     void keepsBackslash(@TempDir final Path temp) {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/slash.csv"));
         final Collection<Map<String, String>> rows = csv.read();

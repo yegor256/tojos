@@ -31,11 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * This decorator prevents multiple reads.
  *
- * You should use this one ONLY if you are sure that nobody else
+ * <p>You should use this one ONLY if you are sure that nobody else
  * is touching the file/mono. Otherwise, there will be synchronization
- * issues.
+ * issues.</p>
  *
- * The class is NOT thread-safe.
+ * <p>The class is NOT thread-safe.</p>
  *
  * @since 0.12.0
  */

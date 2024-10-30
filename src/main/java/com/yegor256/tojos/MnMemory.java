@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * In memory {@link Mono}.
  *
- * The class is thread-safe.
+ * <p>The class is thread-safe.</p>
  *
  * @since 0.12.0
  */

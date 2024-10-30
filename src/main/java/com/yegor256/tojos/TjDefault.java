@@ -35,7 +35,7 @@ import java.util.function.Predicate;
 /**
  * All Tojos in a {@link Mono}.
  *
- * The class is NOT thread-safe.
+ * <p>The class is NOT thread-safe.</p>
  *
  * @since 0.3.0
  */
