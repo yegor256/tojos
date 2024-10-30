@@ -96,6 +96,7 @@ public final class MnCsv implements Mono {
     }
 
     @Override
+    @SuppressWarnings("PMD.CognitiveComplexity")
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> rows = new LinkedList<>();
         if (Files.exists(this.file)) {

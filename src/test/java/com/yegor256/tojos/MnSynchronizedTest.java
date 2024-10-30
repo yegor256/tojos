@@ -42,7 +42,7 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.3.0
  */
-class MnSynchronizedTest {
+final class MnSynchronizedTest {
 
     /**
      * Number of threads.
@@ -65,14 +65,14 @@ class MnSynchronizedTest {
     private CountDownLatch latch;
 
     @BeforeEach
-    final void setUp(@TempDir final Path temp) {
+    void setUp(@TempDir final Path temp) {
         this.shared = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
         this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);
     }
 
     @Test
-    final void writesConcurrently() throws InterruptedException {
+    void writesConcurrently() throws InterruptedException {
         for (int trds = 1; trds <= MnSynchronizedTest.THREADS; ++trds) {
             this.executor.submit(
                 () -> {

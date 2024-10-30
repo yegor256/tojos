@@ -77,8 +77,7 @@ public final class MnYaml implements Mono {
     @Override
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> result = new LinkedList<>();
-        try {
-            final InputStream source = Files.newInputStream(this.destination);
+        try (InputStream source = Files.newInputStream(this.destination)) {
             result.addAll(new Yaml().<List<Map<String, String>>>load(source));
         } catch (final IOException exception) {
             throw new IllegalArgumentException(

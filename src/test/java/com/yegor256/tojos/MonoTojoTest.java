@@ -46,7 +46,7 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.16
  */
-class MonoTojoTest {
+final class MonoTojoTest {
 
     /**
      * Number of threads.

@@ -44,23 +44,27 @@ class TjSynchronizedTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
+    @SuppressWarnings("PMD.CloseResource")
     void addsTojoParallel(final String file, @TempDir final Path temp) throws InterruptedException {
         final Tojos tojos = new TjSynchronized(new TjDefault(new MnJson(temp.resolve(file))));
         final int threads = 100;
         final ExecutorService service = Executors.newFixedThreadPool(threads);
-        final CountDownLatch latch = new CountDownLatch(1);
-        for (int idx = 0; idx < threads; ++idx) {
-            final int curr = idx;
-            service.submit(
-                (Callable<?>) () -> {
-                    latch.await();
-                    return tojos.add("foo".concat(String.valueOf(curr)));
-                }
-            );
+        try {
+            final CountDownLatch latch = new CountDownLatch(1);
+            for (int idx = 0; idx < threads; ++idx) {
+                final int curr = idx;
+                service.submit(
+                    (Callable<?>) () -> {
+                        latch.await();
+                        return tojos.add("foo".concat(String.valueOf(curr)));
+                    }
+                );
+            }
+            latch.countDown();
+        } finally {
+            service.shutdown();
+            assert service.awaitTermination(1L, TimeUnit.MINUTES);
         }
-        latch.countDown();
-        service.shutdown();
-        assert service.awaitTermination(1, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
             "must work fine",
             new TjSmart(tojos).size(),
