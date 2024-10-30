@@ -1,3 +1,5 @@
+# NoSQL Single-File Database 
+
 [![EO principles respected here](https://www.elegantobjects.org/badge.svg)](https://www.elegantobjects.org)
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/tojos)](http://www.rultor.com/p/yegor256/tojos)
 [![We recommend IntelliJ IDEA](https://www.elegantobjects.org/intellij-idea.svg)](https://www.jetbrains.com/idea/)
@@ -9,7 +11,6 @@
 [![Javadoc](http://www.javadoc.io/badge/com.yegor256/tojos.svg)](http://www.javadoc.io/doc/com.yegor256/tojos)
 [![codecov](https://codecov.io/gh/yegor256/tojos/branch/master/graph/badge.svg)](https://codecov.io/gh/yegor256/tojos)
 [![Hits-of-Code](https://hitsofcode.com/github/yegor256/tojos)](https://hitsofcode.com/view/github/yegor256/tojos)
-![Lines of code](https://img.shields.io/tokei/lines/github/yegor256/tojos)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/yegor256/tojos/blob/master/LICENSE.txt)
 
 It's a simple manager of "records" in a text file of CSV, JSON, etc. format.
@@ -23,6 +24,7 @@ You add this to your `pom.xml`:
 <dependency>
   <groupId>com.yegor256</groupId>
   <artifactId>tojos</artifactId>
+  <version>0.0.0</version>
 </dependency>
 ```
 
@@ -52,7 +54,7 @@ provided they don't violate our quality standards. To avoid frustration,
 before sending us your pull request please run full Maven build:
 
 ```bash
-$ mvn clean install -Pqulice
+mvn clean install -Pqulice
 ```
 
 You will need Maven 3.3+ and Java 8+.
