@@ -44,6 +44,7 @@ final class TjDefaultTest {
         tojos.add("foo").set("k", "v").set("a", "b");
         tojos.select(t -> t.exists("k")).iterator().next();
         MatcherAssert.assertThat(
+            "must work fine",
             tojos.select(t -> t.exists("k")).iterator().next().get("a"),
             Matchers.equalTo("b")
         );
@@ -55,6 +56,7 @@ final class TjDefaultTest {
         final Tojos tojos = new TjDefault(new MnJson(temp.resolve(file)));
         tojos.add("foo-1");
         MatcherAssert.assertThat(
+            "must work fine",
             new TjSmart(tojos).size(),
             Matchers.equalTo(1)
         );
@@ -68,6 +70,7 @@ final class TjDefaultTest {
         tojos.add(name);
         tojos.add(name);
         MatcherAssert.assertThat(
+            "must work fine",
             new TjSmart(tojos).size(),
             Matchers.equalTo(1)
         );

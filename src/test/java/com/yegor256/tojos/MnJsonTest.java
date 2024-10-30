@@ -49,6 +49,7 @@ final class MnJsonTest {
         final Mono json = new MnJson(temp.resolve("foo/bar/a.json"));
         final Collection<Map<String, String>> rows = json.read();
         MatcherAssert.assertThat(
+            "must work fine",
             json.read().size(),
             Matchers.equalTo(0)
         );
@@ -59,6 +60,7 @@ final class MnJsonTest {
         rows.add(row);
         json.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             json.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
@@ -69,6 +71,7 @@ final class MnJsonTest {
         final Mono json = new MnJson(temp.resolve("foo/bar/b.json"));
         json.write(Collections.emptyList());
         MatcherAssert.assertThat(
+            "must be empty",
             json.read(),
             Matchers.empty()
         );
@@ -87,6 +90,7 @@ final class MnJsonTest {
         rows.add(row);
         json.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.containsString("},\n")
         );
@@ -104,6 +108,7 @@ final class MnJsonTest {
         rows.add(row);
         json.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.matchesPattern(
                 Pattern.compile(

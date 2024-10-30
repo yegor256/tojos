@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -53,18 +51,11 @@ final class MnYamlTest {
         final Mono yaml = new MnYaml(file);
         yaml.write(tojo);
         MatcherAssert.assertThat(
+            "must work fine",
             keys.get(key),
             Matchers.equalTo(
                 yaml.read().stream().findFirst().get().get(key)
             )
-        );
-    }
-
-    @Test
-    @Disabled
-    void readsWithoutExceptions() {
-        Assertions.assertDoesNotThrow(
-            () -> new MnYaml("src/test/resources/test.yml").read()
         );
     }
 }

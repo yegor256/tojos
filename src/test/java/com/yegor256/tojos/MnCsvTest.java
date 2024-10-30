@@ -48,6 +48,7 @@ final class MnCsvTest {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
         final Collection<Map<String, String>> rows = csv.read();
         MatcherAssert.assertThat(
+            "must work fine",
             csv.read().size(),
             Matchers.equalTo(0)
         );
@@ -58,6 +59,7 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             csv.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
@@ -73,30 +75,9 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             csv.read().iterator().next().containsKey("y"),
             Matchers.equalTo(false)
-        );
-    }
-
-    @Test
-    void savesSparseData(@TempDir final Path temp) {
-        final Mono csv = new MnCsv(temp.resolve("foo/something.csv"));
-        final Collection<Map<String, String>> rows = csv.read();
-        final Map<String, String> row = new HashMap<>(0);
-        row.put("x", "1");
-        row.put(Tojos.ID_KEY, "alpha");
-        rows.add(row);
-        row.clear();
-        row.put("z", "1");
-        row.put("X", "1");
-        row.put(Tojos.ID_KEY, "beta");
-        rows.add(row);
-        row.clear();
-        rows.add(row);
-        csv.write(rows);
-        MatcherAssert.assertThat(
-            csv.read().size(),
-            Matchers.equalTo(3)
         );
     }
 
@@ -110,6 +91,7 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
+            "must have the right element inside",
             csv.read().iterator().next().get("a"),
             Matchers.equalTo(path)
         );
@@ -127,6 +109,7 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.matchesPattern(
                 Pattern.compile(

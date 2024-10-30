@@ -50,6 +50,7 @@ final class MnStickyTest {
     void readsFromEmpty() {
         final Mono mono = new MnSticky(new MnMemory());
         MatcherAssert.assertThat(
+            "must work fine",
             mono.read().size(),
             Matchers.equalTo(0)
         );
@@ -66,6 +67,7 @@ final class MnStickyTest {
         rows.add(row);
         sticky.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             sticky.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
@@ -76,6 +78,7 @@ final class MnStickyTest {
         final TjDefault tojos = new TjDefault(new MnSticky(new MnJson(temp.resolve("x.json"))));
         final int processors = Runtime.getRuntime().availableProcessors();
         MatcherAssert.assertThat(
+            "must work fine",
             new SumOf(
                 new Threads<>(
                     processors,

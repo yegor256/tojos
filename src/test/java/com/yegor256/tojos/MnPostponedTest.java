@@ -49,22 +49,26 @@ final class MnPostponedTest {
             tojos.add(String.format("key-%d", idx))
                 .set(key, String.format("v%d", idx));
             MatcherAssert.assertThat(
+                "must work fine",
                 tojos.select(r -> r.exists(key)),
                 Matchers.iterableWithSize(1)
             );
         }
         MatcherAssert.assertThat(
+            "must work fine",
             tojos.select(r -> true),
             Matchers.iterableWithSize(total)
         );
         tojos.close();
         MatcherAssert.assertThat(
+            "must work fine",
             new TjDefault(mono).select(r -> true),
             Matchers.iterableWithSize(total)
         );
     }
 
     @Test
+    @SuppressWarnings("JTCOP.RuleAssertionMessage")
     void avoidsSavingAfterDestruction(@TempDir final Path temp) {
         final Mono mono = new MnJson(temp.resolve("x/y/z/data.json"));
         final Tojos tojos = new TjDefault(

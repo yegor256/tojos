@@ -88,6 +88,7 @@ class MnSynchronizedTest {
         this.executor.shutdown();
         assert this.executor.awaitTermination(1L, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
+            "must work fine",
             this.shared.read().containsAll(MnSynchronizedTest.rowsByThreads()),
             Matchers.equalTo(true)
         );

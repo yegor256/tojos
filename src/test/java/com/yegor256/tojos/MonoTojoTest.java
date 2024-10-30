@@ -92,15 +92,24 @@ class MonoTojoTest {
         this.service.shutdown();
         this.service.awaitTermination(20, TimeUnit.SECONDS);
         final Collection<Map<String, String>> result = this.mono.read();
-        MatcherAssert.assertThat(result, Matchers.hasSize(MonoTojoTest.N_THREADS));
+        MatcherAssert.assertThat(
+            "must work fine",
+            result,
+            Matchers.hasSize(MonoTojoTest.N_THREADS)
+        );
         for (final Map<String, String> tojo : result) {
-            MatcherAssert.assertThat(tojo.entrySet(), Matchers.hasSize(2));
+            MatcherAssert.assertThat(
+                "must work fine",
+                tojo.entrySet(),
+                Matchers.hasSize(2)
+            );
         }
     }
 
     @Test
     void readsAndWritesConcurrentlyWithHighFrequency() {
         MatcherAssert.assertThat(
+            "must work fine",
             new SumOf(
                 new Threads<>(
                     MonoTojoTest.N_THREADS,

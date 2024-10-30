@@ -42,6 +42,7 @@ final class MnMemoryTest {
     void readsEmpty() {
         final Mono mono = new MnMemory();
         MatcherAssert.assertThat(
+            "must work fine",
             mono.read().size(),
             Matchers.equalTo(0)
         );
@@ -58,6 +59,7 @@ final class MnMemoryTest {
         rows.add(row);
         mono.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             mono.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );

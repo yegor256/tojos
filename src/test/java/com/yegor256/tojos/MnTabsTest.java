@@ -44,6 +44,7 @@ final class MnTabsTest {
         final Mono tabs = new MnTabs(temp.resolve("foo/bar/a.tabs"));
         final Collection<Map<String, String>> rows = tabs.read();
         MatcherAssert.assertThat(
+            "must work fine",
             tabs.read().size(),
             Matchers.equalTo(0)
         );
@@ -54,6 +55,7 @@ final class MnTabsTest {
         rows.add(row);
         tabs.write(rows);
         MatcherAssert.assertThat(
+            "must work fine",
             tabs.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );

@@ -62,6 +62,7 @@ class TjSynchronizedTest {
         service.shutdown();
         assert service.awaitTermination(1, TimeUnit.MINUTES);
         MatcherAssert.assertThat(
+            "must work fine",
             new TjSmart(tojos).size(),
             Matchers.equalTo(threads)
         );

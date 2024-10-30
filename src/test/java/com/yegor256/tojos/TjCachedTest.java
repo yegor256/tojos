@@ -51,6 +51,7 @@ final class TjCachedTest {
         cached.select(x -> true);
         cached.add("D0").set(keys[0], "v40").set(keys[1], "vv40");
         MatcherAssert.assertThat(
+            "must work fine",
             cached.select(x -> true).size(),
             Matchers.equalTo(4)
         );
@@ -67,6 +68,7 @@ final class TjCachedTest {
         cached.select(x -> true);
         tojos.add("D1").set(keys[0], "v41").set(keys[1], "vv41");
         MatcherAssert.assertThat(
+            "must work fine",
             cached.select(x -> true).size(),
             Matchers.equalTo(3)
         );
