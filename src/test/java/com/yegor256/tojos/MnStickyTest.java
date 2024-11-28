@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,13 +39,14 @@ import org.cactoos.number.SumOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnSticky}.
  *
  * @since 0.12.0
  */
+@ExtendWith(MktmpResolver.class)
 final class MnStickyTest {
 
     @Test
@@ -57,7 +60,7 @@ final class MnStickyTest {
     }
 
     @Test
-    void checksSimpleScenario(@TempDir final Path temp) {
+    void checksSimpleScenario(@Mktmp final Path temp) {
         final Mono sticky = new MnSticky(new MnCsv(temp.resolve("x.csv")));
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
@@ -74,7 +77,7 @@ final class MnStickyTest {
     }
 
     @Test
-    void readsAndWritesConcurrentlyWithHighFrequency(@TempDir final Path temp) {
+    void readsAndWritesConcurrentlyWithHighFrequency(@Mktmp final Path temp) {
         final TjDefault tojos = new TjDefault(new MnSticky(new MnJson(temp.resolve("x.json"))));
         final int processors = Runtime.getRuntime().availableProcessors();
         MatcherAssert.assertThat(

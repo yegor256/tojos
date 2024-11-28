@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
@@ -39,13 +41,14 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for MonoTojo usage in concurrent environment.
  *
  * @since 0.16
  */
+@ExtendWith(MktmpResolver.class)
 final class MonoTojoTest {
 
     /**
@@ -69,7 +72,7 @@ final class MonoTojoTest {
     private Mono mono;
 
     @BeforeEach
-    void setUp(@TempDir final Path temp) {
+    void setUp(@Mktmp final Path temp) {
         this.mono = new MnJson(temp.resolve("mono.json"));
         this.tojos = new TjDefault(this.mono);
     }

@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -31,7 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -40,12 +42,13 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @since 0.3.0
  */
+@ExtendWith(MktmpResolver.class)
 class TjSynchronizedTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
     @SuppressWarnings("PMD.CloseResource")
-    void addsTojoParallel(final String file, @TempDir final Path temp) throws InterruptedException {
+    void addsTojoParallel(final String file, @Mktmp final Path temp) throws InterruptedException {
         final Tojos tojos = new TjSynchronized(new TjDefault(new MnJson(temp.resolve(file))));
         final int threads = 100;
         final ExecutorService service = Executors.newFixedThreadPool(threads);

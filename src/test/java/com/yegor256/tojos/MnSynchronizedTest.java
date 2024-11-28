@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,13 +37,14 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnSynchronized}.
  *
  * @since 0.3.0
  */
+@ExtendWith(MktmpResolver.class)
 final class MnSynchronizedTest {
 
     /**
@@ -65,7 +68,7 @@ final class MnSynchronizedTest {
     private CountDownLatch latch;
 
     @BeforeEach
-    void setUp(@TempDir final Path temp) {
+    void setUp(@Mktmp final Path temp) {
         this.shared = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
         this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
         this.latch = new CountDownLatch(1);

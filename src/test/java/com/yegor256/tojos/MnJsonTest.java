@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,17 +37,18 @@ import java.util.regex.Pattern;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnJson}.
  *
  * @since 0.3.0
  */
+@ExtendWith(MktmpResolver.class)
 final class MnJsonTest {
 
     @Test
-    void checksSimpleScenario(@TempDir final Path temp) {
+    void checksSimpleScenario(@Mktmp final Path temp) {
         final Mono json = new MnJson(temp.resolve("foo/bar/a.json"));
         final Collection<Map<String, String>> rows = json.read();
         MatcherAssert.assertThat(
@@ -67,7 +70,7 @@ final class MnJsonTest {
     }
 
     @Test
-    void writesEmptyCollection(@TempDir final Path temp) {
+    void writesEmptyCollection(@Mktmp final Path temp) {
         final Mono json = new MnJson(temp.resolve("foo/bar/b.json"));
         json.write(Collections.emptyList());
         MatcherAssert.assertThat(
@@ -78,7 +81,7 @@ final class MnJsonTest {
     }
 
     @Test
-    void prints(@TempDir final Path temp) throws IOException {
+    void prints(@Mktmp final Path temp) throws IOException {
         final Path path = temp.resolve("z.json");
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();
@@ -97,7 +100,7 @@ final class MnJsonTest {
     }
 
     @Test
-    void retrievesKeyAtFirstPosition(@TempDir final Path temp) throws IOException {
+    void retrievesKeyAtFirstPosition(@Mktmp final Path temp) throws IOException {
         final Path path = temp.resolve("key-test.json");
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();

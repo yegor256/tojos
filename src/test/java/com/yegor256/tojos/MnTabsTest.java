@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,17 +32,18 @@ import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnTabs}.
  *
  * @since 0.7.0
  */
+@ExtendWith(MktmpResolver.class)
 final class MnTabsTest {
 
     @Test
-    void checksSimpleScenario(@TempDir final Path temp) {
+    void checksSimpleScenario(@Mktmp final Path temp) {
         final Mono tabs = new MnTabs(temp.resolve("foo/bar/a.tabs"));
         final Collection<Map<String, String>> rows = tabs.read();
         MatcherAssert.assertThat(

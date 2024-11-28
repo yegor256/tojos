@@ -23,10 +23,12 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -35,11 +37,12 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @since 0.3.0
  */
+@ExtendWith(MktmpResolver.class)
 final class TjDefaultTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"a.csv", "a.json"})
-    void checksSimpleScenario(final String file, @TempDir final Path temp) {
+    void checksSimpleScenario(final String file, @Mktmp final Path temp) {
         final Tojos tojos = new TjDefault(new MnCsv(temp.resolve(file)));
         tojos.add("foo").set("k", "v").set("a", "b");
         tojos.select(t -> t.exists("k")).iterator().next();
@@ -52,7 +55,7 @@ final class TjDefaultTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
-    void addsTojo(final String file, @TempDir final Path temp) {
+    void addsTojo(final String file, @Mktmp final Path temp) {
         final Tojos tojos = new TjDefault(new MnJson(temp.resolve(file)));
         tojos.add("foo-1");
         MatcherAssert.assertThat(
@@ -64,7 +67,7 @@ final class TjDefaultTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"y.csv", "y.json"})
-    void savesUniqueIds(final String file, @TempDir final Path temp) {
+    void savesUniqueIds(final String file, @Mktmp final Path temp) {
         final Tojos tojos = new TjDefault(new MnTabs(temp.resolve(file)));
         final String name = "foo11";
         tojos.add(name);

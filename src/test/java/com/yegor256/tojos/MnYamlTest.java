@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -32,16 +34,17 @@ import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnYaml}.
  * @since 0.9.2
  */
+@ExtendWith(MktmpResolver.class)
 final class MnYamlTest {
 
     @Test
-    void writesAndReads(@TempDir final Path temp) {
+    void writesAndReads(@Mktmp final Path temp) {
         final File file = temp.resolve("test.yml").toFile();
         final Map<String, String> keys = new HashMap<>();
         final List<Map<String, String>> tojo = new LinkedList<>();

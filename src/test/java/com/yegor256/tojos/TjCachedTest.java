@@ -23,6 +23,8 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,17 +33,18 @@ import java.util.concurrent.TimeUnit;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test for {@link TjCached}.
  *
  * @since 1.0
  */
+@ExtendWith(MktmpResolver.class)
 final class TjCachedTest {
 
     @Test
-    void addsClearsCache(@TempDir final Path temp) {
+    void addsClearsCache(@Mktmp final Path temp) {
         final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-1.csv")));
         final String[] keys = {"k10", "k20"};
         tojos.add("A0").set(keys[0], "v10").set(keys[1], "vv10");
@@ -58,7 +61,7 @@ final class TjCachedTest {
     }
 
     @Test
-    void selectsFromCached(@TempDir final Path temp) {
+    void selectsFromCached(@Mktmp final Path temp) {
         final Tojos tojos = new TjDefault(new MnCsv(temp.resolve("my-tojos-2.csv")));
         final String[] keys = {"k11", "k21"};
         tojos.add("A1").set(keys[0], "v11").set(keys[1], "vv11");
@@ -75,7 +78,7 @@ final class TjCachedTest {
     }
 
     @Test
-    void selectsRowsFast(@TempDir final Path temp) {
+    void selectsRowsFast(@Mktmp final Path temp) {
         final Tojos cached =
             new TjCached(
                 new TjDefault(

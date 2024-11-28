@@ -23,21 +23,24 @@
  */
 package com.yegor256.tojos;
 
+import com.yegor256.Mktmp;
+import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link TjDefault}.
  *
  * @since 0.3.0
  */
+@ExtendWith(MktmpResolver.class)
 final class MnPostponedTest {
 
     @Test
-    void writesMassively(@TempDir final Path temp) throws Exception {
+    void writesMassively(@Mktmp final Path temp) throws Exception {
         final Mono mono = new MnJson(temp.resolve("big-data.json"));
         final long delay = 500L;
         final Tojos tojos = new TjDefault(
@@ -69,7 +72,7 @@ final class MnPostponedTest {
 
     @Test
     @SuppressWarnings("JTCOP.RuleAssertionMessage")
-    void avoidsSavingAfterDestruction(@TempDir final Path temp) {
+    void avoidsSavingAfterDestruction(@Mktmp final Path temp) {
         final Mono mono = new MnJson(temp.resolve("x/y/z/data.json"));
         final Tojos tojos = new TjDefault(
             new MnPostponed(mono, 500L)
