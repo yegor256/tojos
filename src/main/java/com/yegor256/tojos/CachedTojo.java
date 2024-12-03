@@ -71,6 +71,11 @@ public final class CachedTojo implements Tojo {
     }
 
     @Override
+    public String toString() {
+        return this.origin.toString();
+    }
+
+    @Override
     public boolean exists(final String key) {
         return this.cache.containsKey(key);
     }

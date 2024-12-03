@@ -37,7 +37,7 @@ public interface Mono extends Closeable {
     /**
      * Read them all.
      *
-     * The list returned is modifiable.
+     * <p>The list returned is modifiable.</p>
      *
      * @return The list of all lines
      */

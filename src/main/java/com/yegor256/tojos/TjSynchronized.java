@@ -59,6 +59,11 @@ public final class TjSynchronized implements Tojos {
     }
 
     @Override
+    public String toString() {
+        return this.wrapped.toString();
+    }
+
+    @Override
     public Tojo add(final String name) {
         this.rwl.writeLock().lock();
         try {

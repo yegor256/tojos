@@ -71,6 +71,11 @@ public final class TjCached implements Tojos {
     }
 
     @Override
+    public String toString() {
+        return this.origin.toString();
+    }
+
+    @Override
     public Tojo add(final String name) {
         final Tojo tojo = new CachedTojo(this.origin.add(name));
         this.cache.put(name, tojo);

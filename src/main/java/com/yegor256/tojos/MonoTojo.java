@@ -58,6 +58,11 @@ final class MonoTojo implements Tojo {
     }
 
     @Override
+    public String toString() {
+        return this.mono.toString();
+    }
+
+    @Override
     public boolean exists(final String key) {
         synchronized (this.mono) {
             return this.mono.read().stream()
