@@ -59,7 +59,7 @@ final class MonoTojo implements Tojo {
 
     @Override
     public String toString() {
-        return this.mono.toString();
+        return this.name;
     }
 
     @Override

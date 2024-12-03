@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  *
  * <p>Use it like this:</p>
  *
- * <pre> Tojos tojos = new MonoTojos(new Csv("hello.csv"));
+ * <pre> Tojos tojos = new MonoTojos(new MnCsv("hello.csv"));
  * Tojo tojo = tojos.add("Jeff");
  * tojo.set("age", 35);
  * </pre>
@@ -49,7 +49,7 @@ public interface Tojos extends Closeable {
     /**
      * Add new tojo with the given ID.
      *
-     * If another tojo already exists with this ID, it will be returned.
+     * <p>If another tojo already exists with this ID, it will be returned.</p>
      *
      * @param name The ID of the tojo
      * @return The tojo created or found
