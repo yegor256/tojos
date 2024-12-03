@@ -28,6 +28,7 @@ import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -76,6 +77,18 @@ final class TjDefaultTest {
             "must work fine",
             new TjSmart(tojos).size(),
             Matchers.equalTo(1)
+        );
+    }
+
+    @Test
+    void calculatesToString(@Mktmp final Path temp) {
+        final Tojos tojos = new TjDefault(new MnTabs(temp.resolve("hello.csv")));
+        final String name = "foo-bar";
+        tojos.add(name);
+        MatcherAssert.assertThat(
+            "must work fine",
+            tojos.select(t -> true).iterator().next().toString(),
+            Matchers.equalTo("foo-bar")
         );
     }
 
