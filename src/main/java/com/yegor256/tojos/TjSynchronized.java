@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Thread-safe version of {@link Tojos}.
@@ -59,14 +60,17 @@ public final class TjSynchronized implements Tojos {
     @Override
     public Tojo add(final String name) {
         synchronized (this.origin) {
-            return new Synched(this.origin.add(name));
+            return new TjSynchronized.Synched(this.origin.add(name));
         }
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
         synchronized (this.origin) {
-            return this.origin.select(filter);
+            return this.origin.select(filter)
+                .stream()
+                .map(TjSynchronized.Synched::new)
+                .collect(Collectors.toList());
         }
     }
 
