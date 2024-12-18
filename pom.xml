@@ -128,6 +128,12 @@ SOFTWARE.
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.yegor256</groupId>
+      <artifactId>together</artifactId>
+      <version>0.0.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
       <version>5.10.1</version>

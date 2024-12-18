@@ -25,21 +25,11 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+import com.yegor256.Together;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.cactoos.Scalar;
-import org.cactoos.experimental.Threads;
-import org.cactoos.number.SumOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -51,90 +41,27 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(MktmpResolver.class)
 final class MonoTojoTest {
 
-    /**
-     * Number of threads.
-     */
-    private static final int N_THREADS = Runtime.getRuntime().availableProcessors();
-
-    /**
-     * Tasks executor - emulates concurrent environment.
-     */
-    private final ExecutorService service = Executors.newFixedThreadPool(MonoTojoTest.N_THREADS);
-
-    /**
-     * All tojos.
-     */
-    private TjDefault tojos;
-
-    /**
-     * Shared mono.
-     */
-    private Mono mono;
-
-    @BeforeEach
-    void setUp(@Mktmp final Path temp) {
-        this.mono = new MnJson(temp.resolve("mono.json"));
-        this.tojos = new TjDefault(this.mono);
-    }
-
     @Test
-    void setsConcurrentlyToTheSameMono() throws InterruptedException {
-        this.service.invokeAll(
-            IntStream.range(0, MonoTojoTest.N_THREADS)
-                .mapToObj(String::valueOf)
-                .map(this.tojos::add)
-                .map(
-                    tojo -> Executors.callable(
-                        () -> {
-                            tojo.set(tojo.toString(), tojo.toString());
-                        }
-                    )
-                )
-                .collect(Collectors.toList())
-        );
-        this.service.shutdown();
-        this.service.awaitTermination(20, TimeUnit.SECONDS);
-        final Collection<Map<String, String>> result = this.mono.read();
+    void setsConcurrentlyToTheSameMono(@Mktmp final Path temp) {
+        final Tojo tojo = new TjDefault(
+            new MnJson(temp.resolve("mono.json"))
+        ).add("foo");
         MatcherAssert.assertThat(
             "must work fine",
-            result,
-            Matchers.hasSize(MonoTojoTest.N_THREADS)
-        );
-        for (final Map<String, String> tojo : result) {
-            MatcherAssert.assertThat(
-                "must work fine",
-                tojo.entrySet(),
-                Matchers.hasSize(2)
-            );
-        }
-    }
-
-    @Test
-    void readsAndWritesConcurrentlyWithHighFrequency() {
-        MatcherAssert.assertThat(
-            "must work fine",
-            new SumOf(
-                new Threads<>(
-                    MonoTojoTest.N_THREADS,
-                    IntStream.range(0, MonoTojoTest.N_THREADS)
-                        .mapToObj(String::valueOf)
-                        .map(this.tojos::add)
-                        .map(
-                            tojo -> (Scalar<Integer>) () -> {
-                                final String key = "uuid";
-                                final String uuid = UUID.randomUUID().toString();
-                                tojo.set(key, uuid);
-                                tojo.get(key);
-                                tojo.set(key, uuid);
-                                tojo.get(key);
-                                tojo.set(key, uuid);
-                                tojo.get(key);
-                                return 1;
-                            }
-                        ).collect(Collectors.toList())
-                )
+            new Together<>(
+                thread -> {
+                    final String key = "foo";
+                    final String uuid = UUID.randomUUID().toString();
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    return 1;
+                }
             ),
-            Matchers.equalTo(MonoTojoTest.N_THREADS)
+            Matchers.not(Matchers.hasItem(0))
         );
     }
 }

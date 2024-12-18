@@ -65,30 +65,14 @@ final class MonoTojo implements Tojo {
     @Override
     public boolean exists(final String key) {
         synchronized (this.mono) {
-            return this.mono.read().stream()
-                .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
-                .findFirst()
-                .get()
-                .containsKey(key);
+            return this.readMap().containsKey(key);
         }
     }
 
     @Override
     public String get(final String key) {
         synchronized (this.mono) {
-            final String value = this.mono.read().stream()
-                .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
-                .findFirst()
-                .get()
-                .get(key);
-            if (value == null) {
-                throw new IllegalStateException(
-                    String.format(
-                        "There is no '%s' key in the tojo", key
-                    )
-                );
-            }
-            return value;
+            return this.readMap().get(key);
         }
     }
 
@@ -104,10 +88,7 @@ final class MonoTojo implements Tojo {
                 );
             }
             final Collection<Map<String, String>> rows = this.mono.read();
-            final Map<String, String> row = rows.stream()
-                .filter(r -> r.get(Tojos.ID_KEY).equals(this.name))
-                .findFirst()
-                .orElseThrow(NotFoundException::new);
+            final Map<String, String> row = this.readMap();
             row.put(key, value.toString());
             this.mono.write(rows);
             return this;
@@ -116,11 +97,27 @@ final class MonoTojo implements Tojo {
 
     @Override
     public Map<String, String> toMap() {
-        return Collections.unmodifiableMap(
-            this.mono.read().stream()
-                .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
-                .findFirst().orElseThrow(NotFoundException::new)
-        );
+        return Collections.unmodifiableMap(this.readMap());
+    }
+
+    /**
+     * Read the map.
+     * @return The map
+     */
+    private Map<String, String> readMap() {
+        final Collection<Map<String, String>> rows = this.mono.read();
+        return rows
+            .stream()
+            .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
+            .findFirst()
+            .orElseThrow(
+                () -> new MonoTojo.NotFoundException(
+                    String.format(
+                        "The tojo with id='%s' not found among %d rows",
+                        this.name, rows.size()
+                    )
+                )
+            );
     }
 
     /**
@@ -128,7 +125,7 @@ final class MonoTojo implements Tojo {
      *
      * @since 0.19.0
      */
-    private final class NotFoundException extends IllegalStateException {
+    private static final class NotFoundException extends IllegalStateException {
 
         /**
          * Serialization marker.
@@ -138,8 +135,8 @@ final class MonoTojo implements Tojo {
         /**
          * Ctor.
          */
-        private NotFoundException() {
-            super(String.format("The tojo with id='%s' not found", MonoTojo.this.name));
+        NotFoundException(final String msg) {
+            super(msg);
         }
     }
 }

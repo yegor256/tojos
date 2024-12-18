@@ -25,14 +25,13 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+import com.yegor256.Together;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -43,35 +42,59 @@ import org.junit.jupiter.params.provider.ValueSource;
  * @since 0.3.0
  */
 @ExtendWith(MktmpResolver.class)
-class TjSynchronizedTest {
+final class TjSynchronizedTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"x.csv", "x.json"})
-    @SuppressWarnings("PMD.CloseResource")
-    void addsTojoParallel(final String file, @Mktmp final Path temp) throws InterruptedException {
+    void addsTojoParallel(final String file, @Mktmp final Path temp) {
         final Tojos tojos = new TjSynchronized(new TjDefault(new MnJson(temp.resolve(file))));
-        final int threads = 100;
-        final ExecutorService service = Executors.newFixedThreadPool(threads);
-        try {
-            final CountDownLatch latch = new CountDownLatch(1);
-            for (int idx = 0; idx < threads; ++idx) {
-                final int curr = idx;
-                service.submit(
-                    (Callable<?>) () -> {
-                        latch.await();
-                        return tojos.add("foo".concat(String.valueOf(curr)));
-                    }
-                );
-            }
-            latch.countDown();
-        } finally {
-            service.shutdown();
-            assert service.awaitTermination(1L, TimeUnit.MINUTES);
-        }
+        final int threads = 50;
         MatcherAssert.assertThat(
             "must work fine",
-            new TjSmart(tojos).size(),
-            Matchers.equalTo(threads)
+            new Together<>(
+                threads,
+                thread -> tojos.add(Integer.toString(thread))
+            ),
+            Matchers.iterableWithSize(threads)
+        );
+        for (int idx = 0; idx < threads; ++idx) {
+            final int thread = idx;
+            MatcherAssert.assertThat(
+                "the tojo is present",
+                tojos.select(t -> t.get(Tojos.ID_KEY).equals(Integer.toString(thread))),
+                Matchers.iterableWithSize(1)
+            );
+        }
+    }
+
+    @RepeatedTest(10)
+    void readsAndWritesConcurrentlyWithHighFrequency(@Mktmp final Path temp) {
+        final Tojos tojos = new TjSynchronized(
+            new TjDefault(
+                new MnSynchronized(
+                    new MnJson(temp.resolve("mono.json"))
+                )
+            )
+        );
+        MatcherAssert.assertThat(
+            "must work fine",
+            new Together<>(
+                thread -> {
+                    synchronized (TjSynchronized.class) {
+                        final Tojo tojo = tojos.add(UUID.randomUUID().toString());
+                        final String key = "foo";
+                        final String uuid = UUID.randomUUID().toString();
+                        tojo.set(key, uuid);
+                        tojo.get(key);
+                        tojo.set(key, uuid);
+                        tojo.get(key);
+                        tojo.set(key, uuid);
+                        tojo.get(key);
+                        return 1;
+                    }
+                }
+            ),
+            Matchers.not(Matchers.hasItem(0))
         );
     }
 }

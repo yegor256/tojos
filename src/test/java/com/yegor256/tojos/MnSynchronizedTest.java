@@ -25,17 +25,12 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+import com.yegor256.Together;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -47,68 +42,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(MktmpResolver.class)
 final class MnSynchronizedTest {
 
-    /**
-     * Number of threads.
-     */
-    static final int THREADS = 5;
-
-    /**
-     * The mono under test.
-     */
-    private Mono shared;
-
-    /**
-     * The executor.
-     */
-    private ExecutorService executor;
-
-    /**
-     * The latch.
-     */
-    private CountDownLatch latch;
-
-    @BeforeEach
-    void setUp(@Mktmp final Path temp) {
-        this.shared = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
-        this.executor = Executors.newFixedThreadPool(MnSynchronizedTest.THREADS);
-        this.latch = new CountDownLatch(1);
-    }
-
-    @Test
-    void writesConcurrently() throws InterruptedException {
-        for (int trds = 1; trds <= MnSynchronizedTest.THREADS; ++trds) {
-            this.executor.submit(
-                () -> {
-                    this.latch.await();
-                    final Collection<Map<String, String>> increased = this.shared.read();
-                    increased.addAll(MnSynchronizedTest.rowsByThreads());
-                    this.shared.write(increased);
-                    return this.shared.read().size();
-                }
-            );
-        }
-        this.latch.countDown();
-        this.executor.shutdown();
-        assert this.executor.awaitTermination(1L, TimeUnit.MINUTES);
+    @RepeatedTest(10)
+    void writesConcurrently(@Mktmp final Path temp) {
+        final Mono mono = new MnSynchronized(new MnJson(temp.resolve("bar/baz/a.json")));
         MatcherAssert.assertThat(
-            "must work fine",
-            this.shared.read().containsAll(MnSynchronizedTest.rowsByThreads()),
-            Matchers.equalTo(true)
-        );
-    }
-
-    /**
-     * The rows which size equal to number of threads.
-     *
-     * @return Collection of rows
-     */
-    private static Collection<Map<String, String>> rowsByThreads() {
-        return Collections.nCopies(
-            MnSynchronizedTest.THREADS,
-            Collections.singletonMap(
-                Tojos.ID_KEY,
-                String.valueOf(MnSynchronizedTest.THREADS)
-            )
+            "works without concurrency conflicts",
+            new Together<>(
+                thread -> {
+                    mono.write(
+                        Collections.nCopies(
+                            thread,
+                            Collections.singletonMap(
+                                Tojos.ID_KEY,
+                                String.valueOf(10)
+                            )
+                        )
+                    );
+                    return mono.read().size();
+                }
+            ),
+            Matchers.not(Matchers.hasItem(0))
         );
     }
 }

@@ -39,7 +39,7 @@ public final class MnSynchronized implements Mono {
     /**
      * The read-write lock.
      */
-    private final ReadWriteLock rwl;
+    private final ReadWriteLock lock;
 
     /**
      * The wrapped mono.
@@ -53,26 +53,26 @@ public final class MnSynchronized implements Mono {
      */
     public MnSynchronized(final Mono mono) {
         this.wrapped = mono;
-        this.rwl = new ReentrantReadWriteLock();
+        this.lock = new ReentrantReadWriteLock();
     }
 
     @Override
     public Collection<Map<String, String>> read() {
-        this.rwl.readLock().lock();
+        this.lock.readLock().lock();
         try {
             return this.wrapped.read();
         } finally {
-            this.rwl.readLock().unlock();
+            this.lock.readLock().unlock();
         }
     }
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        this.rwl.writeLock().lock();
+        this.lock.writeLock().lock();
         try {
             this.wrapped.write(rows);
         } finally {
-            this.rwl.writeLock().unlock();
+            this.lock.writeLock().unlock();
         }
     }
 

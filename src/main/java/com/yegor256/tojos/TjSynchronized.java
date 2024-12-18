@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 
 /**
- * All Tojos in a {@link Mono}.
+ * Thread-safe version of {@link Tojos}.
  *
  * <p>The class is thread-safe.</p>
  *
@@ -39,14 +39,14 @@ import java.util.function.Predicate;
 public final class TjSynchronized implements Tojos {
 
     /**
-     * The wrapped tojos.
+     * The wrapped {@link Tojos}.
      */
-    private final Tojos wrapped;
+    private final Tojos origin;
 
     /**
      * The read-write lock.
      */
-    private final ReadWriteLock rwl;
+    private final ReadWriteLock lock;
 
     /**
      * Ctor.
@@ -54,37 +54,37 @@ public final class TjSynchronized implements Tojos {
      * @param tojos The tojos
      */
     public TjSynchronized(final Tojos tojos) {
-        this.wrapped = tojos;
-        this.rwl = new ReentrantReadWriteLock();
+        this.origin = tojos;
+        this.lock = new ReentrantReadWriteLock();
     }
 
     @Override
     public String toString() {
-        return this.wrapped.toString();
+        return this.origin.toString();
     }
 
     @Override
     public Tojo add(final String name) {
-        this.rwl.writeLock().lock();
+        this.lock.writeLock().lock();
         try {
-            return this.wrapped.add(name);
+            return this.origin.add(name);
         } finally {
-            this.rwl.writeLock().unlock();
+            this.lock.writeLock().unlock();
         }
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        this.rwl.readLock().lock();
+        this.lock.readLock().lock();
         try {
-            return this.wrapped.select(filter);
+            return this.origin.select(filter);
         } finally {
-            this.rwl.readLock().unlock();
+            this.lock.readLock().unlock();
         }
     }
 
     @Override
     public void close() throws IOException {
-        this.wrapped.close();
+        this.origin.close();
     }
 }
