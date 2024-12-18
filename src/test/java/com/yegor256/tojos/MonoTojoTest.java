@@ -42,6 +42,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 final class MonoTojoTest {
 
     @Test
+    void simpleReadWrite(@Mktmp final Path temp) {
+        final Mono mono = new MnJson(temp.resolve("mono.json"));
+        new TjDefault(mono).add("foo");
+        final Tojo tojo = new MonoTojo(mono, "foo");
+        tojo.set("k", "v");
+        MatcherAssert.assertThat(
+            "reads back",
+            tojo.get("k"),
+            Matchers.equalTo("v")
+        );
+    }
+
+    @Test
     void setsConcurrentlyToTheSameMono(@Mktmp final Path temp) {
         final Tojo tojo = new TjDefault(
             new MnJson(temp.resolve("mono.json"))

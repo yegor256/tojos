@@ -121,32 +121,12 @@ final class MonoTojo implements Tojo {
             .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
             .findFirst()
             .orElseThrow(
-                () -> new MonoTojo.NotFoundException(
+                () -> new IllegalArgumentException(
                     String.format(
                         "The tojo with id='%s' not found among %d rows",
                         this.name, rows.size()
                     )
                 )
             );
-    }
-
-    /**
-     * Not found exception.
-     *
-     * @since 0.19.0
-     */
-    private static final class NotFoundException extends IllegalStateException {
-
-        /**
-         * Serialization marker.
-         */
-        private static final long serialVersionUID = 0x7529FAFEL;
-
-        /**
-         * Ctor.
-         */
-        NotFoundException(final String msg) {
-            super(msg);
-        }
     }
 }
