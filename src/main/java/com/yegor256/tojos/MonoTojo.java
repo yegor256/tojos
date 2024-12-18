@@ -72,7 +72,17 @@ final class MonoTojo implements Tojo {
     @Override
     public String get(final String key) {
         synchronized (this.mono) {
-            return this.readMap().get(key);
+            final Map<String, String> map = this.readMap();
+            final String value = map.get(key);
+            if (value == null) {
+                throw new IllegalStateException(
+                    String.format(
+                        "There is no '%s' key in the tojo id=%s, among %d keys: %s",
+                        key, this.name, map.size(), map.keySet()
+                    )
+                );
+            }
+            return value;
         }
     }
 
