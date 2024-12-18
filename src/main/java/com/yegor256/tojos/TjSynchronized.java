@@ -25,6 +25,7 @@ package com.yegor256.tojos;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -58,7 +59,7 @@ public final class TjSynchronized implements Tojos {
     @Override
     public Tojo add(final String name) {
         synchronized (this.origin) {
-            return this.origin.add(name);
+            return new Synched(this.origin.add(name));
         }
     }
 
@@ -72,5 +73,55 @@ public final class TjSynchronized implements Tojos {
     @Override
     public void close() throws IOException {
         this.origin.close();
+    }
+
+    /**
+     * Synchronized tojo.
+     *
+     * @since 0.19.0
+     */
+    private final class Synched implements Tojo {
+
+        /**
+         * The wrapped {@link Tojo}.
+         */
+        private final Tojo origin;
+
+        /**
+         * Ctor.
+         *
+         * @param tojo The tojo
+         */
+        Synched(final Tojo tojo) {
+            this.origin = tojo;
+        }
+
+        @Override
+        public boolean exists(final String key) {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.exists(key);
+            }
+        }
+
+        @Override
+        public String get(final String key) {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.get(key);
+            }
+        }
+
+        @Override
+        public Tojo set(final String key, final Object value) {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.set(key, value);
+            }
+        }
+
+        @Override
+        public Map<String, String> toMap() {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.toMap();
+            }
+        }
     }
 }

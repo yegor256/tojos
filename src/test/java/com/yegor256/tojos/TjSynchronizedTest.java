@@ -79,18 +79,16 @@ final class TjSynchronizedTest {
             "must work fine",
             new Together<>(
                 thread -> {
-                    synchronized (TjSynchronized.class) {
-                        final Tojo tojo = tojos.add(UUID.randomUUID().toString());
-                        final String key = "foo";
-                        final String uuid = UUID.randomUUID().toString();
-                        tojo.set(key, uuid);
-                        tojo.get(key);
-                        tojo.set(key, uuid);
-                        tojo.get(key);
-                        tojo.set(key, uuid);
-                        tojo.get(key);
-                        return 1;
-                    }
+                    final Tojo tojo = tojos.add(UUID.randomUUID().toString());
+                    final String key = "foo";
+                    final String uuid = UUID.randomUUID().toString();
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    return 1;
                 }
             ),
             Matchers.not(Matchers.hasItem(0))
