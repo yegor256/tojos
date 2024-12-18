@@ -50,7 +50,7 @@ final class MnSynchronizedTest {
                 thread -> {
                     mono.write(
                         Collections.nCopies(
-                            thread,
+                            thread + 1,
                             Collections.singletonMap(
                                 Tojos.ID_KEY,
                                 String.valueOf(10)
