@@ -30,6 +30,10 @@ import java.util.Map;
 /**
  * Collection of rows, read/write.
  *
+ * <p>Each row is a map of unique keys and their values. The rows
+ * are either read or written all together. This is why the name
+ * of the interface: "mono."</p>
+ *
  * @since 0.3.0
  */
 public interface Mono extends Closeable {

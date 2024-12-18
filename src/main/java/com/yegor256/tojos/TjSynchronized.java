@@ -25,12 +25,12 @@ package com.yegor256.tojos;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
- * All Tojos in a {@link Mono}.
+ * Thread-safe version of {@link Tojos}.
  *
  * <p>The class is thread-safe.</p>
  *
@@ -39,14 +39,9 @@ import java.util.function.Predicate;
 public final class TjSynchronized implements Tojos {
 
     /**
-     * The wrapped tojos.
+     * The wrapped {@link Tojos}.
      */
-    private final Tojos wrapped;
-
-    /**
-     * The read-write lock.
-     */
-    private final ReadWriteLock rwl;
+    private final Tojos origin;
 
     /**
      * Ctor.
@@ -54,37 +49,83 @@ public final class TjSynchronized implements Tojos {
      * @param tojos The tojos
      */
     public TjSynchronized(final Tojos tojos) {
-        this.wrapped = tojos;
-        this.rwl = new ReentrantReadWriteLock();
+        this.origin = tojos;
     }
 
     @Override
     public String toString() {
-        return this.wrapped.toString();
+        return this.origin.toString();
     }
 
     @Override
     public Tojo add(final String name) {
-        this.rwl.writeLock().lock();
-        try {
-            return this.wrapped.add(name);
-        } finally {
-            this.rwl.writeLock().unlock();
+        synchronized (this.origin) {
+            return new TjSynchronized.Synched(this.origin.add(name));
         }
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        this.rwl.readLock().lock();
-        try {
-            return this.wrapped.select(filter);
-        } finally {
-            this.rwl.readLock().unlock();
+        synchronized (this.origin) {
+            return this.origin.select(filter)
+                .stream()
+                .map(TjSynchronized.Synched::new)
+                .collect(Collectors.toList());
         }
     }
 
     @Override
     public void close() throws IOException {
-        this.wrapped.close();
+        this.origin.close();
+    }
+
+    /**
+     * Synchronized tojo.
+     *
+     * @since 0.19.0
+     */
+    private final class Synched implements Tojo {
+
+        /**
+         * The wrapped {@link Tojo}.
+         */
+        private final Tojo origin;
+
+        /**
+         * Ctor.
+         *
+         * @param tojo The tojo
+         */
+        Synched(final Tojo tojo) {
+            this.origin = tojo;
+        }
+
+        @Override
+        public boolean exists(final String key) {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.exists(key);
+            }
+        }
+
+        @Override
+        public String get(final String key) {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.get(key);
+            }
+        }
+
+        @Override
+        public Tojo set(final String key, final Object value) {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.set(key, value);
+            }
+        }
+
+        @Override
+        public Map<String, String> toMap() {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.toMap();
+            }
+        }
     }
 }
