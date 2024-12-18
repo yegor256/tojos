@@ -65,14 +65,14 @@ final class MonoTojo implements Tojo {
     @Override
     public boolean exists(final String key) {
         synchronized (this.mono) {
-            return this.readMap().containsKey(key);
+            return this.readMap(this.mono.read()).containsKey(key);
         }
     }
 
     @Override
     public String get(final String key) {
         synchronized (this.mono) {
-            final Map<String, String> map = this.readMap();
+            final Map<String, String> map = this.readMap(this.mono.read());
             final String value = map.get(key);
             if (value == null) {
                 throw new IllegalStateException(
@@ -98,7 +98,7 @@ final class MonoTojo implements Tojo {
                 );
             }
             final Collection<Map<String, String>> rows = this.mono.read();
-            final Map<String, String> row = this.readMap();
+            final Map<String, String> row = this.readMap(rows);
             row.put(key, value.toString());
             this.mono.write(rows);
             return this;
@@ -107,15 +107,15 @@ final class MonoTojo implements Tojo {
 
     @Override
     public Map<String, String> toMap() {
-        return Collections.unmodifiableMap(this.readMap());
+        return Collections.unmodifiableMap(this.readMap(this.mono.read()));
     }
 
     /**
-     * Read the map.
+     * Read the map from the collection.
+     * @param rows The rows
      * @return The map
      */
-    private Map<String, String> readMap() {
-        final Collection<Map<String, String>> rows = this.mono.read();
+    private Map<String, String> readMap(final Collection<Map<String, String>> rows) {
         return rows
             .stream()
             .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
