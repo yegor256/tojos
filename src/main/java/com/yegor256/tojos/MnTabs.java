@@ -112,10 +112,12 @@ public final class MnTabs implements Mono {
             }
             for (final String line : lines) {
                 final Map<String, String> row = new HashMap<>(1);
-                final String[] cols = line.split("\t");
-                for (final String part : cols) {
-                    final String[] parts = part.split(":", 2);
-                    row.put(MnTabs.decode(parts[0]), MnTabs.decode(parts[1]));
+                if (!line.isEmpty()) {
+                    final String[] cols = line.split("\t");
+                    for (final String part : cols) {
+                        final String[] parts = part.split(":", 2);
+                        row.put(MnTabs.decode(parts[0]), MnTabs.decode(parts[1]));
+                    }
                 }
                 rows.add(row);
             }

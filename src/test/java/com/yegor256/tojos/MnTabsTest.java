@@ -79,4 +79,18 @@ final class MnTabsTest {
         );
     }
 
+    @Test
+    void savesEmptyRow(@Mktmp final Path temp) {
+        final Mono tabs = new MnTabs(temp.resolve("e.tabs"));
+        final Collection<Map<String, String>> rows = tabs.read();
+        rows.add(new HashMap<>(0));
+        rows.add(new HashMap<>(0));
+        tabs.write(rows);
+        MatcherAssert.assertThat(
+            "reads back empty row",
+            tabs.read().size(),
+            Matchers.equalTo(2)
+        );
+    }
+
 }
