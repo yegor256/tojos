@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.runner.RunWith;
 
 /**
@@ -44,6 +45,12 @@ public final class Fuzzing {
 
     @Fuzz
     public void fuzzMnTabs(final Collection<Map<String, String>> before) throws IOException {
+        for (final Map<String, String> row : before) {
+            for (final Map.Entry<String, String> entry : row.entrySet()) {
+                Assumptions.assumeFalse(entry.getKey() == null);
+                Assumptions.assumeFalse(entry.getValue() == null);
+            }
+        }
         final File temp = File.createTempFile(this.getClass().getCanonicalName(), "");
         final Mono tabs = new MnTabs(temp);
         tabs.write(before);

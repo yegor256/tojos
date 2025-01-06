@@ -64,4 +64,19 @@ final class MnTabsTest {
         );
     }
 
+    @Test
+    void readsWriteEmptyValues(@Mktmp final Path temp) {
+        final Mono tabs = new MnTabs(temp.resolve("x.tabs"));
+        final Collection<Map<String, String>> rows = tabs.read();
+        final Map<String, String> row = new HashMap<>(0);
+        row.put(Tojos.ID_KEY, "");
+        rows.add(row);
+        tabs.write(rows);
+        MatcherAssert.assertThat(
+            "reads back empty string",
+            tabs.read().iterator().next().get(Tojos.ID_KEY),
+            Matchers.equalTo("")
+        );
+    }
+
 }
