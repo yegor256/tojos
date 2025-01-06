@@ -25,16 +25,19 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -51,9 +54,9 @@ final class MnCsvTest {
         final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
         final Collection<Map<String, String>> rows = csv.read();
         MatcherAssert.assertThat(
-            "must work fine",
-            csv.read().size(),
-            Matchers.equalTo(0)
+                "must work fine",
+                csv.read().size(),
+                Matchers.equalTo(0)
         );
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
@@ -62,9 +65,9 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
-            "must work fine",
-            csv.read().iterator().next().get(key),
-            Matchers.equalTo(value)
+                "must work fine",
+                csv.read().iterator().next().get(key),
+                Matchers.equalTo(value)
         );
     }
 
@@ -78,9 +81,9 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
-            "must work fine",
-            csv.read().iterator().next().containsKey("y"),
-            Matchers.equalTo(false)
+                "must work fine",
+                csv.read().iterator().next().containsKey("y"),
+                Matchers.equalTo(false)
         );
     }
 
@@ -94,9 +97,9 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
-            "must have the right element inside",
-            csv.read().iterator().next().get("a"),
-            Matchers.equalTo(path)
+                "must have the right element inside",
+                csv.read().iterator().next().get("a"),
+                Matchers.equalTo(path)
         );
     }
 
@@ -112,14 +115,59 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
-            "must work fine",
-            new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
-            Matchers.matchesPattern(
-                Pattern.compile(
-                    String.format("^\"%s\",.*", Tojos.ID_KEY),
-                    Pattern.MULTILINE | Pattern.DOTALL
+                "must work fine",
+                new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
+                Matchers.matchesPattern(
+                        Pattern.compile(
+                                String.format("^\"%s\",.*", Tojos.ID_KEY),
+                                Pattern.MULTILINE | Pattern.DOTALL
+                        )
                 )
-            )
         );
     }
+
+    @Test
+    public void testConcurrentModificationBugInDupMethod() throws InterruptedException, NoSuchMethodException {
+        Collection<Map<String, String>> rows = new ArrayList<>();
+        AtomicReference<Throwable> exceptionRef = new AtomicReference<>();
+
+        Method dupMethod = MnCsv.class.getDeclaredMethod("dup", Collection.class);
+        dupMethod.setAccessible(true);
+
+        Thread addThead = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                rows.add(new HashMap<>(Map.of("key" + i, "value" + i)));
+            }
+        });
+
+        Thread dupThead = new Thread(() -> {
+            try {
+                Thread.sleep(10);
+                dupMethod.invoke(null, rows);
+            } catch (Exception e) {
+                exceptionRef.set(e);
+            }
+        });
+
+        Thread removeThread = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                int finalI = i;
+                rows.removeIf(map -> map.containsKey("key" + finalI));
+            }
+        });
+
+        addThead.start();
+        dupThead.start();
+        removeThread.start();
+
+        addThead.join();
+        dupThead.join();
+        removeThread.join();
+
+        if (exceptionRef.get() != null) {
+            Throwable exception = exceptionRef.get();
+            Assertions.fail("Test failed due to exception: " + exception.getClass().getSimpleName(), exception);
+        }
+    }
+
 }

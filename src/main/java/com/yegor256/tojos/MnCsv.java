@@ -183,7 +183,8 @@ public final class MnCsv implements Mono {
      */
     private static Collection<Map<String, String>> dup(final Collection<Map<String, String>> rows) {
         final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
-        for (final Map<String, String> map : rows) {
+        final List<Map<String, String>> rowsCopy = new ArrayList<>(rows);
+        for (final Map<String, String> map : rowsCopy) {
             final Map<String, String> copy = new HashMap<>(map.size());
             copy.putAll(map);
             list.add(copy);
