@@ -69,7 +69,7 @@ still break the code. Here is how you can run it:
 mvn test jqf:fuzz
 ```
 
-If after this step you see any files in the 
+If after this step you see any files in the
 `target/fuzz-results/com.yegor256.tojos.Fuzzing/fuzzMnTabs/failures/`
 directory, you got a few failures, very good!
 Now, you reproduce them in order to understand what's wrong:
