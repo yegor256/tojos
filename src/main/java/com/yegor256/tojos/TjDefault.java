@@ -72,7 +72,7 @@ public final class TjDefault implements Tojos {
             rows.add(row);
             this.mono.write(rows);
         }
-        return new MonoTojo(this.mono, name);
+        return new ToMono(this.mono, name);
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class TjDefault implements Tojos {
         final Collection<Map<String, String>> rows = this.mono.read();
         final List<Tojo> tojos = new ArrayList<>(rows.size());
         for (final Map<String, String> row : rows) {
-            final Tojo tojo = new MonoTojo(this.mono, row.get(Tojos.ID_KEY));
+            final Tojo tojo = new ToMono(this.mono, row.get(Tojos.ID_KEY));
             if (filter.test(tojo)) {
                 tojos.add(tojo);
             }

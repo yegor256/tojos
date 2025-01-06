@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * @since 0.18
  */
-public final class CachedTojo implements Tojo {
+public final class ToCached implements Tojo {
 
     /**
      * The original tojo.
@@ -53,7 +53,7 @@ public final class CachedTojo implements Tojo {
      * Constructor.
      * @param tojo The original tojo.
      */
-    CachedTojo(final Tojo tojo) {
+    ToCached(final Tojo tojo) {
         this(tojo, new HashMap<>(tojo.toMap()));
     }
 
@@ -62,7 +62,7 @@ public final class CachedTojo implements Tojo {
      * @param tojo The original tojo
      * @param cache Cache container.
      */
-    private CachedTojo(
+    private ToCached(
         final Tojo tojo,
         final Map<String, String> cache
     ) {

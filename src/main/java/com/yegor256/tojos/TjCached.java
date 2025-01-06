@@ -77,7 +77,7 @@ public final class TjCached implements Tojos {
 
     @Override
     public Tojo add(final String name) {
-        final Tojo tojo = new CachedTojo(this.origin.add(name));
+        final Tojo tojo = new ToCached(this.origin.add(name));
         this.cache.put(name, tojo);
         return tojo;
     }
@@ -105,7 +105,7 @@ public final class TjCached implements Tojos {
         this.cache.putAll(
             this.origin.select(x -> true)
                 .stream()
-                .map(CachedTojo::new)
+                .map(ToCached::new)
                 .collect(
                     Collectors.toMap(
                         x -> x.get(Tojos.ID_KEY),

@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * @since 0.3.0
  */
-final class MonoTojo implements Tojo {
+final class ToMono implements Tojo {
 
     /**
      * The file.
@@ -52,7 +52,7 @@ final class MonoTojo implements Tojo {
      * @param mno The CSV
      * @param nme The name
      */
-    MonoTojo(final Mono mno, final String nme) {
+    ToMono(final Mono mno, final String nme) {
         this.mono = mno;
         this.name = nme;
     }

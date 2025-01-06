@@ -39,13 +39,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.16
  */
 @ExtendWith(MktmpResolver.class)
-final class MonoTojoTest {
+final class ToMonoTest {
 
     @Test
     void readsAndWrites(@Mktmp final Path temp) {
         final Mono mono = new MnJson(temp.resolve("mono.json"));
         new TjDefault(mono).add("foo");
-        final Tojo tojo = new MonoTojo(mono, "foo");
+        final Tojo tojo = new ToMono(mono, "foo");
         tojo.set("k", "v");
         MatcherAssert.assertThat(
             "reads back",
