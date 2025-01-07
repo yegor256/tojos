@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,7 +140,7 @@ final class MnCsvTest {
                 for (int idx = 0; idx < 1000; idx += 1) {
                     rows.add(
                         new HashMap<>(
-                            Map.of(
+                            Collections.singletonMap(
                                 String.format("key%d", idx),
                                 String.format("value%d", idx)
                             )
