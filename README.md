@@ -58,3 +58,24 @@ mvn clean install -Pqulice
 ```
 
 You will need Maven 3.3+ and Java 8+.
+
+## How Fuzz Testing Works
+
+We use [JQF](https://github.com/rohanpadhye/JQF) for fuzz testing. It helps
+us find inputs for some of our tests which are not obvious, but they
+still break the code. Here is how you can run it:
+
+```bash
+mvn test jqf:fuzz
+```
+
+If after this step you see any files in the
+`target/fuzz-results/com.yegor256.tojos.Fuzzing/fuzzMnTabs/failures/`
+directory, you got a few failures, very good!
+Now, you reproduce them in order to understand what's wrong:
+
+```bash
+mvn jqf:repro -Dinput=target/fuzz-results/com.yegor256.tojos.Fuzzing/fuzzMnTabs/failures/id_000000
+```
+
+You should see a stack trace and a few lines of code that caused the failure.
