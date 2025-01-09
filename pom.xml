@@ -175,7 +175,8 @@ SOFTWARE.
           <time>5s</time>
           <exitOnCrash>false</exitOnCrash>
           <quiet>true</quiet>
-          <testMethod>fuzzMnTabs</testMethod>
+          <printArgs>true</printArgs>
+          <testMethod>fuzzMnJson</testMethod>
         </configuration>
       </plugin>
       <plugin>
