@@ -130,7 +130,7 @@ final class  MnCsvTest {
         );
     }
 
-    @RepeatedTest(1)
+    @RepeatedTest(5)
     void handlesConcurrentModificationInDupMethod(@Mktmp final Path temp) {
         final Collection<Map<String, String>> rows = new ArrayList<>(10_000);
         final AtomicReference<Throwable> exc = new AtomicReference<>();
