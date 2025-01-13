@@ -177,7 +177,7 @@ SOFTWARE.
             </goals>
             <configuration>
               <threads>4</threads>
-              <mutationThreshold>10</mutationThreshold>
+              <mutationThreshold>60</mutationThreshold>
             </configuration>
           </execution>
         </executions>
