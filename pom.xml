@@ -181,6 +181,13 @@ SOFTWARE.
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>edu.berkeley.cs.jqf</groupId>
