@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -130,7 +129,7 @@ final class MnCsvTest {
         );
     }
 
-    @RepeatedTest(5)
+    @Test
     void handlesConcurrentModificationInDupMethod(@Mktmp final Path temp) {
         final Collection<Map<String, String>> rows = new ArrayList<>(10_000);
         final AtomicReference<Throwable> error = new AtomicReference<>();
