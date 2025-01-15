@@ -20,5 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 ---
-parent:
-  child: value
+name: ort
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  ort:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
+      - uses: actions/checkout@v4
+      - uses: oss-review-toolkit/ort-ci-github-action@v1
+        with:
+          allow-dynamic-versions: 'true'
+          fail-on: 'violations'
