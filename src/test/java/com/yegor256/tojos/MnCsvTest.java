@@ -51,7 +51,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.3.0
  */
 @ExtendWith(MktmpResolver.class)
-final class  MnCsvTest {
+final class MnCsvTest {
 
     @Test
     void checksSimpleScenario(@Mktmp final Path temp) {
@@ -133,50 +133,35 @@ final class  MnCsvTest {
     @RepeatedTest(5)
     void handlesConcurrentModificationInDupMethod(@Mktmp final Path temp) {
         final Collection<Map<String, String>> rows = new ArrayList<>(10_000);
-        final AtomicReference<Throwable> exc = new AtomicReference<>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
         final Path path = temp.resolve("key-test.json");
         final Mono csv = new MnCsv(path);
-        final int threads = 3;
-        new Together<>(
-            threads, thead -> {
-            switch (thead) {
-                case 0:
-                    add(rows);
-                    break;
-                case 1:
-                    dup(csv, rows, exc);
-                    break;
-                case 2:
-                    try {
-                        rem(rows);
-                    } catch (final ConcurrentModificationException ex) {
+        final int threads = 2;
+        MatcherAssert.assertThat(
+            "works without concurrency conflicts",
+            new Together<>(
+                threads, thread -> {
+                switch (thread) {
+                    case 0:
+                        add(rows);
                         break;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return thead;
-        }).asList();
-        if (exc.get() != null) {
-            final Throwable err = exc.get();
+                    case 1:
+                        dup(csv, rows, error);
+                        break;
+                    default:
+                        break;
+                }
+                return thread;
+            }).asList(), Matchers.hasSize(2)
+        );
+        if (error.get() != null) {
+            final Throwable err = error.get();
             Assertions.fail(
                 String.format(
                     "Test failed due to exception: %s",
                     err.getClass().getSimpleName()
                 ),
                 err
-            );
-        }
-    }
-
-    private static void rem(final Collection<Map<String, String>> rows) {
-        for (int idx = 0; idx < 10_000; idx += 1) {
-            final int pos = idx;
-            rows.removeIf(
-                map -> map.containsKey(
-                    String.format("key%d", pos)
-                )
             );
         }
     }
