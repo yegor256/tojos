@@ -25,16 +25,22 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+import com.yegor256.Together;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -121,5 +127,65 @@ final class MnCsvTest {
                 )
             )
         );
+    }
+
+    @Test
+    void handlesConcurrentModificationInDupMethod(@Mktmp final Path temp) {
+        final Collection<Map<String, String>> rows = new ArrayList<>(10_000);
+        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final Path path = temp.resolve("key-test.json");
+        final Mono csv = new MnCsv(path);
+        final int threads = 2;
+        MatcherAssert.assertThat(
+            "works without concurrency conflicts",
+            new Together<>(
+                threads, thread -> {
+                switch (thread) {
+                    case 0:
+                        add(rows);
+                        break;
+                    case 1:
+                        dup(csv, rows, error);
+                        break;
+                    default:
+                        break;
+                }
+                return thread;
+            }).asList(), Matchers.hasSize(2)
+        );
+        if (error.get() != null) {
+            final Throwable err = error.get();
+            Assertions.fail(
+                String.format(
+                    "Test failed due to exception: %s",
+                    err.getClass().getSimpleName()
+                ),
+                err
+            );
+        }
+    }
+
+    private static void add(final Collection<Map<String, String>> rows) {
+        for (int idx = 0; idx < 10_000; idx += 1) {
+            rows.add(
+                new HashMap<>(
+                    Collections.singletonMap(
+                        String.format("key%d", idx),
+                        String.format("value%d", idx)
+                    )
+                )
+            );
+        }
+    }
+
+    private static void dup(final Mono csv,
+        final Collection<Map<String, String>> rows,
+        final AtomicReference<Throwable> exc) throws InterruptedException {
+        Thread.sleep(50);
+        try {
+            csv.write(rows);
+        } catch (final ConcurrentModificationException ex) {
+            exc.set(ex);
+        }
     }
 }
