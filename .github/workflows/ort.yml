@@ -37,5 +37,4 @@ jobs:
       - uses: oss-review-toolkit/ort-ci-github-action@v1
         with:
           ort-cli-args: '-P ort.enableRepositoryPackageCurations=true'
-          allow-dynamic-versions: 'true'
           fail-on: 'violations'
