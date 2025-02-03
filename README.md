@@ -24,7 +24,7 @@ You add this to your `pom.xml`:
 <dependency>
   <groupId>com.yegor256</groupId>
   <artifactId>tojos</artifactId>
-  <version>0.18.4</version>
+  <version>0.18.5</version>
 </dependency>
 ```
 
