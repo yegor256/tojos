@@ -101,6 +101,13 @@ public final class TjSynchronized implements Tojos {
         }
 
         @Override
+        public String toString() {
+            synchronized (TjSynchronized.this.origin) {
+                return this.origin.toString();
+            }
+        }
+
+        @Override
         public boolean exists(final String key) {
             synchronized (TjSynchronized.this.origin) {
                 return this.origin.exists(key);
