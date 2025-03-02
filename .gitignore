@@ -1,9 +1,11 @@
-target/
-.idea
-.DS_Store
 *.iml
-.project
-.settings
+.DS_Store
 .classpath
-.recommenders
+.idea
+.idea/
 .mvn/wrapper/maven-wrapper.jar
+.project
+.recommenders
+.settings
+node_modules/
+target/
