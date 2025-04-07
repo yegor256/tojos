@@ -1,14 +1,14 @@
 # NoSQL Single-File Database
 
 [![EO principles respected here](https://www.elegantobjects.org/badge.svg)](https://www.elegantobjects.org)
-[![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/tojos)](http://www.rultor.com/p/yegor256/tojos)
+[![DevOps By Rultor.com](https://www.rultor.com/b/yegor256/tojos)](https://www.rultor.com/p/yegor256/tojos)
 [![We recommend IntelliJ IDEA](https://www.elegantobjects.org/intellij-idea.svg)](https://www.jetbrains.com/idea/)
 
 [![mvn](https://github.com/yegor256/tojos/actions/workflows/mvn.yml/badge.svg)](https://github.com/yegor256/tojos/actions/workflows/mvn.yml)
-[![PDD status](http://www.0pdd.com/svg?name=yegor256/tojos)](http://www.0pdd.com/p?name=yegor256/tojos)
+[![PDD status](https://www.0pdd.com/svg?name=yegor256/tojos)](https://www.0pdd.com/p?name=yegor256/tojos)
 [![Maintainability](https://api.codeclimate.com/v1/badges/742bde48ea6fabdba1ce/maintainability)](https://codeclimate.com/github/yegor256/tojos/maintainability)
 [![Maven Central](https://img.shields.io/maven-central/v/com.yegor256/tojos.svg)](https://maven-badges.herokuapp.com/maven-central/com.yegor256/tojos)
-[![Javadoc](http://www.javadoc.io/badge/com.yegor256/tojos.svg)](http://www.javadoc.io/doc/com.yegor256/tojos)
+[![Javadoc](https://www.javadoc.io/badge/com.yegor256/tojos.svg)](https://www.javadoc.io/doc/com.yegor256/tojos)
 [![codecov](https://codecov.io/gh/yegor256/tojos/branch/master/graph/badge.svg)](https://codecov.io/gh/yegor256/tojos)
 [![Hits-of-Code](https://hitsofcode.com/github/yegor256/tojos)](https://hitsofcode.com/view/github/yegor256/tojos)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/yegor256/tojos/blob/master/LICENSE.txt)
