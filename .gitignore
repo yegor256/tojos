@@ -1,11 +1,11 @@
-*.iml
-.DS_Store
 .classpath
+.DS_Store
 .idea
 .idea/
 .mvn/wrapper/maven-wrapper.jar
 .project
 .recommenders
 .settings
+*.iml
 node_modules/
 target/
