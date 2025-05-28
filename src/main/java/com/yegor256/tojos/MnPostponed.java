@@ -105,7 +105,7 @@ public final class MnPostponed implements Mono {
      */
     private static Thread start(final Mono main, final Mono cache,
         final long msec, final AtomicBoolean flag) {
-        final Thread thred = new Thread(
+        final Thread thread = new Thread(
             () -> {
                 while (true) {
                     try {
