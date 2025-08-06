@@ -166,7 +166,11 @@ public final class MnCsv implements Mono {
         final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
         for (final Map<String, String> map : rows) {
             final Map<String, String> copy = new HashMap<>(map.size());
-            copy.putAll(map);
+            final Object[] entries = map.entrySet().toArray();
+            for (final Object obj : entries) {
+                final Map.Entry<String, String> entry = (Map.Entry<String, String>) obj;
+                copy.put(entry.getKey(), entry.getValue());
+            }
             list.add(copy);
         }
         return list;
