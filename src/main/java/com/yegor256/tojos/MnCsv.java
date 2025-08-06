@@ -15,15 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * CSV file.
@@ -166,10 +158,20 @@ public final class MnCsv implements Mono {
         final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
         for (final Map<String, String> map : rows) {
             final Map<String, String> copy = new HashMap<>(map.size());
-            final Object[] entries = map.entrySet().toArray();
-            for (final Object obj : entries) {
-                final Map.Entry<String, String> entry = (Map.Entry<String, String>) obj;
-                copy.put(entry.getKey(), entry.getValue());
+            boolean copied = false;
+            while (!copied) {
+                try {
+                    copy.putAll(map);
+                    copied = true;
+                } catch (final ConcurrentModificationException ex) {
+                    copy.clear();
+                    try {
+                        Thread.sleep(1);
+                    } catch (final InterruptedException iex) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
             }
             list.add(copy);
         }
