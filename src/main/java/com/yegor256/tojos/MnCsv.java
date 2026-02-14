@@ -165,10 +165,23 @@ public final class MnCsv implements Mono {
     private static Collection<Map<String, String>> dup(final Collection<Map<String, String>> rows) {
         final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
         for (final Map<String, String> map : rows) {
-            final Map<String, String> copy = new HashMap<>(map.size());
-            copy.putAll(map);
+            final Map<String, String> copy = MnCsv.safeCopy(map);
             list.add(copy);
         }
         return list;
+    }
+
+    /**
+     * Safely copy a map to avoid ConcurrentModificationException.
+     *
+     * @param map The map to copy
+     * @return A copy of the map
+     */
+    private static Map<String, String> safeCopy(final Map<String, String> map) {
+        final Map<String, String> copy = new HashMap<>(map.size());
+        synchronized (map) {
+            copy.putAll(map);
+        }
+        return copy;
     }
 }
