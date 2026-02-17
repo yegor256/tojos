@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 /**
@@ -28,12 +29,18 @@ public final class TjDefault implements Tojos {
     private final Mono mono;
 
     /**
+     * Shared lock for all ToMono instances.
+     */
+    private final ReentrantLock lock;
+
+    /**
      * Ctor.
      *
      * @param mno The Mono (CSV or JSON)
      */
     public TjDefault(final Mono mno) {
         this.mono = mno;
+        this.lock = new ReentrantLock();
     }
 
     @Override
@@ -53,7 +60,7 @@ public final class TjDefault implements Tojos {
             rows.add(row);
             this.mono.write(rows);
         }
-        return new ToMono(this.mono, name);
+        return new ToMono(this.mono, name, this.lock);
     }
 
     @Override
@@ -61,7 +68,7 @@ public final class TjDefault implements Tojos {
         final Collection<Map<String, String>> rows = this.mono.read();
         final List<Tojo> tojos = new ArrayList<>(rows.size());
         for (final Map<String, String> row : rows) {
-            final Tojo tojo = new ToMono(this.mono, row.get(Tojos.ID_KEY));
+            final Tojo tojo = new ToMono(this.mono, row.get(Tojos.ID_KEY), this.lock);
             if (filter.test(tojo)) {
                 tojos.add(tojo);
             }

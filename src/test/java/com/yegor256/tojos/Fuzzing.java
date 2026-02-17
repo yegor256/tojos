@@ -27,14 +27,14 @@ public final class Fuzzing {
     @Fuzz
     public void fuzzMnTabs(final Collection<Map<String, String>> before) throws IOException {
         Fuzzing.assumeValid(before);
-        final File temp = File.createTempFile(this.getClass().getCanonicalName(), "");
-        final Mono tabs = new MnTabs(temp);
+        final Mono tabs = new MnTabs(
+            File.createTempFile(this.getClass().getCanonicalName(), "")
+        );
         tabs.write(before);
-        final Collection<Map<String, String>> after = tabs.read();
         for (final Map<String, String> row : before) {
             MatcherAssert.assertThat(
                 "must contain the same rows",
-                after,
+                tabs.read(),
                 Matchers.hasItem(row)
             );
         }
@@ -43,14 +43,14 @@ public final class Fuzzing {
     @Fuzz
     public void fuzzMnJson(final Collection<Map<String, String>> before) throws IOException {
         Fuzzing.assumeValid(before);
-        final File temp = File.createTempFile(this.getClass().getCanonicalName(), "");
-        final Mono tabs = new MnJson(temp);
-        tabs.write(before);
-        final Collection<Map<String, String>> after = tabs.read();
+        final Mono json = new MnJson(
+            File.createTempFile(this.getClass().getCanonicalName(), "")
+        );
+        json.write(before);
         for (final Map<String, String> row : before) {
             MatcherAssert.assertThat(
                 "must contain the same rows",
-                after,
+                json.read(),
                 Matchers.hasItem(row)
             );
         }

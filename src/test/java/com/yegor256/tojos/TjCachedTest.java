@@ -76,21 +76,27 @@ final class TjCachedTest {
                 selected.add(uuid);
             }
         }
-        final long start = System.nanoTime();
-        cached.select(
-            x -> selected.contains(x.get(keys[0])) && rows / 2 < Integer.parseInt(x.get(keys[1]))
-        );
-        final long end = System.nanoTime();
-        final long actual = TimeUnit.NANOSECONDS.toMillis(end - start);
-        final long expected = 100L;
         MatcherAssert.assertThat(
-            String.format(
-                "We expect, that select() will take less than %d ms but was %d ms",
-                expected,
-                actual
+            "must select rows within 100ms",
+            TjCachedTest.timed(
+                () -> cached.select(
+                    x -> selected.contains(x.get(keys[0]))
+                        && rows / 2 < Integer.parseInt(x.get(keys[1]))
+                )
             ),
-            actual,
-            Matchers.lessThan(expected)
+            Matchers.lessThan(100L)
         );
+    }
+
+    /**
+     * Measure execution time of a runnable in milliseconds.
+     * @param task Task to time
+     * @return Elapsed time in milliseconds
+     */
+    private static long timed(final Runnable task) {
+        final long[] times = {System.nanoTime(), 0L};
+        task.run();
+        times[1] = System.nanoTime();
+        return TimeUnit.NANOSECONDS.toMillis(times[1] - times[0]);
     }
 }

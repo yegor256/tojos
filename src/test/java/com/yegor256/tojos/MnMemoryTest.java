@@ -21,10 +21,9 @@ final class MnMemoryTest {
 
     @Test
     void readsEmpty() {
-        final Mono mono = new MnMemory();
         MatcherAssert.assertThat(
             "must work fine",
-            mono.read().size(),
+            new MnMemory().read().size(),
             Matchers.equalTo(0)
         );
     }

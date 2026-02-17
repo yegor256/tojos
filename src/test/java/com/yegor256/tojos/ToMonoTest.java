@@ -24,13 +24,11 @@ final class ToMonoTest {
 
     @Test
     void readsAndWrites(@Mktmp final Path temp) {
-        final Mono mono = new MnJson(temp.resolve("mono.json"));
-        new TjDefault(mono).add("foo");
-        final Tojo tojo = new ToMono(mono, "foo");
-        tojo.set("k", "v");
+        final Tojos tojos = new TjDefault(new MnJson(temp.resolve("mono.json")));
+        tojos.add("foo").set("k", "v");
         MatcherAssert.assertThat(
             "reads back",
-            tojo.get("k"),
+            tojos.select(t -> true).iterator().next().get("k"),
             Matchers.equalTo("v")
         );
     }

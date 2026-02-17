@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,10 +33,9 @@ final class MnStickyTest {
 
     @Test
     void readsFromEmpty() {
-        final Mono mono = new MnSticky(new MnMemory());
         MatcherAssert.assertThat(
             "must work fine",
-            mono.read().size(),
+            new MnSticky(new MnMemory()).read().size(),
             Matchers.equalTo(0)
         );
     }
@@ -59,32 +59,46 @@ final class MnStickyTest {
 
     @Test
     void readsAndWritesConcurrentlyWithHighFrequency(@Mktmp final Path temp) {
-        final TjDefault tojos = new TjDefault(new MnSticky(new MnJson(temp.resolve("x.json"))));
         final int processors = Runtime.getRuntime().availableProcessors();
         MatcherAssert.assertThat(
             "must work fine",
             new SumOf(
                 new Threads<>(
                     processors,
-                    IntStream.range(0, processors)
-                        .mapToObj(String::valueOf)
-                        .map(tojos::add)
-                        .map(
-                            tojo -> (Scalar<Integer>) () -> {
-                                final String key = "uuid";
-                                final String uuid = UUID.randomUUID().toString();
-                                tojo.set(key, uuid);
-                                tojo.get(key);
-                                tojo.set(key, uuid);
-                                tojo.get(key);
-                                tojo.set(key, uuid);
-                                tojo.get(key);
-                                return 1;
-                            }
-                        ).collect(Collectors.toList())
+                    MnStickyTest.tasks(
+                        new TjDefault(
+                            new MnSticky(new MnJson(temp.resolve("x.json")))
+                        ),
+                        processors
+                    )
                 )
             ),
             Matchers.equalTo(processors)
         );
+    }
+
+    /**
+     * Creates concurrent tasks for the given tojos.
+     * @param tojos Tojos to use
+     * @param count Number of tasks
+     * @return List of tasks
+     */
+    private static List<Scalar<Integer>> tasks(final Tojos tojos, final int count) {
+        return IntStream.range(0, count)
+            .mapToObj(String::valueOf)
+            .map(tojos::add)
+            .map(
+                tojo -> (Scalar<Integer>) () -> {
+                    final String key = "uuid";
+                    final String uuid = UUID.randomUUID().toString();
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    tojo.set(key, uuid);
+                    tojo.get(key);
+                    return 1;
+                }
+            ).collect(Collectors.toList());
     }
 }

@@ -7,6 +7,7 @@ package com.yegor256.tojos;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * One tojo in a {@link Mono}.
@@ -28,14 +29,21 @@ final class ToMono implements Tojo {
     private final String name;
 
     /**
+     * Lock for synchronization.
+     */
+    private final ReentrantLock lock;
+
+    /**
      * Ctor.
      *
      * @param mno The CSV
      * @param nme The name
+     * @param lck Shared lock
      */
-    ToMono(final Mono mno, final String nme) {
+    ToMono(final Mono mno, final String nme, final ReentrantLock lck) {
         this.mono = mno;
         this.name = nme;
+        this.lock = lck;
     }
 
     @Override
@@ -45,14 +53,18 @@ final class ToMono implements Tojo {
 
     @Override
     public boolean exists(final String key) {
-        synchronized (this.mono) {
+        this.lock.lock();
+        try {
             return this.readMap(this.mono.read()).containsKey(key);
+        } finally {
+            this.lock.unlock();
         }
     }
 
     @Override
     public String get(final String key) {
-        synchronized (this.mono) {
+        this.lock.lock();
+        try {
             final Map<String, String> map = this.readMap(this.mono.read());
             final String value = map.get(key);
             if (value == null) {
@@ -64,12 +76,15 @@ final class ToMono implements Tojo {
                 );
             }
             return value;
+        } finally {
+            this.lock.unlock();
         }
     }
 
     @Override
     public Tojo set(final String key, final Object value) {
-        synchronized (this.mono) {
+        this.lock.lock();
+        try {
             if (key.equals(Tojos.ID_KEY)) {
                 throw new IllegalArgumentException(
                     String.format(
@@ -83,6 +98,8 @@ final class ToMono implements Tojo {
             row.put(key, value.toString());
             this.mono.write(rows);
             return this;
+        } finally {
+            this.lock.unlock();
         }
     }
 

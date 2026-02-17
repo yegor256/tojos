@@ -6,15 +6,14 @@ package com.yegor256.tojos;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.json.Json;
@@ -83,12 +82,9 @@ public final class MnJson implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        final LinkedList<Map<String, String>> rows = new LinkedList<>();
+        final List<Map<String, String>> rows = new ArrayList<>(0);
         if (this.file.toFile().exists()) {
-            try (
-                Reader reader = Files.newBufferedReader(this.file);
-                JsonReader json = Json.createReader(reader)
-            ) {
+            try (JsonReader json = Json.createReader(Files.newBufferedReader(this.file))) {
                 json
                     .readArray()
                     .stream()
@@ -121,10 +117,9 @@ public final class MnJson implements Mono {
             array.add(obj);
         }
         this.file.toFile().getParentFile().mkdirs();
-        try (
-            Writer writer = Files.newBufferedWriter(this.file, StandardOpenOption.CREATE)
-        ) {
-            final JsonWriter json = MnJson.JWF.createWriter(writer);
+        try (JsonWriter json = MnJson.JWF.createWriter(
+            Files.newBufferedWriter(this.file, StandardOpenOption.CREATE)
+        )) {
             json.write(array.build());
         } catch (final IOException ex) {
             throw new IllegalArgumentException(

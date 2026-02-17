@@ -28,14 +28,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 final class MnCsvTest {
 
     @Test
-    void checksSimpleScenario(@Mktmp final Path temp) {
-        final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
-        final Collection<Map<String, String>> rows = csv.read();
+    void readsEmptyFile(@Mktmp final Path temp) {
         MatcherAssert.assertThat(
-            "must work fine",
-            csv.read().size(),
+            "must read empty collection from new file",
+            new MnCsv(temp.resolve("foo/bar/empty.csv")).read().size(),
             Matchers.equalTo(0)
         );
+    }
+
+    @Test
+    void writesAndReadsRow(@Mktmp final Path temp) {
+        final Mono csv = new MnCsv(temp.resolve("foo/bar/a.csv"));
+        final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
         final String value = "привет,\t\n \"друг\"!";
@@ -43,7 +47,7 @@ final class MnCsvTest {
         rows.add(row);
         csv.write(rows);
         MatcherAssert.assertThat(
-            "must work fine",
+            "must read back written value",
             csv.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );

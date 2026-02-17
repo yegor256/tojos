@@ -24,14 +24,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 final class MnTabsTest {
 
     @Test
-    void checksSimpleScenario(@Mktmp final Path temp) {
-        final Mono tabs = new MnTabs(temp.resolve("foo/bar/a.tabs"));
-        final Collection<Map<String, String>> rows = tabs.read();
+    void readsEmptyFile(@Mktmp final Path temp) {
         MatcherAssert.assertThat(
-            "must work fine",
-            tabs.read().size(),
+            "must read empty collection from new file",
+            new MnTabs(temp.resolve("foo/bar/empty.tabs")).read().size(),
             Matchers.equalTo(0)
         );
+    }
+
+    @Test
+    void writesAndReadsRow(@Mktmp final Path temp) {
+        final Mono tabs = new MnTabs(temp.resolve("foo/bar/a.tabs"));
+        final Collection<Map<String, String>> rows = tabs.read();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
         final String value = "привет,\t\r\n друг!";
@@ -39,7 +43,7 @@ final class MnTabsTest {
         rows.add(row);
         tabs.write(rows);
         MatcherAssert.assertThat(
-            "must work fine",
+            "must read back written value",
             tabs.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );

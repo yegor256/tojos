@@ -16,11 +16,7 @@ import java.util.Map;
  */
 public interface Tojo {
 
-    /**
-     * The name of it.
-     *
-     * @return The value of its {@link Tojos#ID_KEY} attribute
-     */
+    @Override
     String toString();
 
     /**

@@ -29,14 +29,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 final class MnJsonTest {
 
     @Test
-    void checksSimpleScenario(@Mktmp final Path temp) {
-        final Mono json = new MnJson(temp.resolve("foo/bar/a.json"));
-        final Collection<Map<String, String>> rows = json.read();
+    void readsEmptyFile(@Mktmp final Path temp) {
         MatcherAssert.assertThat(
-            "must work fine",
-            json.read().size(),
+            "must read empty collection from new file",
+            new MnJson(temp.resolve("foo/bar/empty.json")).read().size(),
             Matchers.equalTo(0)
         );
+    }
+
+    @Test
+    void writesAndReadsRow(@Mktmp final Path temp) {
+        final Mono json = new MnJson(temp.resolve("foo/bar/a.json"));
+        final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
         final String value = "привет,\t\r\n друг!";
@@ -44,7 +48,7 @@ final class MnJsonTest {
         rows.add(row);
         json.write(rows);
         MatcherAssert.assertThat(
-            "must work fine",
+            "must read back written value",
             json.read().iterator().next().get(key),
             Matchers.equalTo(value)
         );
@@ -67,9 +71,7 @@ final class MnJsonTest {
         final Mono json = new MnJson(path);
         final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
-        final String key = Tojos.ID_KEY;
-        final String value = "hello, world!";
-        row.put(key, value);
+        row.put(Tojos.ID_KEY, "hello, world!");
         rows.add(row);
         rows.add(row);
         json.write(rows);

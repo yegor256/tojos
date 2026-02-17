@@ -6,11 +6,10 @@ package com.yegor256.tojos;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
@@ -57,9 +56,13 @@ public final class MnYaml implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        final Collection<Map<String, String>> result = new LinkedList<>();
-        try (InputStream source = Files.newInputStream(this.destination)) {
-            result.addAll(new Yaml().<List<Map<String, String>>>load(source));
+        final Collection<Map<String, String>> result = new ArrayList<>(0);
+        try {
+            result.addAll(
+                new Yaml().<List<Map<String, String>>>load(
+                    Files.newInputStream(this.destination)
+                )
+            );
         } catch (final IOException exception) {
             throw new IllegalArgumentException(
                 String.format("Failed to read YAML from '%s'", this.destination),

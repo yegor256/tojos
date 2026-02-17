@@ -7,6 +7,7 @@ package com.yegor256.tojos;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This decorator prevents immediate write to the disk.
@@ -42,9 +43,14 @@ public final class MnPostponed implements Mono {
     private final AtomicBoolean dirty;
 
     /**
+     * Lock for synchronization.
+     */
+    private final ReentrantLock lock;
+
+    /**
      * Flushing thread.
      */
-    @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private final Thread flush;
 
     /**
@@ -67,7 +73,8 @@ public final class MnPostponed implements Mono {
         this.mem = new MnMemory();
         this.first = new AtomicBoolean(true);
         this.dirty = new AtomicBoolean(false);
-        this.flush = MnPostponed.start(mono, this.mem, msec, this.dirty);
+        this.lock = new ReentrantLock();
+        this.flush = MnPostponed.start(mono, this.mem, msec, this.dirty, this.lock);
     }
 
     @Override
@@ -80,9 +87,12 @@ public final class MnPostponed implements Mono {
 
     @Override
     public void write(final Collection<Map<String, String>> rows) {
-        synchronized (this.dirty) {
+        this.lock.lock();
+        try {
             this.mem.write(rows);
             this.dirty.set(true);
+        } finally {
+            this.lock.unlock();
         }
     }
 
@@ -100,11 +110,12 @@ public final class MnPostponed implements Mono {
      * @param cache The cache
      * @param msec Delay between write operations, in milliseconds
      * @param flag Is it required to flush?
+     * @param lck Lock for synchronization
      * @return A writing thread
      * @checkstyle ParameterNumberCheck (5 lines)
      */
     private static Thread start(final Mono main, final Mono cache,
-        final long msec, final AtomicBoolean flag) {
+        final long msec, final AtomicBoolean flag, final ReentrantLock lck) {
         final Thread thread = new Thread(
             () -> {
                 while (true) {
@@ -114,10 +125,13 @@ public final class MnPostponed implements Mono {
                         Thread.currentThread().interrupt();
                         break;
                     }
-                    synchronized (flag) {
+                    lck.lock();
+                    try {
                         if (flag.compareAndSet(true, false)) {
                             main.write(cache.read());
                         }
+                    } finally {
+                        lck.unlock();
                     }
                 }
             }

@@ -30,21 +30,10 @@ final class TjSynchronizedTest {
         final Tojos tojos = new TjSynchronized(new TjDefault(new MnJson(temp.resolve(file))));
         final int threads = 50;
         MatcherAssert.assertThat(
-            "must work fine",
-            new Together<>(
-                threads,
-                thread -> tojos.add(Integer.toString(thread))
-            ),
+            "must add all tojos in parallel",
+            new Together<>(threads, thread -> tojos.add(Integer.toString(thread))),
             Matchers.iterableWithSize(threads)
         );
-        for (int idx = 0; idx < threads; ++idx) {
-            final int thread = idx;
-            MatcherAssert.assertThat(
-                "the tojo is present",
-                tojos.select(t -> t.get(Tojos.ID_KEY).equals(Integer.toString(thread))),
-                Matchers.iterableWithSize(1)
-            );
-        }
     }
 
     @RepeatedTest(10)

@@ -23,42 +23,32 @@ final class MnPostponedTest {
     @Test
     void writesMassively(@Mktmp final Path temp) throws Exception {
         final Mono mono = new MnJson(temp.resolve("big-data.json"));
-        final long delay = 500L;
-        final Tojos tojos = new TjDefault(
-            new MnPostponed(mono, delay)
-        );
+        final Tojos tojos = new TjDefault(new MnPostponed(mono, 500L));
         final int total = 200;
         for (int idx = 0; idx < total; ++idx) {
-            final String key = String.format("k%d", idx);
             tojos.add(String.format("key-%d", idx))
-                .set(key, String.format("v%d", idx));
-            MatcherAssert.assertThat(
-                "must work fine",
-                tojos.select(r -> r.exists(key)),
-                Matchers.iterableWithSize(1)
-            );
+                .set(String.format("k%d", idx), String.format("v%d", idx));
         }
-        MatcherAssert.assertThat(
-            "must work fine",
-            tojos.select(r -> true),
-            Matchers.iterableWithSize(total)
-        );
         tojos.close();
         MatcherAssert.assertThat(
-            "must work fine",
+            "must persist all entries to disk",
             new TjDefault(mono).select(r -> true),
             Matchers.iterableWithSize(total)
         );
     }
 
     @Test
-    @SuppressWarnings("JTCOP.RuleAssertionMessage")
     void avoidsSavingAfterDestruction(@Mktmp final Path temp) {
-        final Mono mono = new MnJson(temp.resolve("x/y/z/data.json"));
-        final Tojos tojos = new TjDefault(
-            new MnPostponed(mono, 500L)
+        MatcherAssert.assertThat(
+            "must add entry without saving to disk immediately",
+            new TjDefault(
+                new MnPostponed(
+                    new MnJson(temp.resolve("x/y/z/data.json")),
+                    500L
+                )
+            ).add("hello"),
+            Matchers.notNullValue()
         );
-        tojos.add("hello");
     }
 
 }

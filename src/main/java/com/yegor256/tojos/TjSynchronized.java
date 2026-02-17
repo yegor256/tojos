@@ -7,6 +7,7 @@ package com.yegor256.tojos;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -25,12 +26,18 @@ public final class TjSynchronized implements Tojos {
     private final Tojos origin;
 
     /**
+     * Lock for synchronization.
+     */
+    private final ReentrantLock lock;
+
+    /**
      * Ctor.
      *
      * @param tojos The tojos
      */
     public TjSynchronized(final Tojos tojos) {
         this.origin = tojos;
+        this.lock = new ReentrantLock();
     }
 
     @Override
@@ -40,18 +47,24 @@ public final class TjSynchronized implements Tojos {
 
     @Override
     public Tojo add(final String name) {
-        synchronized (this.origin) {
+        this.lock.lock();
+        try {
             return new TjSynchronized.Synched(this.origin.add(name));
+        } finally {
+            this.lock.unlock();
         }
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        synchronized (this.origin) {
+        this.lock.lock();
+        try {
             return this.origin.select(filter)
                 .stream()
                 .map(TjSynchronized.Synched::new)
                 .collect(Collectors.toList());
+        } finally {
+            this.lock.unlock();
         }
     }
 
@@ -83,36 +96,51 @@ public final class TjSynchronized implements Tojos {
 
         @Override
         public String toString() {
-            synchronized (TjSynchronized.this.origin) {
+            TjSynchronized.this.lock.lock();
+            try {
                 return this.origin.toString();
+            } finally {
+                TjSynchronized.this.lock.unlock();
             }
         }
 
         @Override
         public boolean exists(final String key) {
-            synchronized (TjSynchronized.this.origin) {
+            TjSynchronized.this.lock.lock();
+            try {
                 return this.origin.exists(key);
+            } finally {
+                TjSynchronized.this.lock.unlock();
             }
         }
 
         @Override
         public String get(final String key) {
-            synchronized (TjSynchronized.this.origin) {
+            TjSynchronized.this.lock.lock();
+            try {
                 return this.origin.get(key);
+            } finally {
+                TjSynchronized.this.lock.unlock();
             }
         }
 
         @Override
         public Tojo set(final String key, final Object value) {
-            synchronized (TjSynchronized.this.origin) {
+            TjSynchronized.this.lock.lock();
+            try {
                 return this.origin.set(key, value);
+            } finally {
+                TjSynchronized.this.lock.unlock();
             }
         }
 
         @Override
         public Map<String, String> toMap() {
-            synchronized (TjSynchronized.this.origin) {
+            TjSynchronized.this.lock.lock();
+            try {
                 return this.origin.toMap();
+            } finally {
+                TjSynchronized.this.lock.unlock();
             }
         }
     }

@@ -6,10 +6,9 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
-import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.hamcrest.MatcherAssert;
@@ -26,13 +25,12 @@ final class MnYamlTest {
 
     @Test
     void writesAndReads(@Mktmp final Path temp) {
-        final File file = temp.resolve("test.yml").toFile();
         final Map<String, String> keys = new HashMap<>();
-        final List<Map<String, String>> tojo = new LinkedList<>();
+        final List<Map<String, String>> tojo = new ArrayList<>(0);
         final String key = "key";
         tojo.add(keys);
         keys.put(key, "value");
-        final Mono yaml = new MnYaml(file);
+        final Mono yaml = new MnYaml(temp.resolve("test.yml"));
         yaml.write(tojo);
         MatcherAssert.assertThat(
             "must work fine",

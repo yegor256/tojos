@@ -64,8 +64,7 @@ final class TjDefaultTest {
     @Test
     void calculatesToString(@Mktmp final Path temp) {
         final Tojos tojos = new TjDefault(new MnTabs(temp.resolve("hello.csv")));
-        final String name = "foo-bar";
-        tojos.add(name);
+        tojos.add("foo-bar");
         MatcherAssert.assertThat(
             "must work fine",
             tojos.select(t -> true).iterator().next().toString(),
