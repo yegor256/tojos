@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,6 +80,31 @@ final class MnJsonTest {
             "must work fine",
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
             Matchers.containsString("},\n")
+        );
+    }
+
+    @Test
+    void truncatesFileWhenRewritingWithShorterContent(@Mktmp final Path temp) throws IOException {
+        final Path path = temp.resolve("rewrite.json");
+        final Mono json = new MnJson(path);
+        final Collection<Map<String, String>> many = new ArrayList<>(32);
+        for (int idx = 0; idx < 32; ++idx) {
+            final Map<String, String> row = new HashMap<>();
+            row.put(Tojos.ID_KEY, String.format("long-identifier-payload-number-%03d", idx));
+            many.add(row);
+        }
+        json.write(many);
+        final Collection<Map<String, String>> few = new ArrayList<>(1);
+        final Map<String, String> one = new HashMap<>();
+        one.put(Tojos.ID_KEY, "x");
+        few.add(one);
+        json.write(few);
+        final Path reference = temp.resolve("reference.json");
+        new MnJson(reference).write(few);
+        MatcherAssert.assertThat(
+            "rewritten file must not contain stale bytes from the previous longer write",
+            Files.readAllBytes(path),
+            Matchers.equalTo(Files.readAllBytes(reference))
         );
     }
 

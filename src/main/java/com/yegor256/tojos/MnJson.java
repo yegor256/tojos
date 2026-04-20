@@ -118,7 +118,11 @@ public final class MnJson implements Mono {
         }
         this.file.toFile().getParentFile().mkdirs();
         try (JsonWriter json = MnJson.JWF.createWriter(
-            Files.newBufferedWriter(this.file, StandardOpenOption.CREATE)
+            Files.newBufferedWriter(
+                this.file,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+            )
         )) {
             json.write(array.build());
         } catch (final IOException ex) {
