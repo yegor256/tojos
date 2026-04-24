@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -157,7 +158,10 @@ public final class MnCsv implements Mono {
      * Make a duplicate of the provided rows.
      *
      * <p>This is necessary for making sure the list of rows is not updated
-     * by another thread while we are using it.</p>
+     * by another thread while we are using it. If a row map is mutated
+     * while being copied, {@link HashMap} throws
+     * {@link ConcurrentModificationException} from its fail-fast iterator;
+     * in that case we simply try again until we get a clean snapshot.</p>
      *
      * @param rows Original rows
      * @return Duplicate
@@ -165,10 +169,24 @@ public final class MnCsv implements Mono {
     private static Collection<Map<String, String>> dup(final Collection<Map<String, String>> rows) {
         final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
         for (final Map<String, String> map : rows) {
-            final Map<String, String> copy = new HashMap<>(map.size());
-            copy.putAll(map);
-            list.add(copy);
+            list.add(MnCsv.snapshot(map));
         }
         return list;
+    }
+
+    /**
+     * Make a defensive copy of a single row, tolerating concurrent mutation.
+     *
+     * @param map Row to copy
+     * @return Independent copy of the row
+     */
+    private static Map<String, String> snapshot(final Map<String, String> map) {
+        while (true) {
+            try {
+                return new HashMap<>(map);
+            } catch (final ConcurrentModificationException ignored) {
+                Thread.yield();
+            }
+        }
     }
 }
