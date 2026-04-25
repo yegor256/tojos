@@ -44,5 +44,4 @@ public interface Tojos extends Closeable {
      * @return Collection of them
      */
     List<Tojo> select(Predicate<Tojo> filter);
-
 }
