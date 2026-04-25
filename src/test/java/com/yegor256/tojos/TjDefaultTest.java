@@ -71,5 +71,4 @@ final class TjDefaultTest {
             Matchers.equalTo("foo-bar")
         );
     }
-
 }

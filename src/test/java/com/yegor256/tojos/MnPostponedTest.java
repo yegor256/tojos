@@ -50,5 +50,4 @@ final class MnPostponedTest {
             Matchers.notNullValue()
         );
     }
-
 }

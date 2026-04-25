@@ -44,7 +44,7 @@ final class MnJsonTest {
         final Collection<Map<String, String>> rows = json.read();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
-        final String value = "привет,\t\r\n друг!";
+        final String value = "привет,\t\015\012 друг!";
         row.put(key, value);
         rows.add(row);
         json.write(rows);
@@ -79,7 +79,7 @@ final class MnJsonTest {
         MatcherAssert.assertThat(
             "must work fine",
             new String(Files.readAllBytes(path), StandardCharsets.UTF_8),
-            Matchers.containsString("},\n")
+            Matchers.containsString("},\012")
         );
     }
 
@@ -130,5 +130,4 @@ final class MnJsonTest {
             )
         );
     }
-
 }
