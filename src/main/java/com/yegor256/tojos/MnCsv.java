@@ -10,11 +10,9 @@ import com.opencsv.CSVWriter;
 import com.opencsv.ICSVWriter;
 import com.opencsv.RFC4180ParserBuilder;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,26 +37,6 @@ public final class MnCsv implements Mono {
      * The file where to keep them.
      */
     private final Path file;
-
-    /**
-     * Ctor.
-     *
-     * @param path The path to the file
-     * @since 0.4.0
-     */
-    public MnCsv(final String path) {
-        this(Paths.get(path));
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param path The path to the file
-     * @since 0.4.0
-     */
-    public MnCsv(final File path) {
-        this(path.toPath());
-    }
 
     /**
      * Ctor.

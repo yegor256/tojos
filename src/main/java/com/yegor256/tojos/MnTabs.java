@@ -4,7 +4,6 @@
  */
 package com.yegor256.tojos;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,7 +11,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,26 +37,6 @@ public final class MnTabs implements Mono {
      * The file where to keep them.
      */
     private final Path file;
-
-    /**
-     * Ctor.
-     *
-     * @param path The path to the file
-     * @since 0.4.0
-     */
-    public MnTabs(final String path) {
-        this(Paths.get(path));
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param path The path to the file
-     * @since 0.4.0
-     */
-    public MnTabs(final File path) {
-        this(path.toPath());
-    }
 
     /**
      * Ctor.
@@ -166,5 +144,4 @@ public final class MnTabs implements Mono {
             throw new IllegalStateException(ex);
         }
     }
-
 }

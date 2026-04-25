@@ -4,11 +4,9 @@
  */
 package com.yegor256.tojos;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,26 +42,6 @@ public final class MnJson implements Mono {
      * The file path.
      */
     private final Path file;
-
-    /**
-     * Ctor.
-     *
-     * @param path The path to the file
-     * @since 0.4.0
-     */
-    public MnJson(final String path) {
-        this(Paths.get(path));
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param path The path to the file
-     * @since 0.4.0
-     */
-    public MnJson(final File path) {
-        this(path.toPath());
-    }
 
     /**
      * Ctor.
@@ -171,5 +149,4 @@ public final class MnJson implements Mono {
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
         return Json.createWriterFactory(properties);
     }
-
 }
