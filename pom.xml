@@ -141,7 +141,7 @@
         <version>0.15.1</version>
         <configuration>
           <analysisConfigurationFiles>
-            <file>${project.basedir}/.revapi.json</file>
+            <file>.revapi.json</file>
           </analysisConfigurationFiles>
         </configuration>
         <dependencies>
