@@ -58,7 +58,8 @@ public final class TjCached implements Tojos {
 
     @Override
     public Tojo add(final String name) {
-        final Tojo tojo = new ToCached(this.origin.add(name));
+        final Tojo added = this.origin.add(name);
+        final Tojo tojo = new ToCached(added, new HashMap<>(added.toMap()));
         this.cache.put(name, tojo);
         return tojo;
     }
@@ -86,7 +87,7 @@ public final class TjCached implements Tojos {
         this.cache.putAll(
             this.origin.select(x -> true)
                 .stream()
-                .map(ToCached::new)
+                .map(t -> new ToCached(t, new HashMap<>(t.toMap())))
                 .collect(
                     Collectors.toMap(
                         x -> x.get(Tojos.ID_KEY),
