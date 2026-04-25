@@ -8,6 +8,7 @@ import edu.berkeley.cs.jqf.fuzz.Fuzz;
 import edu.berkeley.cs.jqf.fuzz.JQF;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import org.hamcrest.MatcherAssert;
@@ -27,9 +28,7 @@ public final class Fuzzing {
     @Fuzz
     public void fuzzMnTabs(final Collection<Map<String, String>> before) throws IOException {
         Fuzzing.assumeValid(before);
-        final Mono tabs = new MnTabs(
-            File.createTempFile(this.getClass().getCanonicalName(), "")
-        );
+        final Mono tabs = new MnTabs(this.tempPath());
         tabs.write(before);
         for (final Map<String, String> row : before) {
             MatcherAssert.assertThat(
@@ -43,9 +42,7 @@ public final class Fuzzing {
     @Fuzz
     public void fuzzMnJson(final Collection<Map<String, String>> before) throws IOException {
         Fuzzing.assumeValid(before);
-        final Mono json = new MnJson(
-            File.createTempFile(this.getClass().getCanonicalName(), "")
-        );
+        final Mono json = new MnJson(this.tempPath());
         json.write(before);
         for (final Map<String, String> row : before) {
             MatcherAssert.assertThat(
@@ -54,6 +51,16 @@ public final class Fuzzing {
                 Matchers.hasItem(row)
             );
         }
+    }
+
+    /**
+     * Make a temporary file path for fuzz tests.
+     *
+     * @return Path of a freshly-created temp file
+     * @throws IOException If creating the file fails
+     */
+    private Path tempPath() throws IOException {
+        return File.createTempFile(this.getClass().getCanonicalName(), "").toPath();
     }
 
     private static void assumeValid(final Iterable<Map<String, String>> rows) {

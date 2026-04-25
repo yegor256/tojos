@@ -30,7 +30,7 @@ final class TjSynchronizedTest {
         final Tojos tojos = new TjSynchronized(new TjDefault(new MnJson(temp.resolve(file))));
         final int threads = 50;
         MatcherAssert.assertThat(
-            "must add all tojos in parallel",
+            String.format("must add %d tojos in parallel into %s", threads, tojos),
             new Together<>(threads, thread -> tojos.add(Integer.toString(thread))),
             Matchers.iterableWithSize(threads)
         );
@@ -46,7 +46,7 @@ final class TjSynchronizedTest {
             )
         );
         MatcherAssert.assertThat(
-            "must work fine",
+            String.format("must work fine with %s", tojos),
             new Together<>(
                 thread -> {
                     final Tojo tojo = tojos.add(UUID.randomUUID().toString());

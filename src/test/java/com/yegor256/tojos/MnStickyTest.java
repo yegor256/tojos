@@ -45,7 +45,7 @@ final class MnStickyTest {
         final Mono sticky = new MnSticky(new MnCsv(temp.resolve("x.csv")));
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
-        final String value = "привет,\t\n \"друг\"!";
+        final String value = "привет,\t\012 \"друг\"!";
         row.put(key, value);
         final Collection<Map<String, String>> rows = new ArrayList<>(0);
         rows.add(row);

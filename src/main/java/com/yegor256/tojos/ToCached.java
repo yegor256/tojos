@@ -5,7 +5,6 @@
 package com.yegor256.tojos;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,18 +31,10 @@ public final class ToCached implements Tojo {
 
     /**
      * Constructor.
-     * @param tojo The original tojo.
-     */
-    ToCached(final Tojo tojo) {
-        this(tojo, new HashMap<>(tojo.toMap()));
-    }
-
-    /**
-     * Constructor.
      * @param tojo The original tojo
      * @param cache Cache container.
      */
-    private ToCached(
+    ToCached(
         final Tojo tojo,
         final Map<String, String> cache
     ) {

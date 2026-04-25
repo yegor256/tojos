@@ -4,7 +4,6 @@
  */
 package com.yegor256.tojos;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,22 +30,6 @@ public final class MnYaml implements Mono {
      */
     public MnYaml(final Path path) {
         this.destination = path;
-    }
-
-    /**
-     * Ctor.
-     * @param path Path to the file
-     */
-    public MnYaml(final File path) {
-        this(path.toPath());
-    }
-
-    /**
-     * Ctor.
-     * @param path Path to the file
-     */
-    public MnYaml(final String path) {
-        this(new File(path));
     }
 
     @Override
@@ -91,5 +74,4 @@ public final class MnYaml implements Mono {
     public void close() {
         // nothing to close here
     }
-
 }

@@ -1,0 +1,57 @@
+[
+  {
+    "extension": "revapi.differences",
+    "configuration": {
+      "differences": [
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnCsv::<init>(java.io.File)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnCsv(file.toPath()) instead. The previous body called path.toPath() which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnCsv::<init>(java.lang.String)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnCsv(Paths.get(string)) instead. The previous body called Paths.get(path) which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnJson::<init>(java.io.File)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnJson(file.toPath()) instead. The previous body called path.toPath() which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnJson::<init>(java.lang.String)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnJson(Paths.get(string)) instead. The previous body called Paths.get(path) which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnTabs::<init>(java.io.File)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnTabs(file.toPath()) instead. The previous body called path.toPath() which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnTabs::<init>(java.lang.String)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnTabs(Paths.get(string)) instead. The previous body called Paths.get(path) which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnYaml::<init>(java.io.File)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnYaml(file.toPath()) instead. The previous body called path.toPath() which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        },
+        {
+          "ignore": true,
+          "code": "java.method.removed",
+          "old": "method void com.yegor256.tojos.MnYaml::<init>(java.lang.String)",
+          "justification": "Convenience constructor removed for the 1.0 release; use new MnYaml(new java.io.File(string).toPath()) instead. The previous body called new File(path) and indirectly path.toPath() which is not allowed by qulice 0.26.0 ConstructorsCodeFreeCheck."
+        }
+      ]
+    }
+  }
+]

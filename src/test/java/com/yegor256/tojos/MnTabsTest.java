@@ -38,7 +38,7 @@ final class MnTabsTest {
         final Collection<Map<String, String>> rows = tabs.read();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
-        final String value = "привет,\t\r\n друг!";
+        final String value = "привет,\t\015\012 друг!";
         row.put(key, value);
         rows.add(row);
         tabs.write(rows);
@@ -77,5 +77,4 @@ final class MnTabsTest {
             Matchers.equalTo(2)
         );
     }
-
 }

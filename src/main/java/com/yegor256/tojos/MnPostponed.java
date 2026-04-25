@@ -74,6 +74,7 @@ public final class MnPostponed implements Mono {
         this.first = new AtomicBoolean(true);
         this.dirty = new AtomicBoolean(false);
         this.lock = new ReentrantLock();
+        // @checkstyle ConstructorsCodeFreeCheck (1 line)
         this.flush = MnPostponed.start(mono, this.mem, msec, this.dirty, this.lock);
     }
 
@@ -140,5 +141,4 @@ public final class MnPostponed implements Mono {
         thread.start();
         return thread;
     }
-
 }

@@ -45,7 +45,7 @@ final class MnCsvTest {
         final Collection<Map<String, String>> rows = csv.read();
         final Map<String, String> row = new HashMap<>(0);
         final String key = Tojos.ID_KEY;
-        final String value = "привет,\t\n \"друг\"!";
+        final String value = "привет,\t\012 \"друг\"!";
         row.put(key, value);
         rows.add(row);
         csv.write(rows);
