@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  *
  * <p>Use it like this:</p>
  *
- * <pre> Tojos tojos = new MonoTojos(new MnCsv("hello.csv"));
+ * <pre> Tojos tojos = new TjDefault(new MnCsv(Paths.get("hello.csv")));
  * Tojo tojo = tojos.add("Jeff");
  * tojo.set("age", 35);
  * </pre>
