@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Test case for {@link TjDefault}.
- *
  * @since 0.3.0
  */
 @ExtendWith(MktmpResolver.class)

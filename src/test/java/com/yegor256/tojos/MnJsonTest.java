@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnJson}.
- *
  * @since 0.3.0
  */
 @ExtendWith(MktmpResolver.class)

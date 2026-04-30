@@ -24,7 +24,6 @@ public final class TjSmart implements Tojos {
 
     /**
      * Ctor.
-     *
      * @param tojos The origin
      */
     public TjSmart(final Tojos tojos) {

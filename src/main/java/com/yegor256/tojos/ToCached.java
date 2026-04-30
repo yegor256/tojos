@@ -32,12 +32,9 @@ public final class ToCached implements Tojo {
     /**
      * Constructor.
      * @param tojo The original tojo
-     * @param cache Cache container.
+     * @param cache Cache container
      */
-    ToCached(
-        final Tojo tojo,
-        final Map<String, String> cache
-    ) {
+    ToCached(final Tojo tojo, final Map<String, String> cache) {
         this.origin = tojo;
         this.cache = cache;
     }

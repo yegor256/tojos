@@ -21,7 +21,6 @@ public interface Tojo {
 
     /**
      * This attribute exists.
-     *
      * @param key The name of the attribute
      * @return TRUE if exists
      */
@@ -29,7 +28,6 @@ public interface Tojo {
 
     /**
      * Get attribute.
-     *
      * @param key The name of the attribute
      * @return The value
      */
@@ -49,7 +47,7 @@ public interface Tojo {
 
     /**
      * Get all attributes as a map.
-     * @return The map of attributes.
+     * @return The map of attributes
      */
     Map<String, String> toMap();
 }

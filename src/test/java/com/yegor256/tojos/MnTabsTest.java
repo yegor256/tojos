@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnTabs}.
- *
  * @since 0.7.0
  */
 @ExtendWith(MktmpResolver.class)

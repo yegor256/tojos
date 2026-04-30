@@ -4,6 +4,7 @@
  */
 package com.yegor256.tojos;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +46,6 @@ public final class MnJson implements Mono {
 
     /**
      * Ctor.
-     *
      * @param path The path to the file
      * @since 0.4.0
      */
@@ -95,22 +95,8 @@ public final class MnJson implements Mono {
             array.add(obj);
         }
         this.file.toFile().getParentFile().mkdirs();
-        try (JsonWriter json = MnJson.JWF.createWriter(
-            Files.newBufferedWriter(
-                this.file,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING
-            )
-        )) {
+        try (JsonWriter json = MnJson.JWF.createWriter(MnJson.bufferedWriterTo(this.file))) {
             json.write(array.build());
-        } catch (final IOException ex) {
-            throw new IllegalArgumentException(
-                String.format(
-                    "Failed to write %d rows into '%s'",
-                    rows.size(), this.file
-                ),
-                ex
-            );
         }
     }
 
@@ -122,7 +108,7 @@ public final class MnJson implements Mono {
     /**
      * Covert JsonValue to Map.
      * @param value Value
-     * @return Map of Strings.
+     * @return Map of Strings
      */
     private static Map<String, String> asMap(final JsonValue value) {
         return value.asJsonObject()
@@ -133,8 +119,8 @@ public final class MnJson implements Mono {
 
     /**
      * Convert JsonValue to String.
-     * @param value JsonValue.
-     * @return String.
+     * @param value JsonValue
+     * @return String
      */
     private static String asString(final JsonValue value) {
         return JsonString.class.cast(value).getString();
@@ -148,5 +134,25 @@ public final class MnJson implements Mono {
         final Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
         return Json.createWriterFactory(properties);
+    }
+
+    /**
+     * Open a buffered writer to the given file with truncate semantics.
+     * @param target Target file
+     * @return Buffered writer ready to be wrapped in a JsonWriter
+     */
+    private static BufferedWriter bufferedWriterTo(final Path target) {
+        try {
+            return Files.newBufferedWriter(
+                target,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+            );
+        } catch (final IOException ex) {
+            throw new IllegalArgumentException(
+                String.format("Failed to open '%s' for writing", target),
+                ex
+            );
+        }
     }
 }
