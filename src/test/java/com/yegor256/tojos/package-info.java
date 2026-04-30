@@ -5,7 +5,6 @@
 
 /**
  * TOJOs, tests.
- *
  * @since 0.1
  */
 package com.yegor256.tojos;

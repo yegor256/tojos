@@ -25,7 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnSticky}.
- *
  * @since 0.12.0
  */
 @ExtendWith(MktmpResolver.class)
@@ -87,18 +86,26 @@ final class MnStickyTest {
         return IntStream.range(0, count)
             .mapToObj(String::valueOf)
             .map(tojos::add)
-            .map(
-                tojo -> (Scalar<Integer>) () -> {
-                    final String key = "uuid";
-                    final String uuid = UUID.randomUUID().toString();
-                    tojo.set(key, uuid);
-                    tojo.get(key);
-                    tojo.set(key, uuid);
-                    tojo.get(key);
-                    tojo.set(key, uuid);
-                    tojo.get(key);
-                    return 1;
-                }
-            ).collect(Collectors.toList());
+            .map(MnStickyTest::toTask)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Convert a tojo into a scalar that exercises set/get repeatedly.
+     * @param tojo The tojo to use
+     * @return Scalar that performs the operations
+     */
+    private static Scalar<Integer> toTask(final Tojo tojo) {
+        return () -> {
+            final String key = "uuid";
+            final String uuid = UUID.randomUUID().toString();
+            tojo.set(key, uuid);
+            tojo.get(key);
+            tojo.set(key, uuid);
+            tojo.get(key);
+            tojo.set(key, uuid);
+            tojo.get(key);
+            return 1;
+        };
     }
 }

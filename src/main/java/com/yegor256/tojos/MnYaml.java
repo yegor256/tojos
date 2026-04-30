@@ -15,10 +15,10 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * YAML file.
- *
  * @since 0.9.2
  */
 public final class MnYaml implements Mono {
+
     /**
      * Where the YAML is stored.
      */

@@ -32,7 +32,6 @@ public final class TjSynchronized implements Tojos {
 
     /**
      * Ctor.
-     *
      * @param tojos The tojos
      */
     public TjSynchronized(final Tojos tojos) {
@@ -75,7 +74,6 @@ public final class TjSynchronized implements Tojos {
 
     /**
      * Synchronized tojo.
-     *
      * @since 0.19.0
      */
     private final class Synched implements Tojo {
@@ -87,7 +85,6 @@ public final class TjSynchronized implements Tojos {
 
         /**
          * Ctor.
-         *
          * @param tojo The tojo
          */
         Synched(final Tojo tojo) {

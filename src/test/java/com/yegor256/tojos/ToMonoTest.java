@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for MonoTojo usage in concurrent environment.
- *
  * @since 0.16
  */
 @ExtendWith(MktmpResolver.class)

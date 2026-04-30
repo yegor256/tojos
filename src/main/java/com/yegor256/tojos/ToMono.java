@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * One tojo in a {@link Mono}.
@@ -35,7 +36,6 @@ final class ToMono implements Tojo {
 
     /**
      * Ctor.
-     *
      * @param mno The CSV
      * @param nme The name
      * @param lck Shared lock
@@ -118,13 +118,17 @@ final class ToMono implements Tojo {
             .stream()
             .filter(row -> row.get(Tojos.ID_KEY).equals(this.name))
             .findFirst()
-            .orElseThrow(
-                () -> new IllegalArgumentException(
-                    String.format(
-                        "The tojo with id='%s' not found among %d rows",
-                        this.name, rows.size()
-                    )
-                )
-            );
+            .orElseThrow(this.missing(rows.size()));
+    }
+
+    /**
+     * Build a supplier for the "tojo not found" exception.
+     * @param size Number of rows scanned
+     * @return Supplier that constructs the exception
+     */
+    private Supplier<IllegalArgumentException> missing(final int size) {
+        return () -> new IllegalArgumentException(
+            String.format("The tojo with id='%s' not found among %d rows", this.name, size)
+        );
     }
 }

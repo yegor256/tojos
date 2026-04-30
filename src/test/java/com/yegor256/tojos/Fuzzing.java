@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 
 /**
  * Fuzz testing for some classes.
- *
  * @since 0.7.0
  */
 @RunWith(JQF.class)
@@ -55,7 +54,6 @@ public final class Fuzzing {
 
     /**
      * Make a temporary file path for fuzz tests.
-     *
      * @return Path of a freshly-created temp file
      * @throws IOException If creating the file fails
      */

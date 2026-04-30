@@ -18,7 +18,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Test case for {@link TjSynchronized}.
- *
  * @since 0.3.0
  */
 @ExtendWith(MktmpResolver.class)

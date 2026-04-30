@@ -154,7 +154,6 @@ public final class MnCsv implements Mono {
 
     /**
      * Make a defensive copy of a single row, tolerating concurrent mutation.
-     *
      * @param map Row to copy
      * @return Independent copy of the row
      */

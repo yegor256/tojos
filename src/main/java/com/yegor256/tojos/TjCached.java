@@ -43,10 +43,7 @@ public final class TjCached implements Tojos {
      * @param origin Tojos which need to be cached
      * @param cache Cache container for tojos
      */
-    public TjCached(
-        final Tojos origin,
-        final Map<String, Tojo> cache
-    ) {
+    public TjCached(final Tojos origin, final Map<String, Tojo> cache) {
         this.origin = origin;
         this.cache = cache;
     }
@@ -88,13 +85,7 @@ public final class TjCached implements Tojos {
             this.origin.select(x -> true)
                 .stream()
                 .map(t -> new ToCached(t, new HashMap<>(t.toMap())))
-                .collect(
-                    Collectors.toMap(
-                        x -> x.get(Tojos.ID_KEY),
-                        x -> x,
-                        (x, y) -> x
-                    )
-                )
+                .collect(Collectors.toMap(x -> x.get(Tojos.ID_KEY), x -> x, (x, y) -> x))
         );
     }
 }

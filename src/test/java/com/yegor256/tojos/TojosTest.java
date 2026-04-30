@@ -4,6 +4,7 @@
  */
 package com.yegor256.tojos;
 
+import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link Tojos}.
- *
  * @since 0.16
  */
 @ExtendWith(MktmpResolver.class)
@@ -25,9 +25,16 @@ final class TojosTest {
         ArchRuleDefinition.classes()
             .that().haveSimpleNameStartingWith("Tj")
             .should().implement(Tojos.class)
-            .check(new ClassFileImporter()
-                .withImportOption(new ImportOption.DoNotIncludeTests())
-                .importPackages("com.yegor256.tojos")
-            );
+            .check(TojosTest.classes());
+    }
+
+    /**
+     * Import all production classes of the package once.
+     * @return Imported classes
+     */
+    private static JavaClasses classes() {
+        return new ClassFileImporter()
+            .withImportOption(new ImportOption.DoNotIncludeTests())
+            .importPackages("com.yegor256.tojos");
     }
 }
