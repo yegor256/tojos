@@ -8,7 +8,7 @@
  *
  * <p>Use it like this:
  *
- * <pre> Tojos tojos = new MonoTojos(new Csv("hello.csv"));
+ * <pre> Tojos tojos = new TjDefault(new MnCsv(Paths.get("hello.csv")));
  * Tojo tojo = tojos.add("Jeff");
  * tojo.set("age", 35);
  * </pre>
