@@ -38,14 +38,25 @@ public final class MnYaml implements Mono {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Map<String, String>> read() {
         final Collection<Map<String, String>> result = new ArrayList<>(0);
         try {
-            result.addAll(
-                new Yaml().<List<Map<String, String>>>load(
-                    Files.newInputStream(this.destination)
-                )
+            final Object loaded = new Yaml().load(
+                Files.newInputStream(this.destination)
             );
+            if (loaded != null) {
+                if (!(loaded instanceof List)) {
+                    throw new IllegalArgumentException(
+                        String.format(
+                            "Expected a YAML sequence of maps in '%s', but got %s; only files written by MnYaml.write(...) can be read back",
+                            this.destination,
+                            loaded.getClass().getCanonicalName()
+                        )
+                    );
+                }
+                result.addAll((List<Map<String, String>>) loaded);
+            }
         } catch (final IOException exception) {
             throw new IllegalArgumentException(
                 String.format("Failed to read YAML from '%s'", this.destination),
