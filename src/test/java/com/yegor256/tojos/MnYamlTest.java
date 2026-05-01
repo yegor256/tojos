@@ -6,6 +6,8 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -38,6 +41,35 @@ final class MnYamlTest {
             Matchers.equalTo(
                 yaml.read().stream().findFirst().get().get(key)
             )
+        );
+    }
+
+    @Test
+    void throwsClearlyWhenYamlRootIsMap(@Mktmp final Path temp) throws Exception {
+        final Path file = temp.resolve("map.yml");
+        Files.write(
+            file,
+            String.format("parent:%n  child: value%n").getBytes(StandardCharsets.UTF_8)
+        );
+        MatcherAssert.assertThat(
+            "the message must mention the file path",
+            Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> new MnYaml(file).read(),
+                "must throw a clear IllegalArgumentException when the YAML root is a map"
+            ).getMessage(),
+            Matchers.containsString(file.toString())
+        );
+    }
+
+    @Test
+    void readsEmptyFileAsEmptyCollection(@Mktmp final Path temp) throws Exception {
+        final Path file = temp.resolve("empty.yml");
+        Files.write(file, new byte[0]);
+        MatcherAssert.assertThat(
+            "an empty YAML file must produce an empty collection, not throw NPE",
+            new MnYaml(file).read(),
+            Matchers.empty()
         );
     }
 }
