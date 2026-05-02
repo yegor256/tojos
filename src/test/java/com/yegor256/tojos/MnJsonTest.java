@@ -16,10 +16,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Test case for {@link MnJson}.
@@ -108,6 +113,24 @@ final class MnJsonTest {
     }
 
     @Test
+    void hasJavaxJsonApiAsNonOptionalDependency() throws Exception {
+        MatcherAssert.assertThat(
+            "javax.json:javax.json-api must not be optional, otherwise downstream consumers of MnJson hit NoClassDefFoundError at runtime (see #94)",
+            MnJsonTest.optionalIn("javax.json", "javax.json-api"),
+            Matchers.is(false)
+        );
+    }
+
+    @Test
+    void hasGlassfishJsonAsNonOptionalDependency() throws Exception {
+        MatcherAssert.assertThat(
+            "org.glassfish:javax.json must not be optional, otherwise downstream consumers of MnJson hit NoClassDefFoundError at runtime (see #94)",
+            MnJsonTest.optionalIn("org.glassfish", "javax.json"),
+            Matchers.is(false)
+        );
+    }
+
+    @Test
     void retrievesKeyAtFirstPosition(@Mktmp final Path temp) throws IOException {
         final Path path = temp.resolve("key-test.json");
         final Mono json = new MnJson(path);
@@ -128,5 +151,63 @@ final class MnJsonTest {
                 )
             )
         );
+    }
+
+    /**
+     * Read the {@code <optional>} flag of a top-level dependency declared in
+     * the project's {@code pom.xml}.
+     * @param group The {@code <groupId>} of the dependency to look up
+     * @param artifact The {@code <artifactId>} of the dependency to look up
+     * @return Whether the dependency is declared as optional
+     * @throws Exception When the {@code pom.xml} cannot be read or parsed,
+     *  or when the requested dependency is not declared at all
+     */
+    private static boolean optionalIn(final String group, final String artifact)
+        throws Exception {
+        final Document doc = DocumentBuilderFactory
+            .newInstance()
+            .newDocumentBuilder()
+            .parse(Path.of("pom.xml").toFile());
+        final NodeList deps = doc.getElementsByTagName("dependency");
+        Boolean optional = null;
+        for (int idx = 0; idx < deps.getLength(); ++idx) {
+            final Element dep = (Element) deps.item(idx);
+            if (group.equals(MnJsonTest.child(dep, "groupId"))
+                && artifact.equals(MnJsonTest.child(dep, "artifactId"))) {
+                optional = "true".equals(MnJsonTest.child(dep, "optional"));
+                break;
+            }
+        }
+        if (optional == null) {
+            throw new IllegalStateException(
+                String.format(
+                    "dependency %s:%s not declared in pom.xml",
+                    group, artifact
+                )
+            );
+        }
+        return optional;
+    }
+
+    /**
+     * Read the trimmed text content of the first direct child of the given
+     * element with the given tag name.
+     * @param parent The parent {@link Element} to look in
+     * @param tag The local name of the child element to look up
+     * @return Trimmed text content of the matching child, or an empty
+     *  string when no such child exists
+     */
+    private static String child(final Element parent, final String tag) {
+        final NodeList kids = parent.getChildNodes();
+        String text = "";
+        for (int idx = 0; idx < kids.getLength(); ++idx) {
+            final Node kid = kids.item(idx);
+            if (kid.getNodeType() == Node.ELEMENT_NODE
+                && tag.equals(kid.getNodeName())) {
+                text = kid.getTextContent().trim();
+                break;
+            }
+        }
+        return text;
     }
 }
