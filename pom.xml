@@ -160,7 +160,7 @@
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
-        <version>1.25.3</version>
+        <version>1.25.5</version>
         <executions>
           <execution>
             <goals>
