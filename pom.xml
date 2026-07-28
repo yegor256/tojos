@@ -183,7 +183,7 @@
       <plugin>
         <groupId>edu.berkeley.cs.jqf</groupId>
         <artifactId>jqf-maven-plugin</artifactId>
-        <version>2.1</version>
+        <version>3.0</version>
         <configuration>
           <testClassName>com.yegor256.tojos.Fuzzing</testClassName>
           <time>5s</time>
