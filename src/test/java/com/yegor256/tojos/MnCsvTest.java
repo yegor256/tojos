@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -95,7 +95,7 @@ final class MnCsvTest {
         for (int idx = 0; idx < 32; ++idx) {
             row.put(String.format("k%d", idx), String.format("v%d", idx));
         }
-        final Collection<Map<String, String>> rows = new LinkedList<>();
+        final Collection<Map<String, String>> rows = new ArrayList<>(0);
         rows.add(row);
         final AtomicBoolean stop = new AtomicBoolean(false);
         final Thread modifier = new Thread(

@@ -24,6 +24,11 @@ import org.junit.runner.RunWith;
 @SuppressWarnings({"JTCOP.RuleAllTestsHaveProductionClass", "JTCOP.RuleCorrectTestName"})
 public final class Fuzzing {
 
+    /**
+     * Fuzz {@link MnTabs} by writing and reading back random rows.
+     * @param before Rows to write and verify
+     * @throws IOException If an I/O error occurs
+     */
     @Fuzz
     public void fuzzMnTabs(final Collection<Map<String, String>> before) throws IOException {
         Fuzzing.assumeValid(before);
@@ -38,6 +43,11 @@ public final class Fuzzing {
         }
     }
 
+    /**
+     * Fuzz {@link MnJson} by writing and reading back random rows.
+     * @param before Rows to write and verify
+     * @throws IOException If an I/O error occurs
+     */
     @Fuzz
     public void fuzzMnJson(final Collection<Map<String, String>> before) throws IOException {
         Fuzzing.assumeValid(before);
