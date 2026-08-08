@@ -50,6 +50,7 @@ public final class MnPostponed implements Mono {
     /**
      * Flushing thread.
      */
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private final Thread flush;
 
     /**
@@ -99,7 +100,6 @@ public final class MnPostponed implements Mono {
         if (this.dirty.compareAndSet(true, false)) {
             this.origin.write(this.mem.read());
         }
-        this.flush.interrupt();
     }
 
     /**

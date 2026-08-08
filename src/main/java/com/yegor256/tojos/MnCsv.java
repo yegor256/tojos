@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public final class MnCsv implements Mono {
     @Override
     @SuppressWarnings("PMD.CognitiveComplexity")
     public Collection<Map<String, String>> read() {
-        final Collection<Map<String, String>> rows = new ArrayList<>(0);
+        final Collection<Map<String, String>> rows = new LinkedList<>();
         if (Files.exists(this.file)) {
             try (
                 CSVReader reader = new CSVReaderBuilder(
@@ -161,7 +162,7 @@ public final class MnCsv implements Mono {
             try {
                 return new HashMap<>(map);
             } catch (final ConcurrentModificationException ignored) {
-                // try again with a fresh snapshot
+                Thread.yield();
             }
         }
     }

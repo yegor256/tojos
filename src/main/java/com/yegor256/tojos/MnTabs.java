@@ -5,6 +5,7 @@
 package com.yegor256.tojos;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +56,7 @@ public final class MnTabs implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        final Collection<Map<String, String>> rows = new ArrayList<>(0);
+        final Collection<Map<String, String>> rows = new LinkedList<>();
         if (Files.exists(this.file)) {
             final List<String> lines;
             try {
@@ -70,7 +72,7 @@ public final class MnTabs implements Mono {
             for (final String line : lines) {
                 final Map<String, String> row = new HashMap<>(1);
                 if (!line.isEmpty()) {
-                    final String[] cols = line.split("\t", 0);
+                    final String[] cols = line.split("\t");
                     for (final String part : cols) {
                         final String[] parts = part.split(":", 2);
                         row.put(MnTabs.decode(parts[0]), MnTabs.decode(parts[1]));
@@ -123,7 +125,11 @@ public final class MnTabs implements Mono {
      * @return Encoded
      */
     private static String encode(final String txt) {
-        return URLEncoder.encode(txt, StandardCharsets.UTF_8);
+        try {
+            return URLEncoder.encode(txt, StandardCharsets.UTF_8.toString());
+        } catch (final UnsupportedEncodingException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**
@@ -132,6 +138,10 @@ public final class MnTabs implements Mono {
      * @return Decoded
      */
     private static String decode(final String txt) {
-        return URLDecoder.decode(txt, StandardCharsets.UTF_8);
+        try {
+            return URLDecoder.decode(txt, StandardCharsets.UTF_8.toString());
+        } catch (final UnsupportedEncodingException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 }
