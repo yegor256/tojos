@@ -19,6 +19,11 @@ import java.util.function.Predicate;
  *
  * <p>The class is NOT thread-safe.</p>
  *
+ * <p>The predicate of {@link TjDefault#select(Predicate)} is given the row
+ * that has already been read, and not a tojo that goes back to the mono for
+ * every cell it looks at: one selection reads the mono once, not once per row
+ * in it.</p>
+ *
  * @since 0.3.0
  */
 public final class TjDefault implements Tojos {
@@ -68,7 +73,7 @@ public final class TjDefault implements Tojos {
         final List<Tojo> tojos = new ArrayList<>(rows.size());
         for (final Map<String, String> row : rows) {
             final Tojo tojo = new ToMono(this.mono, row.get(Tojos.ID_KEY), this.lock);
-            if (filter.test(tojo)) {
+            if (filter.test(new ToCached(tojo, new HashMap<>(row)))) {
                 tojos.add(tojo);
             }
         }
