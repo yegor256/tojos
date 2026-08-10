@@ -21,7 +21,14 @@ public final class MnMemory implements Mono {
     /**
      * The list of rows.
      */
-    private final Collection<Map<String, String>> mem = new CopyOnWriteArrayList<>();
+    private final Collection<Map<String, String>> mem;
+
+    /**
+     * Ctor.
+     */
+    public MnMemory() {
+        this.mem = new CopyOnWriteArrayList<>();
+    }
 
     @Override
     public Collection<Map<String, String>> read() {

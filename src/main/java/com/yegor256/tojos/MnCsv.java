@@ -28,7 +28,8 @@ import java.util.Map;
  *
  * <p>The class is NOT thread-safe.</p>
  *
- * @see <a href="https://geekprompt.github.io/Properly-handling-backshlash-while-using-openCSV/"/>
+ * @see <a href="https://geekprompt.github.io/Properly-handling-backshlash-while-using-openCSV/">Properly
+ *  handling backslash while using openCSV</a>
  * @since 0.3.0
  */
 public final class MnCsv implements Mono {
