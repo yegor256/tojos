@@ -5,8 +5,8 @@
 package com.yegor256.tojos;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  *
  * @since 1.0
  */
-public final class TjIndexed implements Tojos {
+public final class TjDeferred implements Tojos {
 
     /**
      * The mono.
@@ -42,7 +42,7 @@ public final class TjIndexed implements Tojos {
     /**
      * The rows, by id, in the order they arrived.
      */
-    private final Map<String, ToRow> rows;
+    private final Map<String, Map<String, String>> rows;
 
     /**
      * Is it the first time?
@@ -53,7 +53,7 @@ public final class TjIndexed implements Tojos {
      * Ctor.
      * @param mno The mono to read the rows from and write them back to
      */
-    public TjIndexed(final Mono mno) {
+    public TjDeferred(final Mono mno) {
         this.mono = mno;
         this.rows = new LinkedHashMap<>(0);
         this.first = new AtomicBoolean(true);
@@ -66,15 +66,20 @@ public final class TjIndexed implements Tojos {
 
     @Override
     public Tojo add(final String name) {
-        this.load();
-        return this.rows.computeIfAbsent(name, ToRow::new);
+        return new ToRow(
+            this.load().computeIfAbsent(
+                name,
+                id -> new HashMap<>(Collections.singletonMap(Tojos.ID_KEY, id))
+            )
+        );
     }
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        this.load();
-        return this.rows.values()
+        return this.load()
+            .values()
             .stream()
+            .map(ToRow::new)
             .filter(filter)
             .collect(Collectors.toList());
     }
@@ -82,24 +87,21 @@ public final class TjIndexed implements Tojos {
     @Override
     public void close() throws IOException {
         if (!this.first.get()) {
-            final Collection<Map<String, String>> written =
-                new ArrayList<>(this.rows.size());
-            for (final Tojo row : this.rows.values()) {
-                written.add(row.toMap());
-            }
-            this.mono.write(written);
+            this.mono.write(this.rows.values());
         }
         this.mono.close();
     }
 
     /**
-     * Read the rows of the mono, once.
+     * The rows, read from the mono the first time they are asked for.
+     * @return The rows, by id
      */
-    private void load() {
+    private Map<String, Map<String, String>> load() {
         if (this.first.compareAndSet(true, false)) {
             for (final Map<String, String> row : this.mono.read()) {
-                this.rows.put(row.get(Tojos.ID_KEY), new ToRow(row));
+                this.rows.put(row.get(Tojos.ID_KEY), row);
             }
         }
+        return this.rows;
     }
 }

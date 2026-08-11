@@ -14,16 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Test case for {@link TjIndexed}.
+ * Test case for {@link TjDeferred}.
  * @since 1.0
  */
 @ExtendWith(MktmpResolver.class)
-final class TjIndexedTest {
+final class TjDeferredTest {
 
     @Test
     void readsMonoOnceWhileBuilding() throws IOException {
         final MnCounted mono = new MnCounted(new MnMemory());
-        try (Tojos tojos = new TjIndexed(mono)) {
+        try (Tojos tojos = new TjDeferred(mono)) {
             for (int row = 0; row < 20; row = row + 1) {
                 tojos.add(String.format("row-%d", row)).set("k", "v").set("j", "w");
             }
@@ -38,7 +38,7 @@ final class TjIndexedTest {
     @Test
     void writesMonoOnceWhenClosed() throws IOException {
         final MnCounted mono = new MnCounted(new MnMemory());
-        try (Tojos tojos = new TjIndexed(mono)) {
+        try (Tojos tojos = new TjDeferred(mono)) {
             for (int row = 0; row < 20; row = row + 1) {
                 tojos.add(String.format("row-%d", row)).set("k", "v");
             }
@@ -52,7 +52,7 @@ final class TjIndexedTest {
 
     @Test
     void keepsCellsUntilTheyAreRead() throws IOException {
-        try (Tojos tojos = new TjIndexed(new MnMemory())) {
+        try (Tojos tojos = new TjDeferred(new MnMemory())) {
             tojos.add("book").set("title", "Object Thinking");
             MatcherAssert.assertThat(
                 "must remember what was put into a row",
@@ -65,7 +65,7 @@ final class TjIndexedTest {
     @Test
     void leavesRowsInMonoWhenClosed(@Mktmp final Path temp) throws IOException {
         final Mono mono = new MnCsv(temp.resolve("books.csv"));
-        try (Tojos tojos = new TjIndexed(mono)) {
+        try (Tojos tojos = new TjDeferred(mono)) {
             tojos.add("one").set("k", "v1");
             tojos.add("two").set("k", "v2");
         }
@@ -82,7 +82,7 @@ final class TjIndexedTest {
         try (Tojos before = new TjDefault(mono)) {
             before.add("kettle").set("size", "big");
         }
-        try (Tojos tojos = new TjIndexed(mono)) {
+        try (Tojos tojos = new TjDeferred(mono)) {
             MatcherAssert.assertThat(
                 "must read what the mono already had",
                 tojos.select(row -> true).iterator().next().get("size"),
@@ -93,7 +93,7 @@ final class TjIndexedTest {
 
     @Test
     void savesUniqueIds() throws IOException {
-        try (Tojos tojos = new TjIndexed(new MnMemory())) {
+        try (Tojos tojos = new TjDeferred(new MnMemory())) {
             tojos.add("only").set("k", "first");
             tojos.add("only").set("k", "second");
             MatcherAssert.assertThat(
@@ -107,7 +107,7 @@ final class TjIndexedTest {
     @Test
     void closesMonoItWasGiven() throws IOException {
         final MnCounted mono = new MnCounted(new MnMemory());
-        new TjIndexed(mono).close();
+        new TjDeferred(mono).close();
         MatcherAssert.assertThat(
             "must close the mono it was given, but it left it open",
             mono.closes(),
@@ -117,7 +117,7 @@ final class TjIndexedTest {
 
     @Test
     void forgetsCellItNeverHad() throws IOException {
-        try (Tojos tojos = new TjIndexed(new MnMemory())) {
+        try (Tojos tojos = new TjDeferred(new MnMemory())) {
             MatcherAssert.assertThat(
                 "must not claim a cell nobody wrote",
                 tojos.add("empty").exists("k"),
@@ -128,7 +128,7 @@ final class TjIndexedTest {
 
     @Test
     void showsEveryCellOfRow() throws IOException {
-        try (Tojos tojos = new TjIndexed(new MnMemory())) {
+        try (Tojos tojos = new TjDeferred(new MnMemory())) {
             MatcherAssert.assertThat(
                 "must show the cells of a row, since that is what gets written",
                 tojos.add("cup").set("size", "big").toMap(),
@@ -143,7 +143,7 @@ final class TjIndexedTest {
     @Test
     void keepsMonoEmptyWhenNothingWasAsked(@Mktmp final Path temp) throws IOException {
         final Path path = temp.resolve("untouched.csv");
-        new TjIndexed(new MnCsv(path)).close();
+        new TjDeferred(new MnCsv(path)).close();
         MatcherAssert.assertThat(
             "must not write a table it was never asked about",
             path.toFile().exists(),

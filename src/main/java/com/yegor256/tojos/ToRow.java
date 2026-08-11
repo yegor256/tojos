@@ -5,7 +5,6 @@
 package com.yegor256.tojos;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,14 +24,6 @@ final class ToRow implements Tojo {
      * The cells of this row, by name.
      */
     private final Map<String, String> cells;
-
-    /**
-     * Ctor.
-     * @param id The id of the row, which has nothing else in it yet
-     */
-    ToRow(final String id) {
-        this(new HashMap<>(Collections.singletonMap(Tojos.ID_KEY, id)));
-    }
 
     /**
      * Ctor.
