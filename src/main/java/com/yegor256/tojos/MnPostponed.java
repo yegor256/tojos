@@ -110,7 +110,6 @@ public final class MnPostponed implements Mono {
      * @param flag Is it required to flush?
      * @param lck Lock for synchronization
      * @return A writing thread
-     * @checkstyle ParameterNumberCheck (5 lines)
      */
     private static Thread start(final Mono main, final Mono cache,
         final long msec, final AtomicBoolean flag, final ReentrantLock lck) {
