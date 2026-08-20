@@ -108,11 +108,6 @@ final class ToMono implements Tojo {
         return Collections.unmodifiableMap(this.readMap(this.mono.read()));
     }
 
-    /**
-     * Read the map from the collection.
-     * @param rows The rows
-     * @return The map
-     */
     private Map<String, String> readMap(final Collection<Map<String, String>> rows) {
         return rows
             .stream()
@@ -121,11 +116,6 @@ final class ToMono implements Tojo {
             .orElseThrow(this.missing(rows.size()));
     }
 
-    /**
-     * Build a supplier for the "tojo not found" exception.
-     * @param size Number of rows scanned
-     * @return Supplier that constructs the exception
-     */
     private Supplier<IllegalArgumentException> missing(final int size) {
         return () -> new IllegalArgumentException(
             String.format("The tojo with id='%s' not found among %d rows", this.name, size)

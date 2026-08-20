@@ -62,11 +62,6 @@ public final class Fuzzing {
         }
     }
 
-    /**
-     * Make a temporary file path for fuzz tests.
-     * @return Path of a freshly-created temp file
-     * @throws IOException If creating the file fails
-     */
     private Path tempPath() throws IOException {
         return File.createTempFile(this.getClass().getCanonicalName(), "").toPath();
     }

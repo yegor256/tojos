@@ -117,20 +117,10 @@ public final class MnTabs implements Mono {
         // nothing to close here
     }
 
-    /**
-     * Encode.
-     * @param txt The text to encode
-     * @return Encoded
-     */
     private static String encode(final String txt) {
         return URLEncoder.encode(txt, StandardCharsets.UTF_8);
     }
 
-    /**
-     * Decode.
-     * @param txt The text to decode
-     * @return Decoded
-     */
     private static String decode(final String txt) {
         return URLDecoder.decode(txt, StandardCharsets.UTF_8);
     }

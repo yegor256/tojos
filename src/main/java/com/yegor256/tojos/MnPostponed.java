@@ -102,15 +102,6 @@ public final class MnPostponed implements Mono {
         this.flush.interrupt();
     }
 
-    /**
-     * Make a thread that writes.
-     * @param main The main one
-     * @param cache The cache
-     * @param msec Delay between write operations, in milliseconds
-     * @param flag Is it required to flush?
-     * @param lck Lock for synchronization
-     * @return A writing thread
-     */
     private static Thread start(final Mono main, final Mono cache,
         final long msec, final AtomicBoolean flag, final ReentrantLock lck) {
         final Thread thread = new Thread(

@@ -105,11 +105,6 @@ public final class MnJson implements Mono {
         // nothing to close here
     }
 
-    /**
-     * Covert JsonValue to Map.
-     * @param value Value
-     * @return Map of Strings
-     */
     private static Map<String, String> asMap(final JsonValue value) {
         return value.asJsonObject()
             .entrySet()
@@ -117,30 +112,16 @@ public final class MnJson implements Mono {
             .collect(Collectors.toMap(Map.Entry::getKey, ent -> MnJson.asString(ent.getValue())));
     }
 
-    /**
-     * Convert JsonValue to String.
-     * @param value JsonValue
-     * @return String
-     */
     private static String asString(final JsonValue value) {
         return JsonString.class.cast(value).getString();
     }
 
-    /**
-     * Make factory for JSON printing.
-     * @return Factory
-     */
     private static JsonWriterFactory factory() {
         final Map<String, Object> properties = new HashMap<>(1);
         properties.put(JsonGenerator.PRETTY_PRINTING, true);
         return Json.createWriterFactory(properties);
     }
 
-    /**
-     * Open a buffered writer to the given file with truncate semantics.
-     * @param target Target file
-     * @return Buffered writer ready to be wrapped in a JsonWriter
-     */
     private static BufferedWriter bufferedWriterTo(final Path target) {
         try {
             return Files.newBufferedWriter(

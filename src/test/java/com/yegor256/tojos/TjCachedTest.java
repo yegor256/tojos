@@ -87,11 +87,6 @@ final class TjCachedTest {
         );
     }
 
-    /**
-     * Measure execution time of a runnable in milliseconds.
-     * @param task Task to time
-     * @return Elapsed time in milliseconds
-     */
     private static long timed(final Runnable task) {
         final long[] times = {System.nanoTime(), 0L};
         task.run();

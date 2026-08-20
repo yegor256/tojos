@@ -153,15 +153,6 @@ final class MnJsonTest {
         );
     }
 
-    /**
-     * Read the {@code <optional>} flag of a top-level dependency declared in
-     * the project's {@code pom.xml}.
-     * @param group The {@code <groupId>} of the dependency to look up
-     * @param artifact The {@code <artifactId>} of the dependency to look up
-     * @return Whether the dependency is declared as optional
-     * @throws Exception When the {@code pom.xml} cannot be read or parsed,
-     *  or when the requested dependency is not declared at all
-     */
     private static boolean optionalIn(final String group, final String artifact)
         throws Exception {
         final Document doc = DocumentBuilderFactory
@@ -189,14 +180,6 @@ final class MnJsonTest {
         return optional;
     }
 
-    /**
-     * Read the trimmed text content of the first direct child of the given
-     * element with the given tag name.
-     * @param parent The parent {@link Element} to look in
-     * @param tag The local name of the child element to look up
-     * @return Trimmed text content of the matching child, or an empty
-     *  string when no such child exists
-     */
     private static String child(final Element parent, final String tag) {
         final NodeList kids = parent.getChildNodes();
         String text = "";

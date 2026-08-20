@@ -92,10 +92,6 @@ public final class TjDeferred implements Tojos {
         this.mono.close();
     }
 
-    /**
-     * The rows, read from the mono the first time they are asked for.
-     * @return The rows, by id
-     */
     private Map<String, Map<String, String>> load() {
         if (this.first.compareAndSet(true, false)) {
             for (final Map<String, String> row : this.mono.read()) {

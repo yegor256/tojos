@@ -28,10 +28,6 @@ final class TojosTest {
             .check(TojosTest.classes());
     }
 
-    /**
-     * Import all production classes of the package once.
-     * @return Imported classes
-     */
     private static JavaClasses classes() {
         return new ClassFileImporter()
             .withImportOption(new ImportOption.DoNotIncludeTests())

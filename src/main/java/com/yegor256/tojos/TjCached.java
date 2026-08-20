@@ -77,9 +77,6 @@ public final class TjCached implements Tojos {
         this.origin.close();
     }
 
-    /**
-     * Fill cache with all tojos.
-     */
     private void fill() {
         this.cache.putAll(
             this.origin.select(x -> true)

@@ -132,18 +132,6 @@ public final class MnCsv implements Mono {
         // nothing to close here
     }
 
-    /**
-     * Make a duplicate of the provided rows.
-     *
-     * <p>This is necessary for making sure the list of rows is not updated
-     * by another thread while we are using it. If a row map is mutated
-     * while being copied, {@link HashMap} throws
-     * {@link ConcurrentModificationException} from its fail-fast iterator;
-     * in that case we simply try again until we get a clean snapshot.</p>
-     *
-     * @param rows Original rows
-     * @return Duplicate
-     */
     private static Collection<Map<String, String>> dup(final Collection<Map<String, String>> rows) {
         final Collection<Map<String, String>> list = new ArrayList<>(rows.size());
         for (final Map<String, String> map : rows) {
@@ -152,11 +140,6 @@ public final class MnCsv implements Mono {
         return list;
     }
 
-    /**
-     * Make a defensive copy of a single row, tolerating concurrent mutation.
-     * @param map Row to copy
-     * @return Independent copy of the row
-     */
     private static Map<String, String> snapshot(final Map<String, String> map) {
         while (true) {
             try {

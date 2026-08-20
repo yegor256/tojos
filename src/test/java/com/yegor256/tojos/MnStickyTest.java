@@ -76,12 +76,6 @@ final class MnStickyTest {
         );
     }
 
-    /**
-     * Creates concurrent tasks for the given tojos.
-     * @param tojos Tojos to use
-     * @param count Number of tasks
-     * @return List of tasks
-     */
     private static List<Scalar<Integer>> tasks(final Tojos tojos, final int count) {
         return IntStream.range(0, count)
             .mapToObj(String::valueOf)
@@ -90,11 +84,6 @@ final class MnStickyTest {
             .collect(Collectors.toList());
     }
 
-    /**
-     * Convert a tojo into a scalar that exercises set/get repeatedly.
-     * @param tojo The tojo to use
-     * @return Scalar that performs the operations
-     */
     private static Scalar<Integer> toTask(final Tojo tojo) {
         return () -> {
             final String key = "uuid";
