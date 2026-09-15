@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 /**
  * Fuzz testing for some classes.
+ *
  * @since 0.7.0
  */
 @RunWith(JQF.class)
@@ -25,7 +26,15 @@ import org.junit.runner.RunWith;
 public final class Fuzzing {
 
     /**
+     * Constructor.
+     */
+    public Fuzzing() {
+        // Nothing to initialize.
+    }
+
+    /**
      * Fuzz {@link MnTabs} by writing and reading back random rows.
+     *
      * @param before Rows to write and verify
      * @throws IOException If an I/O error occurs
      */
@@ -45,6 +54,7 @@ public final class Fuzzing {
 
     /**
      * Fuzz {@link MnJson} by writing and reading back random rows.
+     *
      * @param before Rows to write and verify
      * @throws IOException If an I/O error occurs
      */

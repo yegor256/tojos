@@ -30,6 +30,7 @@ public interface Mono extends Closeable {
 
     /**
      * Write them all back.
+     *
      * @param rows The list of all lines
      */
     void write(Collection<Map<String, String>> rows);

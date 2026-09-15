@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class is thread-safe.
+ *
  * @since 0.3.0
  */
 public final class MnSynchronized implements Mono {
@@ -27,6 +28,7 @@ public final class MnSynchronized implements Mono {
 
     /**
      * Ctor.
+     *
      * @param mono The mono
      */
     public MnSynchronized(final Mono mono) {

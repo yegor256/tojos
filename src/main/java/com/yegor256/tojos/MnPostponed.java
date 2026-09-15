@@ -54,6 +54,7 @@ public final class MnPostponed implements Mono {
 
     /**
      * Ctor.
+     *
      * @param mono The original one
      */
     public MnPostponed(final Mono mono) {
@@ -62,6 +63,7 @@ public final class MnPostponed implements Mono {
 
     /**
      * Ctor.
+     *
      * @param mono The original one
      * @param msec Delay between write operations, in milliseconds
      */

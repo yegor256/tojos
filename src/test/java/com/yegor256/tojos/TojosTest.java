@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link Tojos}.
+ *
  * @since 0.16
  */
 @ExtendWith(MktmpResolver.class)

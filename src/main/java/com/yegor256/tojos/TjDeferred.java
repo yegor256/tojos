@@ -51,6 +51,7 @@ public final class TjDeferred implements Tojos {
 
     /**
      * Ctor.
+     *
      * @param mno The mono to read the rows from and write them back to
      */
     public TjDeferred(final Mono mno) {

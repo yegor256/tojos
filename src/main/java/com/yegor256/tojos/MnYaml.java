@@ -15,6 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * YAML file.
+ *
  * @since 0.9.2
  */
 public final class MnYaml implements Mono {
@@ -26,6 +27,7 @@ public final class MnYaml implements Mono {
 
     /**
      * Ctor.
+     *
      * @param path Destination where to keep the data
      */
     public MnYaml(final Path path) {

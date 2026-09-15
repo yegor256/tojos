@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Text file where each line contains columns separated by tabs.
  *
- * <p>For example:
+ * <p>For example:</p>
  *
  * <pre> id:Jeff%20Lebowski   salary: $5,000   age: 35
  * id:Walter%20Sobchak   salary: $4,000   age: 40
@@ -39,7 +39,7 @@ public final class MnTabs implements Mono {
     /**
      * Ctor.
      *
-     * <p>If the directory doesn't exist, it will automatically be created.
+     * <p>If the directory doesn't exist, it will automatically be created.</p>
      *
      * @param path The path to the file
      */

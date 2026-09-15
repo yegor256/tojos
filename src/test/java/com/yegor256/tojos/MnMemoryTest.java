@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test case for {@link MnMemory}.
+ *
  * @since 0.12.0
  */
 final class MnMemoryTest {

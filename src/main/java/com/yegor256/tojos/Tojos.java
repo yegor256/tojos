@@ -39,6 +39,7 @@ public interface Tojos extends Closeable {
 
     /**
      * Select some tojos.
+     *
      * @param filter The filter
      * @return Collection of them
      */

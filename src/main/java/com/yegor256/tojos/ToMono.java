@@ -36,6 +36,7 @@ final class ToMono implements Tojo {
 
     /**
      * Ctor.
+     *
      * @param mno The CSV
      * @param nme The name
      * @param lck Shared lock

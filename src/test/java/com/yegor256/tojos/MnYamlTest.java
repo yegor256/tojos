@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnYaml}.
+ *
  * @since 0.9.2
  */
 @ExtendWith(MktmpResolver.class)

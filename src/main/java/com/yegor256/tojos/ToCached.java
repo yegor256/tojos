@@ -31,6 +31,7 @@ public final class ToCached implements Tojo {
 
     /**
      * Constructor.
+     *
      * @param tojo The original tojo
      * @param cache Cache container
      */

@@ -46,6 +46,7 @@ public final class MnJson implements Mono {
 
     /**
      * Ctor.
+     *
      * @param path The path to the file
      * @since 0.4.0
      */

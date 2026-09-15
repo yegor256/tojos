@@ -39,6 +39,7 @@ public final class MnSticky implements Mono {
 
     /**
      * Ctor.
+     *
      * @param mono The original one
      */
     public MnSticky(final Mono mono) {

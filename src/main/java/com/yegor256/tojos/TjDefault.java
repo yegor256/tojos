@@ -40,6 +40,7 @@ public final class TjDefault implements Tojos {
 
     /**
      * Ctor.
+     *
      * @param mno The Mono (CSV or JSON)
      */
     public TjDefault(final Mono mno) {

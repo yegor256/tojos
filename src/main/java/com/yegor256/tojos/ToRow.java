@@ -27,6 +27,7 @@ final class ToRow implements Tojo {
 
     /**
      * Ctor.
+     *
      * @param row The cells of the row, by name
      */
     ToRow(final Map<String, String> row) {

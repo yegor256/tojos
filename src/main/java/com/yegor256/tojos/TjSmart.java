@@ -24,6 +24,7 @@ public final class TjSmart implements Tojos {
 
     /**
      * Ctor.
+     *
      * @param tojos The origin
      */
     public TjSmart(final Tojos tojos) {
@@ -37,6 +38,7 @@ public final class TjSmart implements Tojos {
 
     /**
      * Get one tojo by ID.
+     *
      * @param name The id
      * @return The tojo if found
      */
@@ -49,6 +51,7 @@ public final class TjSmart implements Tojos {
 
     /**
      * Get size.
+     *
      * @return Total count
      */
     public int size() {

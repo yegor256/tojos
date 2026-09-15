@@ -32,6 +32,7 @@ public final class TjCached implements Tojos {
 
     /**
      * Ctor.
+     *
      * @param tojos Tojos which need to be cached
      */
     public TjCached(final Tojos tojos) {
@@ -40,6 +41,7 @@ public final class TjCached implements Tojos {
 
     /**
      * Ctor.
+     *
      * @param origin Tojos which need to be cached
      * @param cache Cache container for tojos
      */

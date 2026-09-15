@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test case for {@link MnSticky}.
+ *
  * @since 0.12.0
  */
 @ExtendWith(MktmpResolver.class)

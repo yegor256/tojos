@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A mono that remembers how many times it was read and written.
+ *
  * @since 1.0
  */
 final class MnCounted implements Mono {
@@ -37,6 +38,7 @@ final class MnCounted implements Mono {
 
     /**
      * Ctor.
+     *
      * @param mono The mono that does the work
      */
     MnCounted(final Mono mono) {
@@ -66,6 +68,7 @@ final class MnCounted implements Mono {
 
     /**
      * How many times this mono was read.
+     *
      * @return The number of reads
      */
     int reads() {
@@ -74,6 +77,7 @@ final class MnCounted implements Mono {
 
     /**
      * How many times this mono was written.
+     *
      * @return The number of writes
      */
     int writes() {
@@ -82,6 +86,7 @@ final class MnCounted implements Mono {
 
     /**
      * How many times this mono was closed.
+     *
      * @return The number of closes
      */
     int closes() {
