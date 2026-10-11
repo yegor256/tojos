@@ -98,10 +98,13 @@ public final class MnPostponed implements Mono {
 
     @Override
     public void close() {
-        if (this.dirty.compareAndSet(true, false)) {
-            this.origin.write(this.mem.read());
+        try {
+            if (this.dirty.compareAndSet(true, false)) {
+                this.origin.write(this.mem.read());
+            }
+        } finally {
+            this.flush.interrupt();
         }
-        this.flush.interrupt();
     }
 
     private static Thread start(final Mono main, final Mono cache,
