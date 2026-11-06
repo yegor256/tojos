@@ -8,6 +8,7 @@ import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,40 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith(MktmpResolver.class)
 final class TjDeferredTest {
+
+    @Test
+    void selectsRowsInInsertionOrder() throws IOException {
+        try (Tojos tojos = new TjDeferred(new MnMemory())) {
+            tojos.add("third");
+            tojos.add("first");
+            tojos.add("second");
+            tojos.add("first").set("updated", "yes");
+            MatcherAssert.assertThat(
+                "must select rows in insertion order even after updating an existing id",
+                tojos.select(row -> true).stream()
+                    .map(row -> row.get(Tojos.ID_KEY))
+                    .collect(Collectors.toList()),
+                Matchers.contains("third", "first", "second")
+            );
+        }
+    }
+
+    @Test
+    void writesRowsInInsertionOrder() throws IOException {
+        final Mono mono = new MnMemory();
+        new TjDefault(mono).add("original");
+        try (Tojos tojos = new TjDeferred(mono)) {
+            tojos.add("third");
+            tojos.add("first");
+            tojos.add("second");
+        }
+        MatcherAssert.assertThat(
+            "must persist original rows followed by new rows in insertion order",
+            mono.read().stream().map(row -> row.get(Tojos.ID_KEY))
+                .collect(Collectors.toList()),
+            Matchers.contains("original", "third", "first", "second")
+        );
+    }
 
     @Test
     void readsMonoOnceWhileBuilding() throws IOException {

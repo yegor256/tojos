@@ -28,6 +28,10 @@ import java.util.stream.Collectors;
  * touching the mono, and only if you close it: what was added lives in
  * memory until then.</p>
  *
+ * <p>Selection returns rows in insertion order, and closing writes them in
+ * that same order. Rows read from the mono keep their original order, and
+ * new ids are appended. Adding an existing id does not move its row.</p>
+ *
  * <p>The class is NOT thread-safe.</p>
  *
  * @since 1.0
