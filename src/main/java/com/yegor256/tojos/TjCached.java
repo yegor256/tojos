@@ -57,6 +57,7 @@ public final class TjCached implements Tojos {
 
     @Override
     public Tojo add(final String name) {
+        this.fill();
         final Tojo added = this.origin.add(name);
         final Tojo tojo = new ToCached(added, new HashMap<>(added.toMap()));
         this.cache.put(name, tojo);
@@ -65,9 +66,7 @@ public final class TjCached implements Tojos {
 
     @Override
     public List<Tojo> select(final Predicate<Tojo> filter) {
-        if (this.cache.isEmpty()) {
-            this.fill();
-        }
+        this.fill();
         return this.cache.values()
             .stream()
             .filter(filter)
@@ -80,11 +79,13 @@ public final class TjCached implements Tojos {
     }
 
     private void fill() {
-        this.cache.putAll(
-            this.origin.select(x -> true)
-                .stream()
-                .map(t -> new ToCached(t, new HashMap<>(t.toMap())))
-                .collect(Collectors.toMap(x -> x.get(Tojos.ID_KEY), x -> x, (x, y) -> x))
-        );
+        if (this.cache.isEmpty()) {
+            this.cache.putAll(
+                this.origin.select(x -> true)
+                    .stream()
+                    .map(t -> new ToCached(t, new HashMap<>(t.toMap())))
+                    .collect(Collectors.toMap(x -> x.get(Tojos.ID_KEY), x -> x, (x, y) -> x))
+            );
+        }
     }
 }
