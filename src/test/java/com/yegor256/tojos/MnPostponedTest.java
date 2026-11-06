@@ -7,8 +7,15 @@ package com.yegor256.tojos;
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -49,5 +56,63 @@ final class MnPostponedTest {
             ).add("hello"),
             Matchers.notNullValue()
         );
+    }
+
+    @Test
+    void stopsFlushingThreadWhenFinalWriteFails() throws Exception {
+        final AtomicReference<Mono> postponed = new AtomicReference<>();
+        final CompletableFuture<Thread> flushing = new CompletableFuture<>();
+        postponed.set(
+            new MnPostponed(
+                new Mono() {
+                    @Override
+                    public Collection<Map<String, String>> read() {
+                        return new ArrayList<>(0);
+                    }
+
+                    @Override
+                    public void write(final Collection<Map<String, String>> rows) {
+                        if (flushing.isDone()) {
+                            throw new IllegalStateException("disk is full");
+                        }
+                        MnPostponedTest.stall(postponed.get(), rows, flushing);
+                    }
+
+                    @Override
+                    public void close() {
+                        // nothing to close here
+                    }
+                },
+                1L
+            )
+        );
+        postponed.get().write(new ArrayList<>(0));
+        try {
+            final Thread flush = flushing.get(5L, TimeUnit.SECONDS);
+            Assertions.assertThrows(
+                IllegalStateException.class,
+                postponed.get()::close,
+                "must propagate the failure of the final write"
+            );
+            flush.join(TimeUnit.SECONDS.toMillis(5L));
+            MatcherAssert.assertThat(
+                "must stop the flushing thread even if the final write fails",
+                flush.isAlive(),
+                Matchers.is(false)
+            );
+        } finally {
+            flushing.thenAccept(Thread::interrupt).get(5L, TimeUnit.SECONDS);
+        }
+    }
+
+    private static void stall(final Mono mono, final Collection<Map<String, String>> rows,
+        final CompletableFuture<Thread> flushing) {
+        mono.write(rows);
+        flushing.complete(Thread.currentThread());
+        try {
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
