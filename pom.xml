@@ -120,6 +120,18 @@
     </dependency>
     <dependency>
       <groupId>edu.berkeley.cs.jqf</groupId>
+      <artifactId>jqf-core</artifactId>
+      <version>3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.berkeley.cs.jqf</groupId>
+      <artifactId>jqf-junit4</artifactId>
+      <version>3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.berkeley.cs.jqf</groupId>
       <artifactId>jqf-fuzz</artifactId>
       <version>3.0</version>
       <scope>test</scope>
