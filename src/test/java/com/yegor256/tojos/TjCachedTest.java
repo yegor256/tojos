@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,21 @@ final class TjCachedTest {
             "must work fine",
             cached.select(x -> true).size(),
             Matchers.equalTo(4)
+        );
+    }
+
+    @Test
+    void keepsExistingRowsWhenAddingFirst() {
+        final Tojos origin = new TjDefault(new MnMemory());
+        origin.add("existing").set("title", "before");
+        final Tojos cached = new TjCached(origin);
+        cached.add("new").set("title", "after");
+        MatcherAssert.assertThat(
+            "must retain rows from the origin when add precedes select",
+            cached.select(row -> true).stream()
+                .map(row -> row.get("title"))
+                .collect(Collectors.toList()),
+            Matchers.containsInAnyOrder("before", "after")
         );
     }
 
