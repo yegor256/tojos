@@ -79,10 +79,16 @@ public final class MnPostponed implements Mono {
 
     @Override
     public Collection<Map<String, String>> read() {
-        if (this.first.compareAndSet(true, false)) {
-            this.mem.write(this.origin.read());
+        this.lock.lock();
+        try {
+            if (this.first.get()) {
+                this.mem.write(this.origin.read());
+                this.first.set(false);
+            }
+            return this.mem.read();
+        } finally {
+            this.lock.unlock();
         }
-        return this.mem.read();
     }
 
     @Override
@@ -90,6 +96,7 @@ public final class MnPostponed implements Mono {
         this.lock.lock();
         try {
             this.mem.write(rows);
+            this.first.set(false);
             this.dirty.set(true);
         } finally {
             this.lock.unlock();
