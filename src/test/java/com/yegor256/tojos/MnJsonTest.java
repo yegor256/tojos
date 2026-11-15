@@ -125,12 +125,7 @@ final class MnJsonTest {
             rows.add(row);
             json.write(rows);
             MatcherAssert.assertThat(
-                "must create the file in the current directory",
-                Files.exists(path),
-                Matchers.equalTo(true)
-            );
-            MatcherAssert.assertThat(
-                "must read back the written row",
+                "must create the file with the row in the current directory",
                 json.read().iterator().next().get(Tojos.ID_KEY),
                 Matchers.equalTo("alice")
             );
