@@ -98,7 +98,7 @@ public final class MnTabs implements Mono {
             }
             lines.add(String.join("\t", cols));
         }
-        this.file.toFile().getParentFile().mkdirs();
+        this.file.toFile().getAbsoluteFile().getParentFile().mkdirs();
         try {
             Files.write(this.file, lines, StandardCharsets.UTF_8);
         } catch (final IOException ex) {

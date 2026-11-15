@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -147,5 +148,30 @@ final class MnCsvTest {
                 )
             )
         );
+    }
+
+    @Test
+    void writesToBareRelativeFilename() throws IOException {
+        final Path path = Paths.get("bare.csv");
+        try {
+            final Mono csv = new MnCsv(path);
+            final Collection<Map<String, String>> rows = new ArrayList<>(0);
+            final Map<String, String> row = new HashMap<>(0);
+            row.put(Tojos.ID_KEY, "alice");
+            rows.add(row);
+            csv.write(rows);
+            MatcherAssert.assertThat(
+                "must create the file in the current directory",
+                Files.exists(path),
+                Matchers.equalTo(true)
+            );
+            MatcherAssert.assertThat(
+                "must read back the written row",
+                csv.read().iterator().next().get(Tojos.ID_KEY),
+                Matchers.equalTo("alice")
+            );
+        } finally {
+            Files.deleteIfExists(path);
+        }
     }
 }
