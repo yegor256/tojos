@@ -128,7 +128,8 @@ public final class TjSynchronized implements Tojos {
         public Tojo set(final String key, final Object value) {
             TjSynchronized.this.lock.lock();
             try {
-                return this.origin.set(key, value);
+                this.origin.set(key, value);
+                return this;
             } finally {
                 TjSynchronized.this.lock.unlock();
             }
