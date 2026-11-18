@@ -95,7 +95,7 @@ public final class MnJson implements Mono {
             }
             array.add(obj);
         }
-        this.file.toFile().getParentFile().mkdirs();
+        this.file.toFile().getAbsoluteFile().getParentFile().mkdirs();
         try (JsonWriter json = MnJson.JWF.createWriter(MnJson.bufferedWriterTo(this.file))) {
             json.write(array.build());
         }

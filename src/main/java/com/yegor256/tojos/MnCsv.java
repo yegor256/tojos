@@ -106,7 +106,7 @@ public final class MnCsv implements Mono {
             Collections.swap(header, 0, header.indexOf(Tojos.ID_KEY));
         }
         final String[] values = new String[header.size()];
-        this.file.toFile().getParentFile().mkdirs();
+        this.file.toFile().getAbsoluteFile().getParentFile().mkdirs();
         try (ICSVWriter writer = new CSVWriter(Files.newBufferedWriter(this.file))) {
             writer.writeNext(header.toArray(new String[] {}));
             for (final Map<String, String> row : copy) {

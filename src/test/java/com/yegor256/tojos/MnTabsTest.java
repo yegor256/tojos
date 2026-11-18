@@ -6,7 +6,11 @@ package com.yegor256.tojos;
 
 import com.yegor256.Mktmp;
 import com.yegor256.MktmpResolver;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,5 +80,25 @@ final class MnTabsTest {
             tabs.read().size(),
             Matchers.equalTo(2)
         );
+    }
+
+    @Test
+    void writesToBareRelativeFilename() throws IOException {
+        final Path path = Paths.get("bare.tabs");
+        try {
+            final Mono tabs = new MnTabs(path);
+            final Collection<Map<String, String>> rows = new ArrayList<>(0);
+            final Map<String, String> row = new HashMap<>(0);
+            row.put(Tojos.ID_KEY, "alice");
+            rows.add(row);
+            tabs.write(rows);
+            MatcherAssert.assertThat(
+                "must create the file with the row in the current directory",
+                tabs.read().iterator().next().get(Tojos.ID_KEY),
+                Matchers.equalTo("alice")
+            );
+        } finally {
+            Files.deleteIfExists(path);
+        }
     }
 }

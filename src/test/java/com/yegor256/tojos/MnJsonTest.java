@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,6 +112,26 @@ final class MnJsonTest {
             Files.readAllBytes(path),
             Matchers.equalTo(Files.readAllBytes(reference))
         );
+    }
+
+    @Test
+    void writesToBareRelativeFilename() throws IOException {
+        final Path path = Paths.get("bare.json");
+        try {
+            final Mono json = new MnJson(path);
+            final Collection<Map<String, String>> rows = new ArrayList<>(0);
+            final Map<String, String> row = new HashMap<>(0);
+            row.put(Tojos.ID_KEY, "alice");
+            rows.add(row);
+            json.write(rows);
+            MatcherAssert.assertThat(
+                "must create the file with the row in the current directory",
+                json.read().iterator().next().get(Tojos.ID_KEY),
+                Matchers.equalTo("alice")
+            );
+        } finally {
+            Files.deleteIfExists(path);
+        }
     }
 
     @Test
