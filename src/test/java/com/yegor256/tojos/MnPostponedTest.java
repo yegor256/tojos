@@ -9,6 +9,8 @@ import com.yegor256.MktmpResolver;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +57,45 @@ final class MnPostponedTest {
                 )
             ).add("hello"),
             Matchers.notNullValue()
+        );
+    }
+
+    @Test
+    void keepsRowsWrittenBeforeFirstRead() throws Exception {
+        final Map<String, String> stale = MnPostponedTest.row("old");
+        final Map<String, String> fresh = MnPostponedTest.row("new");
+        final MnMemory origin = new MnMemory();
+        origin.write(Collections.singletonList(stale));
+        try (Mono postponed = new MnPostponed(origin, Long.MAX_VALUE)) {
+            postponed.write(Collections.singletonList(fresh));
+            MatcherAssert.assertThat(
+                "first read must return the freshly written rows",
+                postponed.read(),
+                Matchers.allOf(
+                    Matchers.hasItem(fresh),
+                    Matchers.not(Matchers.hasItem(stale))
+                )
+            );
+        }
+    }
+
+    @Test
+    void persistsRowsWrittenBeforeFirstRead() throws Exception {
+        final Map<String, String> stale = MnPostponedTest.row("old");
+        final Map<String, String> fresh = MnPostponedTest.row("new");
+        final MnMemory origin = new MnMemory();
+        origin.write(Collections.singletonList(stale));
+        try (Mono postponed = new MnPostponed(origin, Long.MAX_VALUE)) {
+            postponed.write(Collections.singletonList(fresh));
+            postponed.read();
+        }
+        MatcherAssert.assertThat(
+            "close must persist the written rows, not the stale origin data",
+            origin.read(),
+            Matchers.allOf(
+                Matchers.hasItem(fresh),
+                Matchers.not(Matchers.hasItem(stale))
+            )
         );
     }
 
@@ -114,5 +155,11 @@ final class MnPostponedTest {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private static Map<String, String> row(final String id) {
+        final Map<String, String> map = new HashMap<>(1);
+        map.put(Tojos.ID_KEY, id);
+        return map;
     }
 }
