@@ -73,4 +73,17 @@ final class MnYamlTest {
             Matchers.empty()
         );
     }
+
+    @Test
+    void addsFirstRowToAbsentFile(@Mktmp final Path temp) {
+        final Tojos table = new TjDefault(
+            new MnYaml(temp.resolve("new.yml"))
+        );
+        table.add("alice");
+        MatcherAssert.assertThat(
+            "the first row added to an absent YAML file must be readable back",
+            table.select(row -> true),
+            Matchers.hasSize(1)
+        );
+    }
 }
